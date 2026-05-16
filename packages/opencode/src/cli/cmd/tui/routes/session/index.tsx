@@ -168,6 +168,7 @@ const context = createContext<{
   providers: () => ReadonlyMap<string, Provider>
   sync: ReturnType<typeof useSync>
   tui: ReturnType<typeof useTuiConfig>
+  activeTab: () => "result" | "thinking"
 }>()
 
 function use() {
@@ -225,6 +226,15 @@ export function Session() {
   const [diffWrapMode] = kv.signal<"word" | "none">("diff_wrap_mode", "word")
   const [_animationsEnabled, _setAnimationsEnabled] = kv.signal("animations_enabled", true)
   const [showGenericToolOutput, setShowGenericToolOutput] = kv.signal("generic_tool_output_visibility", false)
+  const [activeTab, setActiveTab] = createSignal<"result" | "thinking">("result")
+
+  const hasThinkingContent = createMemo(() => {
+    return messages().some((m) => {
+      if (m.role !== "assistant") return false
+      const parts = sync.data.part[m.id] ?? []
+      return parts.some((p) => p.type === "reasoning" && (p as any).text?.replace("[REDACTED]", "").trim())
+    })
+  })
 
   const wide = createMemo(() => dimensions().width > 120)
   const sidebarVisible = createMemo(() => {
@@ -410,7 +420,7 @@ export function Session() {
   const local = useLocal()
 
   const mascotMode = createMemo((): MascotMode => {
-    if (pending()) return "thinking"
+    if (pending() || disabled()) return "thinking"
     if (local.agent.current()?.name === "plan") return "planning"
     return "idle"
   })
@@ -1103,6 +1113,7 @@ export function Session() {
           providers,
           sync,
           tui: tuiConfig,
+          activeTab,
         }}
       >
         <box flexDirection="column" flexGrow={1} minHeight={0}>
@@ -1110,9 +1121,16 @@ export function Session() {
             <box flexShrink={0} paddingLeft={2} paddingTop={1} flexDirection="row" alignItems="center" gap={1}>
               <Mascot mode={mascotMode()} idle={true} />
               <text fg={theme.textMuted}>
-                {mascotMode() === "thinking" ? "THINK" :
-                 mascotMode() === "planning" ? "PLAN" : "BUILD"}
+                {local.agent.current()?.name?.toUpperCase() ?? "BUILD"}
               </text>
+              <box flexDirection="row" gap={0} paddingLeft={2}>
+                <box onMouseUp={() => setActiveTab("result")} paddingLeft={1} paddingRight={1}>
+                  <text fg={activeTab() === "result" ? theme.text : theme.textMuted}>Result</text>
+                </box>
+                <box onMouseUp={() => setActiveTab("thinking")} paddingLeft={1} paddingRight={1}>
+                  <text fg={activeTab() === "thinking" ? theme.text : theme.textMuted}>Thinking</text>
+                </box>
+              </box>
             </box>
           </Show>
           <box flexDirection="row" flexGrow={1} minHeight={0}>
@@ -1232,6 +1250,11 @@ export function Session() {
                     </Switch>
                   )}
                 </For>
+                <Show when={activeTab() === "thinking" && !hasThinkingContent()}>
+                  <box flexGrow={1} justifyContent="center" alignItems="center">
+                    <text fg={theme.textMuted}>No thinking content yet.</text>
+                  </box>
+                </Show>
               </scrollbox>
               <box flexShrink={0}>
                 <Show when={permissions().length > 0}>
@@ -1434,15 +1457,20 @@ function AssistantMessage(props: { message: AssistantMessage; parts: Part[]; las
 
   const childShortcut = useCommandShortcut("session.child.first")
 
+  const visibleParts = createMemo(() => {
+    if (ctx.activeTab() === "thinking") return props.parts.filter((p) => p.type === "reasoning")
+    return props.parts.filter((p) => p.type !== "reasoning")
+  })
+
   return (
     <>
-      <For each={props.parts}>
+      <For each={visibleParts()}>
         {(part, index) => {
           const component = createMemo(() => PART_MAPPING[part.type as keyof typeof PART_MAPPING])
           return (
             <Show when={component()}>
               <Dynamic
-                last={index() === props.parts.length - 1}
+                last={index() === visibleParts().length - 1}
                 component={component()}
                 part={part as any}
                 message={props.message}
