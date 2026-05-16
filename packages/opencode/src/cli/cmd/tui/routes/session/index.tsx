@@ -21,6 +21,8 @@ import { useSync } from "@tui/context/sync"
 import { useEvent } from "@tui/context/event"
 import { SplitBorder } from "@tui/component/border"
 import { Spinner } from "@tui/component/spinner"
+import { Mascot } from "@tui/component/mascot"
+import type { MascotMode } from "@tui/component/mascot"
 import { selectedForeground, useTheme } from "@tui/context/theme"
 import { BoxRenderable, ScrollBoxRenderable, addDefaultParsers, TextAttributes, RGBA } from "@opentui/core"
 import { Prompt, type PromptRef } from "@tui/component/prompt"
@@ -406,6 +408,12 @@ export function Session() {
   }
 
   const local = useLocal()
+
+  const mascotMode = createMemo((): MascotMode => {
+    if (pending()) return "thinking"
+    if (local.agent.current()?.name === "plan") return "planning"
+    return "idle"
+  })
 
   function moveFirstChild() {
     if (children().length === 1) return
@@ -1097,8 +1105,18 @@ export function Session() {
           tui: tuiConfig,
         }}
       >
-        <box flexDirection="row" flexGrow={1} minHeight={0}>
-          <box flexGrow={1} minHeight={0} paddingBottom={1} paddingLeft={2} paddingRight={2} gap={1}>
+        <box flexDirection="column" flexGrow={1} minHeight={0}>
+          <Show when={session()}>
+            <box flexShrink={0} paddingLeft={2} paddingTop={1} flexDirection="row" alignItems="center" gap={1}>
+              <Mascot mode={mascotMode()} idle={true} />
+              <text fg={theme.textMuted}>
+                {mascotMode() === "thinking" ? "THINK" :
+                 mascotMode() === "planning" ? "PLAN" : "BUILD"}
+              </text>
+            </box>
+          </Show>
+          <box flexDirection="row" flexGrow={1} minHeight={0}>
+            <box flexGrow={1} minHeight={0} paddingBottom={1} paddingLeft={2} paddingRight={2} gap={1}>
             <Show when={session()}>
               <scrollbox
                 ref={(r) => (scroll = r)}
@@ -1271,6 +1289,7 @@ export function Session() {
               </Match>
             </Switch>
           </Show>
+        </box>
         </box>
       </context.Provider>
     </PathFormatterProvider>

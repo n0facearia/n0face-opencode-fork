@@ -142,3 +142,60 @@ const cb = Instance.bind((err, evts) => {
 })
 nativeAddon.subscribe(dir, cb)
 ```
+
+# TUI: Mascot feature — cat sprites (in progress)
+
+## Files created/modified
+
+- `packages/opencode/src/cli/logo.ts` — added `catIdle`, `catThink`, `catPlan` exports. Each has `left: string[]` and `right: string[]` (4 rows each). Rendered via Logo component as `left[i] + " " + right[i]`. Uses chars: `█ ▀ ▄ _ ^ ~ , (space)`.
+- `packages/opencode/src/cli/cmd/tui/component/mascot.tsx` — Mascot component. Accepts `{ mode: MascotMode, idle?: boolean }`. Maps mode to shape and delegates to `<Logo>`.
+- `packages/opencode/src/cli/cmd/tui/component/startup-loading.tsx` — added Mascot above the spinner in the splash.
+- `packages/opencode/src/cli/cmd/tui/routes/session/index.tsx` — added Mascot header bar at top of session view with mode label (THINK/PLAN/BUILD). Derived signal `mascotMode` reads `pending()` for streaming state and `local.agent.current()?.name` for plan/build mode.
+
+## Current cat sprites (9-wide left, right empty)
+
+### catIdle (`~ _ ~` sleepy)
+```
+▀▄▄▄▄▄▄▄▀
+█ ~ _ ~ █
+█▄▄▄▄▄▄▄█
+▄███████▄
+```
+
+### catThink (`^ _ ^` alert)
+```
+▀▄▄▄▄▄▄▄▀
+█ ^ _ ^ █
+█▄▄▄▄▄▄▄█
+▄███████▄
+```
+
+### catPlan (`███` sunglasses)
+```
+▀▄▄▄▄▄▄▄▀
+█  ███  █
+█▄▄▄▄▄▄▄█
+▄███████▄
+```
+
+Pixel structure at 2:1 terminal ratio:
+- R0: half-block ear tips at corners (`▀`) + brow (`▄`)
+- R1: face sides (`█`) + eye text
+- R2: face sides + cheek line (`█▄▄▄▄▄▄▄█`)
+- R3: body with paw bumps at edges (`▄███████▄`)
+
+## Mascot mode logic (session header)
+
+Derived signal in `session/index.tsx`:
+```ts
+const mascotMode = createMemo((): MascotMode => {
+  if (pending()) return "thinking"    // AI is streaming a response
+  if (local.agent.current()?.name === "plan") return "planning"
+  return "idle"
+})
+```
+
+## TODO (next steps)
+
+1. Run TUI and visually tune the sprites — verify ears look like ears, eyes are readable, body proportions
+2. Tweak any pixel art issues found in real rendering
