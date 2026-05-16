@@ -42,7 +42,7 @@ bun install
 bun run build
 ```
 
-Then run `opencode` from anywhere.
+Then run `n0face` from anywhere.
 
 ---
 
@@ -77,10 +77,10 @@ Then run `opencode` from anywhere.
 
 ## Tutorial
 
-### Starting OpenCode
+### Starting n0face
 
 ```bash
-opencode
+n0face
 ```
 
 ### Switching Modes
@@ -158,10 +158,10 @@ In the session header, click **Result** or **Thinking** to toggle between:
 
 ```bash
 cd ~/my-new-project
-opencode
+n0face
 ```
 
-Then in OpenCode:
+Then in n0face:
 
 ```
 /new-project
@@ -179,10 +179,10 @@ It creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, `.n0face/`, and `.opencode/a
 
 ```bash
 cd ~/my-existing-project
-opencode
+n0face
 ```
 
-Then in OpenCode:
+Then in n0face:
 
 ```
 /import-md

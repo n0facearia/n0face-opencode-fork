@@ -51,10 +51,10 @@ Installs 3 custom agent modes (design, cleanup, security), system prompts, and c
 curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash
 ```
 
-### Run OpenCode
+### Run n0face
 
 ```bash
-opencode
+n0face
 ```
 
 ### Switch modes
@@ -87,7 +87,7 @@ bun install
 bun run build
 ```
 
-Then `opencode` is available anywhere.
+Then `n0face` is available anywhere.
 
 ---
 

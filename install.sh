@@ -53,7 +53,7 @@ fi
 echo ""
 if [ "$created" -gt 0 ]; then
   echo "  Next steps:"
-  echo "    Run 'opencode' and press Tab to cycle modes:"
+    echo "    Run 'n0face' and press Tab to cycle modes:"
   echo "    plan → build → design → cleanup → security"
   echo ""
   echo "    Type '/new-project' to set up a new project"
