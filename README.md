@@ -67,11 +67,15 @@ Press **Tab** to cycle: `plan` → `build` → `design` → `cleanup` → `secur
 /new-project
 ```
 
+Scaffolds a new project with the full mode system. Prompts for project name, type, stack, and description, then creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, `.n0face/`, and `.opencode/agent/`. Opens in VS Code if running inside it.
+
 ### Import into existing project
 
 ```
 /import-md
 ```
+
+Scans an existing project and imports the mode system without overwriting existing files. Auto-detects project name, type, and stack from `package.json`, `Cargo.toml`, `go.mod`, or `README.md`. Creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, `.n0face/`, and `.opencode/agent/` wherever they're missing.
 
 ---
 
