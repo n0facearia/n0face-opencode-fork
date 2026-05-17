@@ -63,6 +63,8 @@ case "$raw_arch" in x86_64|amd64) arch="x64" ;; aarch64|arm64) arch="arm64" ;; *
 
 install_binary() {
   mkdir -p "$BIN_DIR"
+  # Also install to ~/.local/bin so it takes priority in standard PATH
+  mkdir -p "$HOME/.local/bin"
 
   local target="${os}-${arch}"
   local filename="${APP}-${target}.tar.gz"
@@ -72,6 +74,7 @@ install_binary() {
     echo -e "${MUTED}Downloading n0face binary...${NC}"
     curl -# -L "$release_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
     [ -f "$BIN_DIR/opencode" ] && mv "$BIN_DIR/opencode" "$BIN_DIR/n0face"
+    cp "$BIN_DIR/n0face" "$HOME/.local/bin/n0face"
     echo -e "  ${GREEN}✓${NC} Installed n0face binary to $BIN_DIR/n0face"
     return 0
   fi
@@ -92,6 +95,7 @@ install_binary() {
         if [ -n "$built" ] && [ -f "$built" ]; then
           cp "$built" "$BIN_DIR/n0face"
           chmod +x "$BIN_DIR/n0face"
+          cp "$BIN_DIR/n0face" "$HOME/.local/bin/n0face"
           echo -e "  ${GREEN}✓${NC} Built n0face binary from source"
           rm -rf "$build_dir"
           return 0
@@ -113,7 +117,7 @@ install_binary() {
     local src
     src=$(bun pm bin 2>/dev/null || echo "")
     if [ -n "$src" ] && [ -f "$src/opencode" ]; then
-      ln -sf "$src/opencode" "$BIN_DIR/n0face"
+      cp "$src/opencode" "$BIN_DIR/n0face"
     fi
   else
     npm install -g opencode-ai
@@ -121,15 +125,18 @@ install_binary() {
     src=$(npm root -g 2>/dev/null || echo "")
     src="${src%/lib/node_modules}/bin"
     if [ -f "$src/opencode" ]; then
-      ln -sf "$src/opencode" "$BIN_DIR/n0face"
+      cp "$src/opencode" "$BIN_DIR/n0face"
     fi
   fi
 
   if [ -f "$BIN_DIR/n0face" ]; then
-    echo -e "  ${GREEN}✓${NC} Installed n0face ($(readlink "$BIN_DIR/n0face"))"
+    chmod +x "$BIN_DIR/n0face"
+    cp "$BIN_DIR/n0face" "$HOME/.local/bin/n0face"
+    echo -e "  ${GREEN}✓${NC} Installed n0face"
   else
     if command -v opencode &>/dev/null; then
-      ln -sf "$(which opencode)" "$BIN_DIR/n0face"
+      cp "$(which opencode)" "$BIN_DIR/n0face"
+      cp "$BIN_DIR/n0face" "$HOME/.local/bin/n0face"
       echo -e "  ${GREEN}✓${NC} n0face aliased to opencode"
     else
       echo -e "${RED}Failed to install n0face binary${NC}"
