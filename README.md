@@ -84,6 +84,77 @@ Scans an existing project and imports the mode system without overwriting existi
 
 ---
 
+## Demo Project: simpl·cal
+
+A full Spider-Verse themed calculator built entirely with n0face — from design system to deployed app. Shows all 5 modes in action.
+
+**Repo:** https://github.com/n0facearia/simpl-cal
+
+### Prompts Used
+
+**`plan` mode** — Architecture & stack decision:
+```
+Build a Spider-Verse themed calculator app with Next.js.
+Theme: halftone dots, CMYK misregistered shadows, bold comic-style borders.
+Palette: #e62429 red, #00bcd4 cyan, #e91e90 magenta, #ffd700 yellow, #111 ink.
+Features: basic arithmetic, expression history, dark mode toggle, localStorage persistence.
+```
+
+**`build` mode** — Core implementation:
+```
+Scaffold Next.js app with halftone CSS background using radial-gradient dots.
+Build the calculator component with 3D-styled buttons, display with expression + result.
+Add history panel with timestamped calculations. Implement dark mode via CSS variables.
+Add favicon, manifest.json, and PWA support with Spider-Verse icon design.
+```
+
+**`design` mode** — Visual polish:
+```
+Run full UI audit on the calculator. Add comic card rounded borders with 3px black outline.
+Implement misregistered CMYK shadow effect (cyan + magenta offset) on cards and buttons.
+Add halftone dot overlay on calculator display area. Make buttons have 3D press depth.
+Add Spider-Verse color splash blobs in the background. Design Spider-Verse favicon with
+equal sign in red, misregistered cyan/magenta offsets, halftone dots.
+```
+
+**`cleanup` mode** — Refinement:
+```
+Run code cleanup on the project. Remove unused imports, consolidate CSS variables.
+Optimize the halftone background rendering. Fix button sizing inconsistencies.
+```
+
+**`security` mode** — Audit:
+```
+Run security audit. Check for eval() in expression parser, verify localStorage usage
+is safe, review dependencies for vulnerabilities.
+```
+
+### Screenshots
+
+**Login Page** — Spider-Verse themed auth card with misregistered CMYK shadows:
+
+![Login](README-assets/login.png)
+
+**Calculator Home (Light)** — Full calculator with expression display, 3D buttons, and history panel:
+
+![Home](README-assets/home.png)
+
+**Dark Theme** — Full dark mode with comic-style dark cards and yellow-accented operator buttons:
+
+![Dark](README-assets/dark.png)
+
+### Modes Used
+
+| Mode | What it did |
+|------|-------------|
+| **plan** | Architecture, stack selection (Next.js), component layout, theme strategy |
+| **build** | Scaffolding, calculator logic, history, dark mode, PWA setup, favicon |
+| **design** | Halftone CSS, CMYK misregistration, 3D buttons, color splashes, favicon design |
+| **cleanup** | Code organization, CSS variable consolidation, rendering optimization |
+| **security** | eval() audit, localStorage safety check, dependency review |
+
+---
+
 ## Separate from OpenCode
 
 Running `n0face` uses its own config directory and never touches `.opencode/`:
