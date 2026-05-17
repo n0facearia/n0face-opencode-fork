@@ -12,6 +12,32 @@ RED='\033[0;31m'
 ORANGE='\033[38;5;214m'
 NC='\033[0m'
 
+# ─── Uninstall mode ──────────────────────────────────────────────────
+
+if [ "${1:-}" = "--uninstall" ]; then
+  BIN_DIR="$HOME/.n0face/bin"
+  CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/n0face"
+  echo ""
+  echo "  ┌─ n0face Uninstaller ───────────────────────────────────┐"
+  echo "  │                                                          │"
+  echo "  │  Removes n0face CLI, mode configs, and PATH entries      │"
+  echo "  └──────────────────────────────────────────────────────────┘"
+  echo ""
+
+  rm -f "$BIN_DIR/n0face"
+  rmdir "$BIN_DIR" 2>/dev/null || true
+
+  rm -rf "$CONFIG_DIR"
+
+  for file in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.config/fish/config.fish"; do
+    [ -f "$file" ] && sed -i '/# n0face/d;/n0face\/bin/d' "$file"
+  done
+
+  echo "  ✅ n0face removed"
+  echo ""
+  exit 0
+fi
+
 echo ""
 echo "  ┌─ n0face Installer ─────────────────────────────────────┐"
 echo "  │                                                          │"
