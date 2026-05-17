@@ -334,7 +334,7 @@ function patchDir(input: PatchInput) {
   if (input.global) return input.config ?? Global.Path.config
   const git = input.vcs === "git" && input.worktree !== "/"
   const root = git ? input.worktree : input.directory
-  return path.join(root, ".opencode")
+  return path.join(root, process.env.N0FACE === "1" ? ".n0face" : ".opencode")
 }
 
 function patchName(kind: Kind): "opencode" | "tui" {

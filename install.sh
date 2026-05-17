@@ -13,7 +13,7 @@ echo "  │                                                          │"
 echo "  └──────────────────────────────────────────────────────────┘"
 echo ""
 
-mkdir -p .n0face .opencode/agent
+mkdir -p .n0face .n0face/agent .n0face/command
 
 created=0
 skipped=0
@@ -35,10 +35,14 @@ install_file ".n0face/design.mode.md"   ".n0face/design.mode.md"
 install_file ".n0face/cleanup.mode.md"  ".n0face/cleanup.mode.md"
 install_file ".n0face/security.mode.md" ".n0face/security.mode.md"
 
-# Agent config files
-install_file ".opencode/agent/design.md"   ".opencode/agent/design.md"
-install_file ".opencode/agent/cleanup.md"  ".opencode/agent/cleanup.md"
-install_file ".opencode/agent/security.md" ".opencode/agent/security.md"
+# Agent config files (sourced from .opencode/agent/ on GitHub, placed in .n0face/agent/ locally)
+install_file ".opencode/agent/design.md"   ".n0face/agent/design.md"
+install_file ".opencode/agent/cleanup.md"  ".n0face/agent/cleanup.md"
+install_file ".opencode/agent/security.md" ".n0face/agent/security.md"
+
+# Slash commands (sourced from .opencode/command/ on GitHub)
+install_file ".opencode/command/new-project.md" ".n0face/command/new-project.md"
+install_file ".opencode/command/import-md.md"   ".n0face/command/import-md.md"
 
 # Tutorial
 install_file "TUTORIAL.md" "TUTORIAL.md"

@@ -31,6 +31,7 @@ Installs 3 custom agent modes (design, cleanup, security), system prompts, and c
 | **Home screen** | Single column | Three-column layout |
 | **Mode prompts** | 2 built-in | 5 modes with system prompts |
 | **Setup commands** | None | `/new-project`, `/import-md` |
+| **Config isolation** | Shares `.opencode/` | Uses separate `.n0face/` dir |
 | **Install** | `curl opencode.ai/install` | `curl raw.githubusercontent.com/...` |
 
 ### Custom Agents
@@ -67,7 +68,7 @@ Press **Tab** to cycle: `plan` → `build` → `design` → `cleanup` → `secur
 /new-project
 ```
 
-Scaffolds a new project with the full mode system. Prompts for project name, type, stack, and description, then creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, `.n0face/`, and `.opencode/agent/`. Opens in VS Code if running inside it.
+Scaffolds a new project with the full mode system. Prompts for project name, type, stack, and description, then creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, and `.n0face/`. Opens in VS Code if running inside it.
 
 ### Import into existing project
 
@@ -75,7 +76,23 @@ Scaffolds a new project with the full mode system. Prompts for project name, typ
 /import-md
 ```
 
-Scans an existing project and imports the mode system without overwriting existing files. Auto-detects project name, type, and stack from `package.json`, `Cargo.toml`, `go.mod`, or `README.md`. Creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, `.n0face/`, and `.opencode/agent/` wherever they're missing.
+Scans an existing project and imports the mode system without overwriting existing files. Auto-detects project name, type, and stack from `package.json`, `Cargo.toml`, `go.mod`, or `README.md`. Creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, and `.n0face/` wherever they're missing.
+
+---
+
+## Separate from OpenCode
+
+Running `n0face` uses its own config directory and never touches `.opencode/`:
+
+| | `n0face` | `opencode` |
+|---|---|---|
+| **Project config dir** | `.n0face/` | `.opencode/` |
+| **Project config file** | `n0face.json` / `n0face.jsonc` | `opencode.json` / `opencode.jsonc` |
+| **Global config dir** | `~/.config/n0face/` | `~/.config/opencode/` |
+| **Agent files** | `.n0face/agent/*.md` | `.opencode/agent/*.md` |
+| **Command files** | `.n0face/command/*.md` | `.opencode/command/*.md` |
+
+This means you can have **both `n0face` and `opencode` installed side by side** without interference. The install script only creates files under `.n0face/`.
 
 ---
 
@@ -115,12 +132,12 @@ The cat sprite changes based on the agent's state:
 ├── cleanup.mode.md             # Code quality audit checklist and workflow
 └── security.mode.md            # Security audit checklist and workflow
 
-.opencode/agent/                # Agent configurations
+.n0face/agent/                  # Agent configurations
 ├── design.md                   # Design agent (mode: primary)
 ├── cleanup.md                  # Cleanup agent (mode: primary)
 └── security.md                 # Security agent (mode: primary)
 
-.opencode/command/              # Custom slash commands
+.n0face/command/                # Custom slash commands
 ├── new-project.md              # /new-project — scaffold a new project
 └── import-md.md                # /import-md — import into existing project
 

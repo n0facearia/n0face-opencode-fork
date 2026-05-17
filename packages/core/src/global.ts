@@ -6,30 +6,43 @@ import { Context, Effect, Layer } from "effect"
 import { Flock } from "./util/flock"
 import { Flag } from "./flag/flag"
 
-const app = "opencode"
-const data = path.join(xdgData!, app)
-const cache = path.join(xdgCache!, app)
-const config = path.join(xdgConfig!, app)
-const state = path.join(xdgState!, app)
-const tmp = path.join(os.tmpdir(), app)
+function appName() {
+  return process.env.N0FACE === "1" ? "n0face" : "opencode"
+}
 
 const paths = {
   get home() {
     return process.env.OPENCODE_TEST_HOME ?? os.homedir()
   },
-  data,
-  bin: path.join(cache, "bin"),
-  log: path.join(data, "log"),
-  repos: path.join(data, "repos"),
-  cache,
-  config,
-  state,
-  tmp,
+  get data() {
+    return path.join(xdgData!, appName())
+  },
+  get bin() {
+    return path.join(this.cache, "bin")
+  },
+  get log() {
+    return path.join(this.data, "log")
+  },
+  get repos() {
+    return path.join(this.data, "repos")
+  },
+  get cache() {
+    return path.join(xdgCache!, appName())
+  },
+  get config() {
+    return path.join(xdgConfig!, appName())
+  },
+  get state() {
+    return path.join(xdgState!, appName())
+  },
+  get tmp() {
+    return path.join(os.tmpdir(), appName())
+  },
 }
 
 export const Path = paths
 
-Flock.setGlobal({ state })
+Flock.setGlobal({ state: Path.state })
 
 await Promise.all([
   fs.mkdir(Path.data, { recursive: true }),
