@@ -76,6 +76,29 @@ install_binary() {
     return 0
   fi
 
+  # Fallback: build from source if git + bun are available
+  if command -v git &>/dev/null && command -v bun &>/dev/null; then
+    echo -e "${MUTED}Building n0face from source...${NC}"
+    local build_dir
+    build_dir=$(mktemp -d)
+    git clone --depth=1 "https://github.com/$REPO.git" "$build_dir" 2>/dev/null
+    if [ -d "$build_dir/packages/opencode" ]; then
+      bun install --cwd "$build_dir" --ignore-scripts 2>/dev/null
+      bun run --cwd "$build_dir/packages/opencode" build --single --skip-install --skip-embed-web-ui 2>/dev/null
+      local dist_dir="$build_dir/packages/opencode/dist"
+      local built
+      built=$(find "$dist_dir" -name "opencode" -type f 2>/dev/null | head -1)
+      if [ -n "$built" ]; then
+        cp "$built" "$BIN_DIR/n0face"
+        chmod +x "$BIN_DIR/n0face"
+        echo -e "  ${GREEN}✓${NC} Built n0face binary from source"
+        rm -rf "$build_dir"
+        return 0
+      fi
+    fi
+    rm -rf "$build_dir"
+  fi
+
   echo -e "${MUTED}Installing opencode-ai via npm (aliased as n0face)...${NC}"
   if ! command -v npm &>/dev/null && ! command -v bun &>/dev/null; then
     if command -v node &>/dev/null; then
