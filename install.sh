@@ -88,7 +88,7 @@ install_binary() {
       git clone --depth=1 "https://github.com/$REPO.git" "$build_dir" 2>/dev/null || true
       if [ -d "$build_dir/packages/opencode" ]; then
         (bun install --cwd "$build_dir" --ignore-scripts 2>/dev/null || true)
-        (bun run --cwd "$build_dir/packages/opencode" build --single --skip-install --skip-embed-web-ui 2>/dev/null || true)
+        (bun run --cwd "$build_dir/packages/opencode" build --single --skip-install 2>/dev/null || true)
         local dist_dir="$build_dir/packages/opencode/dist"
         local built
         built=$(find "$dist_dir" -name "opencode" -type f 2>/dev/null | head -1) || true
