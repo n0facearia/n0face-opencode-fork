@@ -34,7 +34,7 @@ if [ "${0:-}" = "--uninstall" ] || [ "${1:-}" = "--uninstall" ]; then
 
   # Remove PATH entries from shell configs
   for file in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.config/fish/config.fish"; do
-    [ -f "$file" ] && sed -i '/# n0face/d;/n0face\/bin/d' "$file"
+    [ -f "$file" ] && sed -i '/# n0face/d;/n0face\/bin/d;/opencode\/bin/d' "$file"
   done
 
   echo "  ✅ n0face removed"
@@ -113,17 +113,7 @@ install_binary() {
   fi
 }
 
-# Always ensure ~/.n0face/bin/n0face exists
-if [ -f "$BIN_DIR/n0face" ]; then
-  echo -e "  ${ORANGE}~${NC} n0face already installed at $BIN_DIR/n0face"
-else
-  if command -v n0face &>/dev/null; then
-    ln -sf "$(which n0face)" "$BIN_DIR/n0face"
-    echo -e "  ${GREEN}✓${NC} Linked n0face to $BIN_DIR/n0face"
-  else
-    install_binary
-  fi
-fi
+install_binary
 
 # ─── Add to PATH ──────────────────────────────────────────────────
 
@@ -139,8 +129,17 @@ add_to_path() {
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
   case "${SHELL##*/}" in
     fish)
-      add_to_path "$HOME/.config/fish/config.fish" "fish_add_path $BIN_DIR"
       fish -c "fish_add_path $BIN_DIR" 2>/dev/null || true
+      if [ -f "$HOME/.config/fish/config.fish" ] && ! grep -q "fish_add_path $BIN_DIR" "$HOME/.config/fish/config.fish" 2>/dev/null; then
+        # Insert before any existing opencode PATH entry so n0face takes priority
+        if grep -q "opencode/bin" "$HOME/.config/fish/config.fish" 2>/dev/null; then
+          sed -i "/opencode\/bin/i fish_add_path $BIN_DIR" "$HOME/.config/fish/config.fish"
+        else
+          echo -e "\n# n0face" >> "$HOME/.config/fish/config.fish"
+          echo "fish_add_path $BIN_DIR" >> "$HOME/.config/fish/config.fish"
+        fi
+        echo -e "  ${MUTED}Added to \$PATH in ${NC}$HOME/.config/fish/config.fish"
+      fi
       ;;
     zsh)
       add_to_path "${ZDOTDIR:-$HOME}/.zshrc" "export PATH=\"$BIN_DIR:\$PATH\""
