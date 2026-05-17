@@ -85,10 +85,13 @@ install_binary() {
     local build_dir
     build_dir=$(mktemp -d) || true
     if [ -n "$build_dir" ]; then
-      git clone --depth=1 "https://github.com/$REPO.git" "$build_dir" 2>/dev/null || true
+      echo -e "${MUTED}  Cloning repo...${NC}"
+      git clone --depth=1 "https://github.com/$REPO.git" "$build_dir" 2>&1 | sed 's/^/  /' || true
       if [ -d "$build_dir/packages/opencode" ]; then
-        (bun install --cwd "$build_dir" --ignore-scripts 2>/dev/null || true)
-        (bun run --cwd "$build_dir/packages/opencode" build --single --skip-install 2>/dev/null || true)
+        echo -e "${MUTED}  Installing dependencies...${NC}"
+        bun install --cwd "$build_dir" --ignore-scripts 2>&1 | tail -3 | sed 's/^/  /' || true
+        echo -e "${MUTED}  Building binary (this may take a few minutes)...${NC}"
+        bun run --cwd "$build_dir/packages/opencode" build --single --skip-install 2>&1 | tail -5 | sed 's/^/  /' || true
         local dist_dir="$build_dir/packages/opencode/dist"
         local built
         built=$(find "$dist_dir" -name "opencode" -type f 2>/dev/null | head -1) || true
@@ -101,6 +104,7 @@ install_binary() {
           return 0
         fi
       fi
+      echo -e "  ${ORANGE}⚠${NC} Source build failed, trying alternatives..."
       rm -rf "$build_dir" 2>/dev/null || true
     fi
   fi
