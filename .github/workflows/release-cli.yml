@@ -19,13 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
-      repo: ${{ steps.version.outputs.repo }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - uses: oven-sh/setup-bun@v2
 
       - name: Set version
         id: version
@@ -36,7 +33,6 @@ jobs:
             VERSION="${GITHUB_REF_NAME#v}"
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "repo=${{ github.repository }}" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release
         env:
@@ -70,13 +66,37 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
-      - name: Install dependencies
-        run: bun install
+      - name: Install dependencies (ignore native scripts)
+        run: bun install --ignore-scripts
+
+      - name: Fix node-pty
+        run: bun run --cwd packages/opencode fix-node-pty
 
       - name: Build CLI binary
-        run: ./packages/opencode/script/build.ts --single
+        run: bun run --cwd packages/opencode build --single
         env:
-          OPENCODE_VERSION: ${{ needs.create-release.outputs.version }}
-          OPENCODE_RELEASE: "true"
-          GH_REPO: ${{ needs.create-release.outputs.repo }}
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package binary
+        run: |
+          DIST="packages/opencode/dist"
+          BINARY=$(find "$DIST" -name "opencode" -type f | head -1)
+          if [ -n "$BINARY" ]; then
+            DIRNAME=$(dirname "$(dirname "$BINARY")")
+            BASENAME=$(basename "$DIRNAME")
+            cd "$(dirname "$BINARY")"
+            tar -czf "${BASENAME}.tar.gz" opencode
+            echo "asset_path=$(pwd)/${BASENAME}.tar.gz" >> "$GITHUB_ENV"
+            echo "asset_name=${BASENAME}.tar.gz" >> "$GITHUB_ENV"
+          fi
+
+      - name: Upload binary to release
+        if: env.asset_path != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "v${{ needs.create-release.outputs.version }}" \
+            "${{ env.asset_path }}" \
+            --clobber \
+            --repo "${{ github.repository }}"
