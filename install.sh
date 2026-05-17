@@ -14,9 +14,7 @@ NC='\033[0m'
 
 # ─── Uninstall mode ──────────────────────────────────────────────────
 
-if [ "${1:-}" = "--uninstall" ]; then
-  BIN_DIR="$HOME/.n0face/bin"
-  CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/n0face"
+if [ "${0:-}" = "--uninstall" ] || [ "${1:-}" = "--uninstall" ]; then
   echo ""
   echo "  ┌─ n0face Uninstaller ───────────────────────────────────┐"
   echo "  │                                                          │"
@@ -24,11 +22,17 @@ if [ "${1:-}" = "--uninstall" ]; then
   echo "  └──────────────────────────────────────────────────────────┘"
   echo ""
 
-  rm -f "$BIN_DIR/n0face"
-  rmdir "$BIN_DIR" 2>/dev/null || true
+  # Remove n0face binary from any location
+  local_path=$(command -v n0face 2>/dev/null || true)
+  [ -n "$local_path" ] && rm -f "$local_path"
+  rm -f "$HOME/.n0face/bin/n0face"
+  rm -f "$HOME/.local/bin/n0face"
 
+  # Remove global configs
+  CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/n0face"
   rm -rf "$CONFIG_DIR"
 
+  # Remove PATH entries from shell configs
   for file in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.config/fish/config.fish"; do
     [ -f "$file" ] && sed -i '/# n0face/d;/n0face\/bin/d' "$file"
   done
