@@ -11,13 +11,17 @@
 
 ## One-Command Install
 
-Run this in any project directory:
-
 ```bash
 curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash
 ```
 
 Installs 3 custom agent modes (design, cleanup, security), system prompts, and configs — then press **Tab** to cycle through all 5 modes.
+
+## One-Command Uninstall
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash -s -- --uninstall
+```
 
 ---
 
