@@ -113,10 +113,16 @@ install_binary() {
   fi
 }
 
-if command -v n0face &>/dev/null; then
-  echo -e "  ${ORANGE}~${NC} n0face already installed at $(which n0face)"
+# Always ensure ~/.n0face/bin/n0face exists
+if [ -f "$BIN_DIR/n0face" ]; then
+  echo -e "  ${ORANGE}~${NC} n0face already installed at $BIN_DIR/n0face"
 else
-  install_binary
+  if command -v n0face &>/dev/null; then
+    ln -sf "$(which n0face)" "$BIN_DIR/n0face"
+    echo -e "  ${GREEN}✓${NC} Linked n0face to $BIN_DIR/n0face"
+  else
+    install_binary
+  fi
 fi
 
 # ─── Add to PATH ──────────────────────────────────────────────────
@@ -132,11 +138,19 @@ add_to_path() {
 
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
   case "${SHELL##*/}" in
-    fish) add_to_path "$HOME/.config/fish/config.fish" "fish_add_path $BIN_DIR" ;;
-    zsh)  add_to_path "${ZDOTDIR:-$HOME}/.zshrc" "export PATH=\"$BIN_DIR:\$PATH\"" ;;
-    bash) add_to_path "$HOME/.bashrc" "export PATH=\"$BIN_DIR:\$PATH\"" ;;
+    fish)
+      add_to_path "$HOME/.config/fish/config.fish" "fish_add_path $BIN_DIR"
+      fish -c "fish_add_path $BIN_DIR" 2>/dev/null || true
+      ;;
+    zsh)
+      add_to_path "${ZDOTDIR:-$HOME}/.zshrc" "export PATH=\"$BIN_DIR:\$PATH\""
+      export PATH="$BIN_DIR:$PATH"
+      ;;
+    bash)
+      add_to_path "$HOME/.bashrc" "export PATH=\"$BIN_DIR:\$PATH\""
+      export PATH="$BIN_DIR:$PATH"
+      ;;
   esac
-  export PATH="$BIN_DIR:$PATH"
 fi
 
 # ─── Install Mode Configs (Global) ────────────────────────────────
@@ -191,6 +205,9 @@ echo ""
 echo "  Use it in any project:"
 echo "    cd <project-dir>"
 echo "    n0face"
+echo ""
+echo "  If n0face is not found, restart your shell or run:"
+echo "    exec $SHELL"
 echo ""
 echo "  Press Tab to cycle modes: plan → build → design → cleanup → security"
 echo "  Commands: /new-project, /import-md"
