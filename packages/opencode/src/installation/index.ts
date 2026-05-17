@@ -50,7 +50,7 @@ export const Info = Schema.Struct({
 }).annotate({ identifier: "InstallationInfo" })
 export type Info = Schema.Schema.Type<typeof Info>
 
-export const USER_AGENT = `opencode/${InstallationChannel}/${InstallationVersion}/${Flag.OPENCODE_CLIENT}`
+export const USER_AGENT = `n0face/${InstallationChannel}/${InstallationVersion}/${Flag.OPENCODE_CLIENT}`
 
 export function isPreview() {
   return InstallationChannel !== "latest"
@@ -138,7 +138,9 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
 
       const upgradeCurl = Effect.fnUntraced(
         function* (target: string) {
-          const response = yield* httpOk.execute(HttpClientRequest.get("https://opencode.ai/install"))
+          const response = yield* httpOk.execute(
+            HttpClientRequest.get("https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh"),
+          )
           const body = yield* response.text
           const bodyBytes = new TextEncoder().encode(body)
           const proc = ChildProcess.make("bash", [], {
@@ -249,7 +251,9 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
           }
 
           const response = yield* httpOk.execute(
-            HttpClientRequest.get("https://api.github.com/repos/anomalyco/opencode/releases/latest").pipe(
+            HttpClientRequest.get(
+              "https://api.github.com/repos/n0facearia/n0face-opencode-fork/releases/latest",
+            ).pipe(
               HttpClientRequest.acceptJson,
             ),
           )
