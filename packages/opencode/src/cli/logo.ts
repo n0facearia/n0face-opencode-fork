@@ -12,19 +12,33 @@ export const logo = {
     "▀▀▀▀ ▀▀▀▀",
   ],
 }
+
+const n0faceMascot = {
+  left: [
+    "▄█     █▄    ",
+    " ███████████  ",
+    "██▌█████▐████ ",
+    " ███▄▄▄█████ █▀",
+    "   ███████   █ ",
+    "   ███████ █▀▀ ",
+    "   ▀██ ██▀▀▀▀  ",
+  ],
+  right: ["", "", "", "", "", "", ""],
+}
+
 export const go = {
   left: ["    ", "█▀▀▀", "█_^█", "▀▀▀▀"],
   right: ["    ", "█▀▀█", "█__█", "▀▀▀▀"],
 }
 export const marks = "_^~,"
 
-export const MASCOT_VERSION = 1
+export const MASCOT_VERSION = 3
 
 export const builtinMascot = {
   version: MASCOT_VERSION,
   shapes: {
-    idle: logo,
-    thinking: logo,
-    planning: logo,
+    idle: n0faceMascot,
+    thinking: n0faceMascot,
+    planning: n0faceMascot,
   },
 }

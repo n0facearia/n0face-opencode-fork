@@ -22,17 +22,14 @@ if [ "${0:-}" = "--uninstall" ] || [ "${1:-}" = "--uninstall" ]; then
   echo "  └──────────────────────────────────────────────────────────┘"
   echo ""
 
-  # Remove n0face binary from any location
   local_path=$(command -v n0face 2>/dev/null || true)
   [ -n "$local_path" ] && rm -f "$local_path"
   rm -f "$HOME/.n0face/bin/n0face"
   rm -f "$HOME/.local/bin/n0face"
 
-  # Remove global configs
   CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/n0face"
   rm -rf "$CONFIG_DIR"
 
-  # Remove PATH entries from shell configs
   for file in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.config/fish/config.fish"; do
     [ -f "$file" ] && sed -i '/# n0face/d;/n0face\/bin/d;/opencode\/bin/d' "$file"
   done
@@ -63,7 +60,6 @@ case "$raw_arch" in x86_64|amd64) arch="x64" ;; aarch64|arm64) arch="arm64" ;; *
 
 install_binary() {
   mkdir -p "$BIN_DIR"
-  # Also install to ~/.local/bin so it takes priority in standard PATH
   mkdir -p "$HOME/.local/bin"
 
   local target="${os}-${arch}"
@@ -77,36 +73,6 @@ install_binary() {
     cp "$BIN_DIR/n0face" "$HOME/.local/bin/n0face"
     echo -e "  ${GREEN}✓${NC} Installed n0face binary to $BIN_DIR/n0face"
     return 0
-  fi
-
-  # Fallback: build from source if git + bun are available
-  if command -v git &>/dev/null && command -v bun &>/dev/null; then
-    echo -e "${MUTED}Building n0face from source...${NC}"
-    local build_dir
-    build_dir=$(mktemp -d) || true
-    if [ -n "$build_dir" ]; then
-      echo -e "${MUTED}  Cloning repo...${NC}"
-      git clone --depth=1 "https://github.com/$REPO.git" "$build_dir" 2>&1 | sed 's/^/  /' || true
-      if [ -d "$build_dir/packages/opencode" ]; then
-        echo -e "${MUTED}  Installing dependencies...${NC}"
-        bun install --cwd "$build_dir" --ignore-scripts 2>&1 | tail -3 | sed 's/^/  /' || true
-        echo -e "${MUTED}  Building binary (this may take a few minutes)...${NC}"
-        bun run --cwd "$build_dir/packages/opencode" build --single --skip-install 2>&1 | tail -5 | sed 's/^/  /' || true
-        local dist_dir="$build_dir/packages/opencode/dist"
-        local built
-        built=$(find "$dist_dir" -name "opencode" -type f 2>/dev/null | head -1) || true
-        if [ -n "$built" ] && [ -f "$built" ]; then
-          cp "$built" "$BIN_DIR/n0face"
-          chmod +x "$BIN_DIR/n0face"
-          cp "$BIN_DIR/n0face" "$HOME/.local/bin/n0face"
-          echo -e "  ${GREEN}✓${NC} Built n0face binary from source"
-          rm -rf "$build_dir"
-          return 0
-        fi
-      fi
-      echo -e "  ${ORANGE}⚠${NC} Source build failed, trying alternatives..."
-      rm -rf "$build_dir" 2>/dev/null || true
-    fi
   fi
 
   echo -e "${MUTED}Installing opencode-ai via npm (aliased as n0face)...${NC}"
@@ -167,7 +133,6 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     fish)
       fish -c "fish_add_path $BIN_DIR" 2>/dev/null || true
       if [ -f "$HOME/.config/fish/config.fish" ] && ! grep -q "fish_add_path $BIN_DIR" "$HOME/.config/fish/config.fish" 2>/dev/null; then
-        # Insert before any existing opencode PATH entry so n0face takes priority
         if grep -q "opencode/bin" "$HOME/.config/fish/config.fish" 2>/dev/null; then
           sed -i "/opencode\/bin/i fish_add_path $BIN_DIR" "$HOME/.config/fish/config.fish"
         else
