@@ -5,6 +5,7 @@ import {
   ACCEPTED_FILE_TYPES,
   AppBaseProviders,
   AppInterface,
+  checkUpdate,
   handleNotificationClick,
   loadLocaleDict,
   normalizeLocale,
@@ -190,13 +191,16 @@ const createPlatform = (): Platform => {
 
     checkUpdate: async () => {
       const config = await window.api.getWindowConfig().catch(() => ({ updaterEnabled: false }))
-      if (!config.updaterEnabled) return { updateAvailable: false }
-      return window.api.checkUpdate()
+      if (config.updaterEnabled) return window.api.checkUpdate()
+      return checkUpdate()
     },
 
     updateAndRestart: async () => {
       const config = await window.api.getWindowConfig().catch(() => ({ updaterEnabled: false }))
-      if (!config.updaterEnabled) return
+      if (!config.updaterEnabled) {
+        window.location.reload()
+        return
+      }
       await window.api.installUpdate()
     },
 

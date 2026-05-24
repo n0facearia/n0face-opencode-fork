@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/solid"
 import { render } from "solid-js/web"
 import { AppBaseProviders, AppInterface } from "@/app"
 import { type Platform, PlatformProvider } from "@/context/platform"
+import { checkUpdate as gitHubCheckUpdate } from "@/utils/check-update"
 import { dict as en } from "@/i18n/en"
 import { dict as zh } from "@/i18n/zh"
 import { handleNotificationClick } from "@/utils/notification-click"
@@ -127,6 +128,10 @@ const platform: Platform = {
   forward,
   restart,
   notify,
+  checkUpdate: gitHubCheckUpdate,
+  updateAndRestart: async () => {
+    window.location.reload()
+  },
   getDefaultServer: async () => {
     const stored = readDefaultServerUrl()
     return stored ? ServerConnection.Key.make(stored) : null

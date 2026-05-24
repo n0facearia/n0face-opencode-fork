@@ -136,6 +136,16 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
         return "opencode"
       })
 
+      const fetchRepoLatest = Effect.fnUntraced(function* (repo: string) {
+        const response = yield* httpOk.execute(
+          HttpClientRequest.get(`https://api.github.com/repos/${repo}/releases/latest`).pipe(
+            HttpClientRequest.acceptJson,
+          ),
+        )
+        const data = yield* HttpClientResponse.schemaBodyJson(GitHubRelease)(response)
+        return data.tag_name.replace(/^v/, "")
+      })
+
       const upgradeCurl = Effect.fnUntraced(
         function* (target: string) {
           const response = yield* httpOk.execute(
@@ -250,15 +260,29 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
             return data.version
           }
 
+<<<<<<< HEAD
           const response = yield* httpOk.execute(
             HttpClientRequest.get(
               "https://api.github.com/repos/n0facearia/n0face-opencode-fork/releases/latest",
             ).pipe(
               HttpClientRequest.acceptJson,
             ),
+=======
+          const [upstream, fork] = yield* Effect.all(
+            [
+              fetchRepoLatest("anomalyco/opencode").pipe(Effect.catch(() => Effect.succeed(""))),
+              fetchRepoLatest("n0facearia/n0face-opencode-fork").pipe(Effect.catch(() => Effect.succeed(""))),
+            ],
+            { concurrency: 2 },
+>>>>>>> 09616e7 (add auto-update checker for fork + upstream repos)
           )
-          const data = yield* HttpClientResponse.schemaBodyJson(GitHubRelease)(response)
-          return data.tag_name.replace(/^v/, "")
+
+          let version = ""
+          for (const c of [upstream, fork]) {
+            if (c && semver.valid(c) && (!version || semver.gt(c, version))) version = c
+          }
+          if (!version) return yield* Effect.die("no repo reachable")
+          return version
         }, Effect.orDie),
         upgrade: Effect.fn("Installation.upgrade")(function* (m: Method, target: string) {
           let upgradeResult: { code: ChildProcessSpawner.ExitCode; stdout: string; stderr: string } | undefined

@@ -38,6 +38,8 @@ import { useConnected } from "@tui/component/use-connected"
 import { DialogMcp } from "@tui/component/dialog-mcp"
 import { DialogStatus } from "@tui/component/dialog-status"
 import { DialogThemeList } from "@tui/component/dialog-theme-list"
+import { DialogMascot } from "@tui/component/dialog-mascot"
+import { DialogRemoveMascot } from "@tui/component/dialog-remove-mascot"
 import { DialogHelp } from "./ui/dialog-help"
 import { DialogAgent } from "@tui/component/dialog-agent"
 import { DialogSessionList } from "@tui/component/dialog-session-list"
@@ -50,6 +52,7 @@ import { FrecencyProvider } from "./component/prompt/frecency"
 import { PromptStashProvider } from "./component/prompt/stash"
 import { DialogAlert } from "./ui/dialog-alert"
 import { DialogConfirm } from "./ui/dialog-confirm"
+import { MASCOT_VERSION, builtinMascot } from "@/cli/logo"
 import { ToastProvider, useToast } from "./ui/toast"
 import { ExitProvider, useExit } from "./context/exit"
 import { Session as SessionApi } from "@/session/session"
@@ -394,6 +397,14 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
     })
   })
 
+  onMount(() => {
+    const v = kv.get("mascot_version") ?? 0
+    if (v >= MASCOT_VERSION) return
+    kv.set("mascot_version", MASCOT_VERSION)
+    kv.set("mascot_data", builtinMascot.shapes)
+    toast.show({ message: "Mascot refreshed with a new look!", variant: "success", duration: 5000 })
+  })
+
   let continued = false
   createEffect(() => {
     // When using -c, session list is loaded in blocking phase, so we can navigate at "partial"
@@ -652,6 +663,24 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         slashName: "themes",
         run: () => {
           dialog.replace(() => <DialogThemeList />)
+        },
+        category: "System",
+      },
+      {
+        name: "mascot.list",
+        title: "Switch mascot",
+        slashName: "mascots",
+        run: () => {
+          dialog.replace(() => <DialogMascot />)
+        },
+        category: "System",
+      },
+      {
+        name: "mascot.remove",
+        title: "Remove mascot",
+        slashName: "remove-mascot",
+        run: () => {
+          dialog.replace(() => <DialogRemoveMascot />)
         },
         category: "System",
       },

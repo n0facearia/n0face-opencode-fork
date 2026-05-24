@@ -18,17 +18,13 @@ export const go = {
 }
 export const marks = "_^~,"
 
-export const catIdle = {
-  left: ["┌─────────┐", "│ █  █    │", "│ ───────  │", "└─────────┘"],
-  right: ["", "", "", ""],
-}
+export const MASCOT_VERSION = 1
 
-export const catThink = {
-  left: ["┌─────────┐", "│ █  █    │", "│ ~~~~~~~  │", "└─────────┘"],
-  right: ["", "", "", ""],
-}
-
-export const catPlan = {
-  left: ["┌─────────┐", "│ █  █    │", "│ ∿∿∿∿∿∿∿  │", "└─────────┘"],
-  right: ["", "", "", ""],
+export const builtinMascot = {
+  version: MASCOT_VERSION,
+  shapes: {
+    idle: logo,
+    thinking: logo,
+    planning: logo,
+  },
 }
