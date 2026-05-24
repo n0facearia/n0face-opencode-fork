@@ -260,21 +260,12 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
             return data.version
           }
 
-<<<<<<< HEAD
-          const response = yield* httpOk.execute(
-            HttpClientRequest.get(
-              "https://api.github.com/repos/n0facearia/n0face-opencode-fork/releases/latest",
-            ).pipe(
-              HttpClientRequest.acceptJson,
-            ),
-=======
           const [upstream, fork] = yield* Effect.all(
             [
               fetchRepoLatest("anomalyco/opencode").pipe(Effect.catch(() => Effect.succeed(""))),
               fetchRepoLatest("n0facearia/n0face-opencode-fork").pipe(Effect.catch(() => Effect.succeed(""))),
             ],
             { concurrency: 2 },
->>>>>>> 09616e7 (add auto-update checker for fork + upstream repos)
           )
 
           let version = ""

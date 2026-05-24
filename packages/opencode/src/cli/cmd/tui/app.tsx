@@ -667,9 +667,9 @@ function App(props: { onSnapshot?: () => Promise<string[]> }) {
         category: "System",
       },
       {
-        name: "mascot.list",
-        title: "Switch mascot",
-        slashName: "mascots",
+        name: "mascot.add",
+        title: "Add or switch mascot",
+        slashName: "mascot",
         run: () => {
           dialog.replace(() => <DialogMascot />)
         },
