@@ -34,7 +34,7 @@ curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/mai
 | **Message tabs** | None | Result / Thinking toggle |
 | **Home screen** | Single column | Three-column layout |
 | **Mode prompts** | 2 built-in | 5 modes with system prompts |
-| **Setup commands** | None | `/new-project`, `/import-md`, `/mascot`, `/remove-mascot` |
+| **Setup commands** | None | `/new-project`, `/import-md`, `/mascot`, `/remove-mascot`, `n0face rebuild` |
 | **Config isolation** | Shares `.opencode/` | Uses separate `.n0face/` dir |
 | **Auto-update** | None | Checks both repos for new releases |
 | **Install** | `curl opencode.ai/install` | `curl raw.githubusercontent.com/...` |
@@ -200,7 +200,18 @@ bun install
 bun run build
 ```
 
-Then `n0face` is available anywhere.
+ Then `n0face` is available anywhere.
+
+### Manual Rebuild
+If you're developing on the fork or need to force a clean build from source, use the built-in rebuild command:
+
+```bash
+n0face rebuild
+```
+
+This command automatically clones/updates the source from the GitHub fork, installs dependencies via `bun`, builds the native binary, and re-installs it into your local path (`~/.local/bin/n0face`). This is the fastest way to test new features or apply local changes to the binary.
+
+---
 
 ---
 
@@ -227,6 +238,13 @@ The cat sprite changes based on the agent's state:
 | **idle** | `~ _ ~` | Waiting for your input |
 | **thinking** | `^ _ ^` | Model is streaming or executing tools |
 | **planning** | `███` | Plan mode is active |
+
+![Mascot States](README-assets/mascot-states.png)
+
+### TUI Control
+You can manage the mascot directly from the TUI:
+- `/mascot`: Toggles the animated cat mascot in the session header.
+- `/remove-mascot`: Permanently removes the mascot from the session view.
 
 ---
 
