@@ -36,6 +36,7 @@ curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/mai
 | **Mode prompts** | 2 built-in | 5 modes with system prompts |
 | **Setup commands** | None | `/new-project`, `/import-md` |
 | **Config isolation** | Shares `.opencode/` | Uses separate `.n0face/` dir |
+| **Auto-update** | None | Checks both repos for new releases |
 | **Install** | `curl opencode.ai/install` | `curl raw.githubusercontent.com/...` |
 
 ### Custom Agents
@@ -184,6 +185,20 @@ bun run build
 ```
 
 Then `n0face` is available anywhere.
+
+---
+
+## Auto-Update
+
+On startup, n0face checks both `n0facearia/n0face-opencode-fork` and `anomalyco/opencode` for new releases and picks the highest version.
+
+| Platform | Notification | How update works |
+|----------|-------------|------------------|
+| **Desktop app** | Toast "Update available" | Downloads via `electron-updater`, installs on restart |
+| **Web app** | Toast "Update available" | Page reload (pull latest + rebuild) |
+| **TUI/CLI** | Dialog prompt (1s after start) | Auto-upgrades or prompts via detected package manager |
+
+The TUI also supports `N0FACE=1` to check the fork repo; silently auto-upgrades patch releases for curl-installed versions.
 
 ---
 
