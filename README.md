@@ -34,7 +34,7 @@ curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/mai
 | **Message tabs** | None | Result / Thinking toggle |
 | **Home screen** | Single column | Three-column layout |
 | **Mode prompts** | 2 built-in | 5 modes with system prompts |
-| **Setup commands** | None | `/new-project`, `/import-md` |
+| **Setup commands** | None | `/new-project`, `/import-md`, `/mascot`, `/remove-mascot` |
 | **Config isolation** | Shares `.opencode/` | Uses separate `.n0face/` dir |
 | **Auto-update** | None | Checks both repos for new releases |
 | **Install** | `curl opencode.ai/install` | `curl raw.githubusercontent.com/...` |
@@ -82,6 +82,22 @@ Scaffolds a new project with the full mode system. Prompts for project name, typ
 ```
 
 Scans an existing project and imports the mode system without overwriting existing files. Auto-detects project name, type, and stack from `package.json`, `Cargo.toml`, `go.mod`, or `README.md`. Creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, and `.n0face/` wherever they're missing.
+
+### Toggle mascot
+
+```
+/mascot
+```
+
+Shows or hides the animated cat mascot in the session header.
+
+### Remove mascot
+
+```
+/remove-mascot
+```
+
+Permanently removes the mascot from the session view.
 
 ---
 
