@@ -82,44 +82,58 @@ install_binary() {
     return 0
   fi
 
-  echo -e "${MUTED}Installing opencode-ai via npm (aliased as am)...${NC}"
-  if ! command -v npm &>/dev/null && ! command -v bun &>/dev/null; then
-    if command -v node &>/dev/null; then
-      corepack enable 2>/dev/null || true
-    fi
-  fi
-
-  if command -v bun &>/dev/null; then
-    bun install -g opencode-ai
-    local src
-    src=$(bun pm bin 2>/dev/null || echo "")
-    if [ -n "$src" ] && [ -f "$src/opencode" ]; then
-      cp "$src/opencode" "$BIN_DIR/am"
-    fi
-  else
-    npm install -g opencode-ai
-    local src
-    src=$(npm root -g 2>/dev/null || echo "")
-    src="${src%/lib/node_modules}/bin"
-    if [ -f "$src/opencode" ]; then
-      cp "$src/opencode" "$BIN_DIR/am"
-    fi
-  fi
-
-  if [ -f "$BIN_DIR/am" ]; then
-    chmod +x "$BIN_DIR/am"
-    cp "$BIN_DIR/am" "$HOME/.local/bin/am"
-    echo -e "  ${GREEN}✓${NC} Installed AM"
-  else
+  if ! command -v git &>/dev/null || ! command -v bun &>/dev/null; then
     if command -v opencode &>/dev/null; then
       cp "$(which opencode)" "$BIN_DIR/am"
       cp "$BIN_DIR/am" "$HOME/.local/bin/am"
-      echo -e "  ${GREEN}✓${NC} AM aliased to opencode"
-    else
-      echo -e "${RED}Failed to install AM binary${NC}"
-      exit 1
+      echo -e "  ${ORANGE}⚠${NC} AM aliased to existing opencode binary (git+bun required to build)"
+      return 0
     fi
+    echo -e "${RED}git and bun are required to build AM. Install them first.${NC}"
+    exit 1
   fi
+
+  echo -e "${MUTED}Building AM from source...${NC}"
+  local BUILD_DIR
+  BUILD_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t am-build)
+
+  git clone --depth=1 "https://github.com/$REPO.git" "$BUILD_DIR" 2>/dev/null || {
+    echo -e "${RED}Failed to clone repository${NC}"
+    rm -rf "$BUILD_DIR"
+    if command -v opencode &>/dev/null; then
+      cp "$(which opencode)" "$BIN_DIR/am"
+      cp "$BIN_DIR/am" "$HOME/.local/bin/am"
+      echo -e "  ${ORANGE}⚠${NC} AM aliased to existing opencode binary"
+      return 0
+    fi
+    echo -e "${RED}Failed to install AM binary${NC}"
+    exit 1
+  }
+
+  echo -e "${MUTED}Installing dependencies...${NC}"
+  bun install --cwd "$BUILD_DIR" --ignore-scripts 2>/dev/null || {
+    echo -e "${RED}Failed to install dependencies${NC}"
+    rm -rf "$BUILD_DIR"; exit 1
+  }
+
+  echo -e "${MUTED}Building binary (may take a few minutes)...${NC}"
+  bun run --cwd "$BUILD_DIR/packages/opencode" build --single --skip-install 2>/dev/null || {
+    echo -e "${RED}Failed to build AM${NC}"
+    rm -rf "$BUILD_DIR"; exit 1
+  }
+
+  local BUILT
+  BUILT=$(find "$BUILD_DIR/packages/opencode/dist" -name "opencode" -type f 2>/dev/null | head -1)
+  if [ -z "$BUILT" ] || [ ! -f "$BUILT" ]; then
+    echo -e "${RED}Built binary not found${NC}"
+    rm -rf "$BUILD_DIR"; exit 1
+  fi
+
+  cp "$BUILT" "$BIN_DIR/am"
+  chmod +x "$BIN_DIR/am"
+  cp "$BIN_DIR/am" "$HOME/.local/bin/am"
+  rm -rf "$BUILD_DIR"
+  echo -e "  ${GREEN}✓${NC} Installed AM binary to $BIN_DIR/am"
 }
 
 install_binary
