@@ -1,4 +1,4 @@
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
 import { Effect, Layer } from "effect"
 import { afterEach, describe, expect } from "bun:test"
 import path from "path"
@@ -52,11 +52,11 @@ Use this skill.
           )
           yield* Effect.promise(() => Bun.write(path.join(skill, "scripts", "demo.txt"), "demo"))
 
-          const home = process.env.OPENCODE_TEST_HOME
-          process.env.OPENCODE_TEST_HOME = dir
+          const home = process.env.AM_TEST_HOME
+          process.env.AM_TEST_HOME = dir
           yield* Effect.addFinalizer(() =>
             Effect.sync(() => {
-              process.env.OPENCODE_TEST_HOME = home
+              process.env.AM_TEST_HOME = home
             }),
           )
 

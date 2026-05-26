@@ -7,14 +7,14 @@ import { Flock } from "./util/flock"
 import { Flag } from "./flag/flag"
 
 function appName() {
-  return process.env.AM === "1" ? "am" : "opencode"
+  return "am"
 }
 
 const overrides: Record<string, string | undefined> = {}
 
 const paths = {
   get home() {
-    return overrides.home ?? process.env.OPENCODE_TEST_HOME ?? os.homedir()
+    return overrides.home ?? process.env.AM_TEST_HOME ?? os.homedir()
   },
   set home(v: string) {
     overrides.home = v
@@ -83,7 +83,7 @@ await Promise.all([
   fs.mkdir(Path.repos, { recursive: true }),
 ])
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Global") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Global") {}
 
 export interface Interface {
   readonly home: string
@@ -102,7 +102,7 @@ export function make(input: Partial<Interface> = {}): Interface {
     home: Path.home,
     data: Path.data,
     cache: Path.cache,
-    config: Flag.OPENCODE_CONFIG_DIR ?? Path.config,
+    config: Flag.AM_CONFIG_DIR ?? Path.config,
     state: Path.state,
     tmp: Path.tmp,
     bin: Path.bin,

@@ -52,7 +52,7 @@ function app(modules: Runtime, options: CallOptions) {
     modules.ExperimentalHttpApiServer.routes.pipe(
       Layer.provide(
         ConfigProvider.layer(
-          ConfigProvider.fromUnknown({ OPENCODE_SERVER_PASSWORD: password, OPENCODE_SERVER_USERNAME: username }),
+          ConfigProvider.fromUnknown({ AM_SERVER_PASSWORD: password, AM_SERVER_USERNAME: username }),
         ),
       ),
     ),

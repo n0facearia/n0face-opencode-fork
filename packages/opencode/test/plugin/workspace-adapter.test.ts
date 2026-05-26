@@ -1,9 +1,9 @@
 import { afterAll, afterEach, describe, expect } from "bun:test"
 import { Effect, Layer, Option } from "effect"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
-import { EffectFlock } from "@opencode-ai/core/util/effect-flock"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
+import { AppFileSystem } from "@am-ai/core/filesystem"
+import { EffectFlock } from "@am-ai/core/util/effect-flock"
+import { Flag } from "@am-ai/core/flag/flag"
 import path from "path"
 import { pathToFileURL } from "url"
 import { Account } from "../../src/account/account"
@@ -47,16 +47,16 @@ const workspaceLayer = Workspace.defaultLayer.pipe(
 )
 const it = testEffect(Layer.mergeAll(pluginLayer, workspaceLayer, CrossSpawnSpawner.defaultLayer))
 
-const experimental = Flag.OPENCODE_EXPERIMENTAL_WORKSPACES
+const experimental = Flag.AM_EXPERIMENTAL_WORKSPACES
 
-Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = true
+Flag.AM_EXPERIMENTAL_WORKSPACES = true
 
 afterEach(async () => {
   await disposeAllInstances()
 })
 
 afterAll(() => {
-  Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = experimental
+  Flag.AM_EXPERIMENTAL_WORKSPACES = experimental
 })
 
 describe("plugin.workspace", () => {

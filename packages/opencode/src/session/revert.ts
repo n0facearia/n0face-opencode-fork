@@ -3,7 +3,7 @@ import { Bus } from "../bus"
 import { Snapshot } from "../snapshot"
 import { Storage } from "@/storage/storage"
 import { SyncEvent } from "../sync"
-import * as Log from "@opencode-ai/core/util/log"
+import * as Log from "@am-ai/core/util/log"
 import * as Session from "./session"
 import { MessageV2 } from "./message-v2"
 import { SessionID, MessageID, PartID } from "./schema"
@@ -25,7 +25,7 @@ export interface Interface {
   readonly cleanup: (session: Session.Info) => Effect.Effect<void>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/SessionRevert") {}
+export class Service extends Context.Service<Service, Interface>()("@am/SessionRevert") {}
 
 export const layer = Layer.effect(
   Service,

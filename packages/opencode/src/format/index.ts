@@ -1,11 +1,11 @@
 import { Effect, Layer, Context, Schema } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
 import { InstanceState } from "@/effect/instance-state"
 import path from "path"
 import { mergeDeep } from "remeda"
 import { Config } from "@/config/config"
-import * as Log from "@opencode-ai/core/util/log"
+import * as Log from "@am-ai/core/util/log"
 import * as Formatter from "./formatter"
 
 const log = Log.create({ service: "format" })
@@ -23,7 +23,7 @@ export interface Interface {
   readonly file: (filepath: string) => Effect.Effect<boolean>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Format") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Format") {}
 
 export const layer = Layer.effect(
   Service,

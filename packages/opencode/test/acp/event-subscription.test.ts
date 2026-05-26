@@ -7,7 +7,7 @@ import type {
   ToolStateCompleted,
   ToolStatePending,
   ToolStateRunning,
-} from "@opencode-ai/sdk/v2"
+} from "@am-ai/sdk/v2"
 import { WithInstance } from "../../src/project/with-instance"
 import { tmpdir } from "../fixture/fixture"
 

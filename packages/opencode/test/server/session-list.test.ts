@@ -1,9 +1,9 @@
 import { afterEach, describe, expect } from "bun:test"
 import { Effect } from "effect"
 import { Session as SessionNs } from "@/session/session"
-import * as Log from "@opencode-ai/core/util/log"
+import * as Log from "@am-ai/core/util/log"
 import { disposeAllInstances, provideInstance, TestInstance } from "../fixture/fixture"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Flag } from "@am-ai/core/flag/flag"
 import { mkdir } from "fs/promises"
 import path from "path"
 import { Database } from "@/storage/db"
@@ -12,7 +12,7 @@ import { eq } from "drizzle-orm"
 import { testEffect } from "../lib/effect"
 
 void Log.init({ print: false })
-const originalWorkspaces = Flag.OPENCODE_EXPERIMENTAL_WORKSPACES
+const originalWorkspaces = Flag.AM_EXPERIMENTAL_WORKSPACES
 const it = testEffect(SessionNs.defaultLayer)
 
 const withSession = (input?: Parameters<SessionNs.Interface["create"]>[0]) =>
@@ -22,7 +22,7 @@ const withSession = (input?: Parameters<SessionNs.Interface["create"]>[0]) =>
   )
 
 afterEach(async () => {
-  Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = originalWorkspaces
+  Flag.AM_EXPERIMENTAL_WORKSPACES = originalWorkspaces
   await disposeAllInstances()
 })
 
@@ -31,7 +31,7 @@ describe("session.list", () => {
     "does not filter by directory when directory is omitted",
     () =>
       Effect.gen(function* () {
-        Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = false
+        Flag.AM_EXPERIMENTAL_WORKSPACES = false
         const test = yield* TestInstance
         yield* Effect.promise(() => mkdir(path.join(test.directory, "packages", "opencode"), { recursive: true }))
         yield* Effect.promise(() => mkdir(path.join(test.directory, "packages", "app"), { recursive: true }))
@@ -60,7 +60,7 @@ describe("session.list", () => {
     "filters by directory when directory is provided",
     () =>
       Effect.gen(function* () {
-        Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = false
+        Flag.AM_EXPERIMENTAL_WORKSPACES = false
         const test = yield* TestInstance
         yield* Effect.promise(() => mkdir(path.join(test.directory, "packages", "opencode"), { recursive: true }))
         yield* Effect.promise(() => mkdir(path.join(test.directory, "packages", "app"), { recursive: true }))
@@ -91,7 +91,7 @@ describe("session.list", () => {
     "filters by path and ignores directory when path is provided",
     () =>
       Effect.gen(function* () {
-        Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = false
+        Flag.AM_EXPERIMENTAL_WORKSPACES = false
         const test = yield* TestInstance
         yield* Effect.promise(() =>
           mkdir(path.join(test.directory, "packages", "opencode", "src", "deep"), { recursive: true }),
@@ -129,7 +129,7 @@ describe("session.list", () => {
     "falls back to directory when filtering legacy sessions without path",
     () =>
       Effect.gen(function* () {
-        Flag.OPENCODE_EXPERIMENTAL_WORKSPACES = false
+        Flag.AM_EXPERIMENTAL_WORKSPACES = false
         const test = yield* TestInstance
         yield* Effect.promise(() =>
           mkdir(path.join(test.directory, "packages", "opencode", "src"), { recursive: true }),

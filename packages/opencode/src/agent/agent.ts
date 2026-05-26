@@ -14,8 +14,8 @@ import PROMPT_SUMMARY from "./prompt/summary.txt"
 import PROMPT_TITLE from "./prompt/title.txt"
 import { Permission } from "@/permission"
 import { mergeDeep, pipe, sortBy, values } from "remeda"
-import { Global } from "@opencode-ai/core/global"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Global } from "@am-ai/core/global"
+import { Flag } from "@am-ai/core/flag/flag"
 import path from "path"
 import { Plugin } from "@/plugin"
 import { Skill } from "../skill"
@@ -23,7 +23,7 @@ import { Effect, Context, Layer, Schema } from "effect"
 import { InstanceState } from "@/effect/instance-state"
 import * as Option from "effect/Option"
 import * as OtelTracer from "@effect/opentelemetry/Tracer"
-import { type DeepMutable } from "@opencode-ai/core/schema"
+import { type DeepMutable } from "@am-ai/core/schema"
 
 export const Info = Schema.Struct({
   name: Schema.String,
@@ -71,7 +71,7 @@ export interface Interface {
 
 type State = Omit<Interface, "generate">
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Agent") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Agent") {}
 
 export const layer = Layer.effect(
   Service,
@@ -195,7 +195,7 @@ export const layer = Layer.effect(
             mode: "subagent",
             native: true,
           },
-          ...(Flag.OPENCODE_EXPERIMENTAL_SCOUT
+          ...(Flag.AM_EXPERIMENTAL_SCOUT
             ? {
                 scout: {
                   name: "scout",

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto"
 import { describe, expect } from "bun:test"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import * as Log from "@opencode-ai/core/util/log"
+import { Flag } from "@am-ai/core/flag/flag"
+import * as Log from "@am-ai/core/util/log"
 import { ConfigProvider, Effect, Layer } from "effect"
 import {
   HttpClient,
@@ -12,7 +12,7 @@ import {
   HttpServerRequest,
   HttpServerResponse,
 } from "effect/unstable/http"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
+import { AppFileSystem } from "@am-ai/core/filesystem"
 import { ServerAuth } from "../../src/server/auth"
 import { authorizationRouterMiddleware } from "../../src/server/routes/instance/httpapi/middleware/authorization"
 import { ExperimentalHttpApiServer } from "../../src/server/routes/instance/httpapi/server"
@@ -25,20 +25,20 @@ void Log.init({ print: false })
 const testStateLayer = Layer.effectDiscard(
   Effect.gen(function* () {
     const original = {
-      OPENCODE_DISABLE_EMBEDDED_WEB_UI: Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI,
-      OPENCODE_SERVER_PASSWORD: Flag.OPENCODE_SERVER_PASSWORD,
-      OPENCODE_SERVER_USERNAME: Flag.OPENCODE_SERVER_USERNAME,
-      envPassword: process.env.OPENCODE_SERVER_PASSWORD,
-      envUsername: process.env.OPENCODE_SERVER_USERNAME,
+      AM_DISABLE_EMBEDDED_WEB_UI: Flag.AM_DISABLE_EMBEDDED_WEB_UI,
+      AM_SERVER_PASSWORD: Flag.AM_SERVER_PASSWORD,
+      AM_SERVER_USERNAME: Flag.AM_SERVER_USERNAME,
+      envPassword: process.env.AM_SERVER_PASSWORD,
+      envUsername: process.env.AM_SERVER_USERNAME,
     }
 
     yield* Effect.addFinalizer(() =>
       Effect.sync(() => {
-        Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = original.OPENCODE_DISABLE_EMBEDDED_WEB_UI
-        Flag.OPENCODE_SERVER_PASSWORD = original.OPENCODE_SERVER_PASSWORD
-        Flag.OPENCODE_SERVER_USERNAME = original.OPENCODE_SERVER_USERNAME
-        restoreEnv("OPENCODE_SERVER_PASSWORD", original.envPassword)
-        restoreEnv("OPENCODE_SERVER_USERNAME", original.envUsername)
+        Flag.AM_DISABLE_EMBEDDED_WEB_UI = original.AM_DISABLE_EMBEDDED_WEB_UI
+        Flag.AM_SERVER_PASSWORD = original.AM_SERVER_PASSWORD
+        Flag.AM_SERVER_USERNAME = original.AM_SERVER_USERNAME
+        restoreEnv("AM_SERVER_PASSWORD", original.envPassword)
+        restoreEnv("AM_SERVER_USERNAME", original.envUsername)
       }),
     )
   }),
@@ -60,8 +60,8 @@ function app(input?: { password?: string; username?: string }) {
       Layer.provide(
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
-            OPENCODE_SERVER_PASSWORD: input?.password,
-            OPENCODE_SERVER_USERNAME: input?.username,
+            AM_SERVER_PASSWORD: input?.password,
+            AM_SERVER_USERNAME: input?.username,
           }),
         ),
       ),
@@ -98,8 +98,8 @@ function uiApp(input?: { password?: string; username?: string; client?: Layer.La
         HttpServer.layerServices,
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
-            OPENCODE_SERVER_PASSWORD: input?.password,
-            OPENCODE_SERVER_USERNAME: input?.username,
+            AM_SERVER_PASSWORD: input?.password,
+            AM_SERVER_USERNAME: input?.username,
           }),
         ),
       ]),
@@ -137,7 +137,7 @@ function responseText(response: Response) {
 describe("HttpApi UI fallback", () => {
   it.live("serves the web UI through the experimental backend", () =>
     Effect.gen(function* () {
-      Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
+      Flag.AM_DISABLE_EMBEDDED_WEB_UI = true
       let proxiedUrl: string | undefined
 
       const response = yield* uiApp({
@@ -158,7 +158,7 @@ describe("HttpApi UI fallback", () => {
 
   it.live("strips upstream transfer encoding headers from proxied assets", () =>
     Effect.gen(function* () {
-      Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
+      Flag.AM_DISABLE_EMBEDDED_WEB_UI = true
       let proxiedUrl: string | undefined
 
       const response = yield* Effect.gen(function* () {
@@ -206,7 +206,7 @@ describe("HttpApi UI fallback", () => {
   // causing browsers to fail with `ERR_INVALID_CHUNKED_ENCODING`.
   it.live("strips upstream transfer-encoding header from proxied assets", () =>
     Effect.gen(function* () {
-      Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
+      Flag.AM_DISABLE_EMBEDDED_WEB_UI = true
 
       const response = yield* Effect.gen(function* () {
         const fs = yield* AppFileSystem.Service
@@ -309,7 +309,7 @@ describe("HttpApi UI fallback", () => {
 
   it.live("requires server password for the web UI", () =>
     Effect.gen(function* () {
-      Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
+      Flag.AM_DISABLE_EMBEDDED_WEB_UI = true
 
       const response = yield* uiApp({ password: "secret", username: "opencode" }).request("/")
 
@@ -320,7 +320,7 @@ describe("HttpApi UI fallback", () => {
 
   it.live("accepts auth token for the web UI", () =>
     Effect.gen(function* () {
-      Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
+      Flag.AM_DISABLE_EMBEDDED_WEB_UI = true
 
       const response = yield* uiApp({
         password: "secret",
@@ -335,7 +335,7 @@ describe("HttpApi UI fallback", () => {
 
   it.live("accepts basic auth for the web UI", () =>
     Effect.gen(function* () {
-      Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
+      Flag.AM_DISABLE_EMBEDDED_WEB_UI = true
 
       const response = yield* uiApp({ password: "secret", username: "opencode" }).request("/", {
         headers: { authorization: `Basic ${btoa("opencode:secret")}` },
@@ -352,7 +352,7 @@ describe("HttpApi UI fallback", () => {
   // should bypass auth.
   it.live("serves the PWA manifest without auth even when a server password is set", () =>
     Effect.gen(function* () {
-      Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI = true
+      Flag.AM_DISABLE_EMBEDDED_WEB_UI = true
 
       for (const path of ["/site.webmanifest", "/web-app-manifest-192x192.png", "/web-app-manifest-512x512.png"]) {
         const response = yield* uiApp({

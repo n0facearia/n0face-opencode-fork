@@ -2,7 +2,7 @@ import { BusEvent } from "@/bus/bus-event"
 import { Bus } from "@/bus"
 import { InstanceState } from "@/effect/instance-state"
 import { SessionID } from "./schema"
-import { NonNegativeInt } from "@opencode-ai/core/schema"
+import { NonNegativeInt } from "@am-ai/core/schema"
 import { Effect, Layer, Context, Schema } from "effect"
 
 export const Info = Schema.Union([
@@ -54,7 +54,7 @@ export interface Interface {
   readonly set: (sessionID: SessionID, status: Info) => Effect.Effect<void>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/SessionStatus") {}
+export class Service extends Context.Service<Service, Interface>()("@am/SessionStatus") {}
 
 export const layer = Layer.effect(
   Service,

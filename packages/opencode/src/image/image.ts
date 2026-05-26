@@ -1,6 +1,6 @@
 import { Config } from "@/config/config"
 import type { MessageV2 } from "@/session/message-v2"
-import * as Log from "@opencode-ai/core/util/log"
+import * as Log from "@am-ai/core/util/log"
 import { Context, Effect, Layer, Schema } from "effect"
 
 const MAX_BASE64_BYTES = 4.5 * 1024 * 1024
@@ -52,7 +52,7 @@ export interface Interface {
   readonly normalize: (input: MessageV2.FilePart) => Effect.Effect<MessageV2.FilePart, Error>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Image") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Image") {}
 
 export const layer = Layer.effect(
   Service,
@@ -64,7 +64,7 @@ export const layer = Layer.effect(
           const photonWasm = (await import("@silvia-odwyer/photon-node/photon_rs_bg.wasm", { with: { type: "file" } }))
             .default
           // Patched photon-node reads this during module init so Bun compiled binaries use the embedded wasm path.
-          ;(globalThis as typeof globalThis & { __OPENCODE_PHOTON_WASM_PATH?: string }).__OPENCODE_PHOTON_WASM_PATH =
+          ;(globalThis as typeof globalThis & { __AM_PHOTON_WASM_PATH?: string }).__AM_PHOTON_WASM_PATH =
             photonWasm
           return await import("@silvia-odwyer/photon-node")
         } catch {

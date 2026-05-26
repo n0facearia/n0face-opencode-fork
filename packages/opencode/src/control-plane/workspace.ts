@@ -10,11 +10,11 @@ import { GlobalBus } from "@/bus/global"
 import { Auth } from "@/auth"
 import { SyncEvent } from "@/sync"
 import { EventSequenceTable, EventTable } from "@/sync/event.sql"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import * as Log from "@opencode-ai/core/util/log"
+import { Flag } from "@am-ai/core/flag/flag"
+import * as Log from "@am-ai/core/util/log"
 import { Filesystem } from "@/util/filesystem"
 import { ProjectID } from "@/project/schema"
-import { Slug } from "@opencode-ai/core/util/slug"
+import { Slug } from "@am-ai/core/util/slug"
 import { WorkspaceTable } from "./workspace.sql"
 import { getAdapter, registeredAdapters } from "./adapters"
 import { type Target, type WorkspaceInfo, WorkspaceInfo as WorkspaceInfoSchema } from "./types"
@@ -164,7 +164,7 @@ export interface Interface {
   readonly startWorkspaceSyncing: (projectID: ProjectID) => Effect.Effect<void>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Workspace") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Workspace") {}
 
 export const layer = Layer.effect(
   Service,
@@ -482,7 +482,7 @@ export const layer = Layer.effect(
     })
 
     const startSync = Effect.fn("Workspace.startSync")(function* (space: Info) {
-      if (!Flag.OPENCODE_EXPERIMENTAL_WORKSPACES) return
+      if (!Flag.AM_EXPERIMENTAL_WORKSPACES) return
 
       const adapter = getAdapter(space.projectID, space.type)
       const target = yield* EffectBridge.fromPromise(() => adapter.target(space)).pipe(
@@ -573,9 +573,9 @@ export const layer = Layer.effect(
       })
 
       const env = {
-        OPENCODE_AUTH_CONTENT: JSON.stringify(yield* auth.all()),
-        OPENCODE_WORKSPACE_ID: config.id,
-        OPENCODE_EXPERIMENTAL_WORKSPACES: "true",
+        AM_AUTH_CONTENT: JSON.stringify(yield* auth.all()),
+        AM_WORKSPACE_ID: config.id,
+        AM_EXPERIMENTAL_WORKSPACES: "true",
         OTEL_EXPORTER_OTLP_HEADERS: process.env.OTEL_EXPORTER_OTLP_HEADERS,
         OTEL_EXPORTER_OTLP_ENDPOINT: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
         OTEL_RESOURCE_ATTRIBUTES: process.env.OTEL_RESOURCE_ATTRIBUTES,

@@ -7,10 +7,10 @@
 // so your last-used variant sticks. Cycling (ctrl+t) updates both the active
 // variant and the persisted file.
 import path from "path"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
+import { AppFileSystem } from "@am-ai/core/filesystem"
 import { Context, Effect, Layer } from "effect"
 import { makeRuntime } from "@/effect/run-service"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@am-ai/core/global"
 import { isRecord } from "@/util/record"
 import { createSession, sessionVariant, type RunSession, type SessionMessages } from "./session.shared"
 import type { RunInput, RunProvider } from "./types"
@@ -29,7 +29,7 @@ type VariantRuntime = {
   saveVariant(model: RunInput["model"], variant: string | undefined): Promise<void>
 }
 
-class Service extends Context.Service<Service, VariantService>()("@opencode/RunVariant") {}
+class Service extends Context.Service<Service, VariantService>()("@am/RunVariant") {}
 
 function modelKey(provider: string, model: string): string {
   return `${provider}/${model}`

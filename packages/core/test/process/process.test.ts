@@ -1,7 +1,7 @@
 import { describe, expect } from "bun:test"
 import { Effect, Exit, Stream } from "effect"
 import { ChildProcess } from "effect/unstable/process"
-import { AppProcess } from "@opencode-ai/core/process"
+import { AppProcess } from "@am-ai/core/process"
 import { testEffect } from "../lib/effect"
 
 const it = testEffect(AppProcess.defaultLayer)

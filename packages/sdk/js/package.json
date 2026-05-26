@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/sdk",
+  "name": "@am-ai/sdk",
   "version": "1.14.48",
   "type": "module",
   "license": "MIT",

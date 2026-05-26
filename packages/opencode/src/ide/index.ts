@@ -1,7 +1,7 @@
 import { BusEvent } from "@/bus/bus-event"
 import { Schema } from "effect"
-import { NamedError } from "@opencode-ai/core/util/error"
-import * as Log from "@opencode-ai/core/util/log"
+import { NamedError } from "@am-ai/core/util/error"
+import * as Log from "@am-ai/core/util/log"
 import { Process } from "@/util/process"
 
 const SUPPORTED_IDES = [
@@ -40,7 +40,7 @@ export function ide() {
 }
 
 export function alreadyInstalled() {
-  return process.env["OPENCODE_CALLER"] === "vscode" || process.env["OPENCODE_CALLER"] === "vscode-insiders"
+  return process.env["AM_CALLER"] === "vscode" || process.env["AM_CALLER"] === "vscode-insiders"
 }
 
 export async function install(ide: (typeof SUPPORTED_IDES)[number]["name"]) {

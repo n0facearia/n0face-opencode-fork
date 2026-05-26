@@ -1,7 +1,7 @@
-import type { TuiPluginApi } from "@opencode-ai/plugin/tui"
+import type { TuiPluginApi } from "@am-ai/plugin/tui"
 import { createMemo, For, type Accessor } from "solid-js"
 import { DEFAULT_THEMES, useTheme } from "@tui/context/theme"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Flag } from "@am-ai/core/flag/flag"
 import { useCommandShortcut } from "../../keymap"
 
 const themeCount = Object.keys(DEFAULT_THEMES).length
@@ -177,7 +177,7 @@ const TIPS: Tip[] = [
   (shortcuts) => `Use ${commandText("/themes", shortcuts.themeList())} to switch between ${themeCount} built-in themes`,
   (shortcuts) => `Use ${commandText("/new", shortcuts.sessionNew())} to start a fresh conversation session`,
   (shortcuts) => `Use ${commandText("/sessions", shortcuts.sessionList())} to list and continue previous conversations`,
-  ...(Flag.OPENCODE_EXPERIMENTAL_SESSION_SWITCHING
+  ...(Flag.AM_EXPERIMENTAL_SESSION_SWITCHING
     ? ([
         (shortcuts) =>
           press(shortcuts.sessionPinToggle(), "in the session list to pin a session so it stays at the top"),

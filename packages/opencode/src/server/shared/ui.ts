@@ -1,11 +1,11 @@
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
+import { Flag } from "@am-ai/core/flag/flag"
+import { AppFileSystem } from "@am-ai/core/filesystem"
 import { Effect, Stream } from "effect"
 import { HttpBody, HttpClient, HttpClientRequest, HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
 import { createHash } from "node:crypto"
 import { ProxyUtil } from "../proxy-util"
 
-const embeddedUIPromise = Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI
+const embeddedUIPromise = Flag.AM_DISABLE_EMBEDDED_WEB_UI
   ? Promise.resolve(null)
   : // @ts-expect-error - generated file at build time
     import("opencode-web-ui.gen.ts").then((module) => module.default as Record<string, string>).catch(() => null)
@@ -46,7 +46,7 @@ export function upstreamURL(path: string) {
 }
 
 export function embeddedUI() {
-  if (Flag.OPENCODE_DISABLE_EMBEDDED_WEB_UI) return Promise.resolve(null)
+  if (Flag.AM_DISABLE_EMBEDDED_WEB_UI) return Promise.resolve(null)
   return embeddedUIPromise
 }
 

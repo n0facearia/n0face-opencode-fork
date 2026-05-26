@@ -1,6 +1,6 @@
-import { Global } from "@opencode-ai/core/global"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Global } from "@am-ai/core/global"
+import { InstallationVersion } from "@am-ai/core/installation/version"
+import { Flag } from "@am-ai/core/flag/flag"
 import os from "os"
 import { Duration, Effect } from "effect"
 import { Config } from "@/config/config"
@@ -60,7 +60,7 @@ const InfoCommand = effectCmd({
     console.log(`os: ${os.type()} ${os.release()} ${os.arch()}`)
     console.log(`terminal: ${terminal || "unknown"}`)
     console.log("plugins:")
-    if (Flag.OPENCODE_PURE) {
+    if (Flag.AM_PURE) {
       console.log("external plugins disabled (--pure)")
       return
     }

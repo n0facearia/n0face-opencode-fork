@@ -14,13 +14,13 @@ describe("RuntimeFlags", () => {
       const flags = yield* readFlags.pipe(
         Effect.provide(
           fromConfig({
-            OPENCODE_PURE: "true",
-            OPENCODE_DISABLE_DEFAULT_PLUGINS: "true",
-            OPENCODE_EXPERIMENTAL: "true",
-            OPENCODE_ENABLE_EXA: "true",
-            OPENCODE_ENABLE_PARALLEL: "true",
-            OPENCODE_ENABLE_QUESTION_TOOL: "true",
-            OPENCODE_CLIENT: "desktop",
+            AM_PURE: "true",
+            AM_DISABLE_DEFAULT_PLUGINS: "true",
+            AM_EXPERIMENTAL: "true",
+            AM_ENABLE_EXA: "true",
+            AM_ENABLE_PARALLEL: "true",
+            AM_ENABLE_QUESTION_TOOL: "true",
+            AM_CLIENT: "desktop",
           }),
         ),
       )
@@ -55,11 +55,11 @@ describe("RuntimeFlags", () => {
         Effect.provide(
           ConfigProvider.layer(
             ConfigProvider.fromUnknown({
-              OPENCODE_PURE: "true",
-              OPENCODE_DISABLE_DEFAULT_PLUGINS: "true",
-              OPENCODE_EXPERIMENTAL: "true",
-              OPENCODE_ENABLE_EXA: "true",
-              OPENCODE_CLIENT: "desktop",
+              AM_PURE: "true",
+              AM_DISABLE_DEFAULT_PLUGINS: "true",
+              AM_EXPERIMENTAL: "true",
+              AM_ENABLE_EXA: "true",
+              AM_CLIENT: "desktop",
             }),
           ),
         ),

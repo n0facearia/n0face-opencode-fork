@@ -7,8 +7,8 @@ import { useRoute } from "@tui/context/route"
 import { useEvent } from "@tui/context/event"
 import { uniqueBy } from "remeda"
 import path from "path"
-import { Global } from "@opencode-ai/core/global"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Global } from "@am-ai/core/global"
+import { Flag } from "@am-ai/core/flag/flag"
 import { iife } from "@/util/iife"
 import { useToast } from "../ui/toast"
 import { useArgs } from "./args"
@@ -471,7 +471,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
         prune(evt.properties.info.id)
       })
 
-      if (Flag.OPENCODE_EXPERIMENTAL_SESSION_SWITCHING) {
+      if (Flag.AM_EXPERIMENTAL_SESSION_SWITCHING) {
         createEffect(
           on(
             () => (sessionStore.ready && route.data.type === "session" ? route.data.sessionID : undefined),

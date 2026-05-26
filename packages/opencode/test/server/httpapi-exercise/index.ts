@@ -6,7 +6,7 @@
  * requests, uses the right instance context, mutates storage when expected, and
  * returns the expected response shape.
  *
- * The script intentionally isolates `OPENCODE_DB` before importing modules that touch
+ * The script intentionally isolates `AM_DB` before importing modules that touch
  * storage. Scenarios may create/delete sessions and reset the database after each run,
  * so this must never point at a developer's real session database.
  *
@@ -36,7 +36,7 @@ import { runScenario } from "./runner"
 import { runtime } from "./runtime"
 import { type Scenario } from "./types"
 
-void (await import("@opencode-ai/core/util/log")).init({ print: false })
+void (await import("@am-ai/core/util/log")).init({ print: false })
 
 function cursor(input: Record<string, unknown>) {
   return Buffer.from(JSON.stringify(input)).toString("base64url")

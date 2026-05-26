@@ -1,8 +1,8 @@
 import { Provider } from "@/provider/provider"
 import { Session } from "@/session/session"
 import { iife } from "@/util/iife"
-import { NamedError } from "@opencode-ai/core/util/error"
-import * as Log from "@opencode-ai/core/util/log"
+import { NamedError } from "@am-ai/core/util/error"
+import * as Log from "@am-ai/core/util/log"
 import { Cause, Effect } from "effect"
 import { HttpRouter, HttpServerError, HttpServerRespondable, HttpServerResponse } from "effect/unstable/http"
 

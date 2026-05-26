@@ -7,9 +7,9 @@ import type { InstanceContext } from "@/project/instance"
 import { EventSequenceTable, EventTable } from "./event.sql"
 import type { WorkspaceID } from "@/control-plane/schema"
 import { EventID } from "./schema"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Flag } from "@am-ai/core/flag/flag"
 import { Context, Effect, Layer, Schema as EffectSchema } from "effect"
-import type { DeepMutable } from "@opencode-ai/core/schema"
+import type { DeepMutable } from "@am-ai/core/schema"
 import { serviceUse } from "@/effect/service-use"
 import { InstanceState } from "@/effect/instance-state"
 
@@ -65,7 +65,7 @@ export interface Interface {
   readonly claim: (aggregateID: string, ownerID: string) => Effect.Effect<void>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/SyncEvent") {}
+export class Service extends Context.Service<Service, Interface>()("@am/SyncEvent") {}
 
 export const layer = Layer.effect(Service)(
   Effect.gen(function* () {
@@ -293,7 +293,7 @@ function process<Def extends Definition>(
   Database.transaction((tx) => {
     projector(tx, event.data, event)
 
-    if (Flag.OPENCODE_EXPERIMENTAL_WORKSPACES) {
+    if (Flag.AM_EXPERIMENTAL_WORKSPACES) {
       tx.insert(EventSequenceTable)
         .values({
           aggregate_id: event.aggregateID,

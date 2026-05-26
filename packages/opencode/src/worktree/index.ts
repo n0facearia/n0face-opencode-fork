@@ -1,4 +1,4 @@
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@am-ai/core/global"
 import { InstanceLayer } from "@/project/instance-layer"
 import { InstanceStore } from "@/project/instance-store"
 import { Project } from "@/project/project"
@@ -6,8 +6,8 @@ import { Database } from "@/storage/db"
 import { eq } from "drizzle-orm"
 import { ProjectTable } from "../project/project.sql"
 import type { ProjectID } from "../project/schema"
-import * as Log from "@opencode-ai/core/util/log"
-import { Slug } from "@opencode-ai/core/util/slug"
+import * as Log from "@am-ai/core/util/log"
+import { Slug } from "@am-ai/core/util/slug"
 import { errorMessage } from "../util/error"
 import { BusEvent } from "@/bus/bus-event"
 import { GlobalBus } from "@/bus/global"
@@ -15,9 +15,9 @@ import { Git } from "@/git"
 import { Effect, Layer, Path, Schema, Scope, Context, Stream } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { NodePath } from "@effect/platform-node"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
+import { AppFileSystem } from "@am-ai/core/filesystem"
 import { BootstrapRuntime } from "@/effect/bootstrap-runtime"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
 import { InstanceState } from "@/effect/instance-state"
 
 const log = Log.create({ service: "worktree" })
@@ -143,7 +143,7 @@ export interface Interface {
   readonly reset: (input: ResetInput) => Effect.Effect<boolean, Error>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Worktree") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Worktree") {}
 
 type GitResult = { code: number; text: string; stderr: string }
 

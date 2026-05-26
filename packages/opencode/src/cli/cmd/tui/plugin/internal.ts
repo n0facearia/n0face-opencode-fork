@@ -10,8 +10,8 @@ import PluginManager from "../feature-plugins/system/plugins"
 import Notifications from "../feature-plugins/system/notifications"
 import SessionV2Debug from "../feature-plugins/system/session-v2"
 import WhichKey from "../feature-plugins/system/which-key"
-import type { TuiPlugin, TuiPluginModule } from "@opencode-ai/plugin/tui"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import type { TuiPlugin, TuiPluginModule } from "@am-ai/plugin/tui"
+import { Flag } from "@am-ai/core/flag/flag"
 
 export type InternalTuiPlugin = Omit<TuiPluginModule, "id"> & {
   id: string
@@ -31,5 +31,5 @@ export const INTERNAL_TUI_PLUGINS: InternalTuiPlugin[] = [
   Notifications,
   PluginManager,
   WhichKey,
-  ...(Flag.OPENCODE_EXPERIMENTAL_EVENT_SYSTEM ? [SessionV2Debug] : []),
+  ...(Flag.AM_EXPERIMENTAL_EVENT_SYSTEM ? [SessionV2Debug] : []),
 ]

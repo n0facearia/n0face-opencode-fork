@@ -2,13 +2,13 @@ import { Cause, Duration, Effect, Layer, Schedule, Schema, Semaphore, Context, S
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { formatPatch, structuredPatch } from "diff"
 import path from "path"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
 import { InstanceState } from "@/effect/instance-state"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
-import { Hash } from "@opencode-ai/core/util/hash"
+import { AppFileSystem } from "@am-ai/core/filesystem"
+import { Hash } from "@am-ai/core/util/hash"
 import { Config } from "@/config/config"
-import { Global } from "@opencode-ai/core/global"
-import * as Log from "@opencode-ai/core/util/log"
+import { Global } from "@am-ai/core/global"
+import * as Log from "@am-ai/core/util/log"
 
 export const Patch = Schema.Struct({
   hash: Schema.String,
@@ -53,7 +53,7 @@ export interface Interface {
   readonly diffFull: (from: string, to: string) => Effect.Effect<FileDiff[]>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Snapshot") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Snapshot") {}
 
 export const layer: Layer.Layer<
   Service,

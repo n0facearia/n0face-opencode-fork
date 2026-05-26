@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import path from "path"
-import { Global } from "@opencode-ai/core/global"
-import { InstallationChannel } from "@opencode-ai/core/installation/version"
+import { Global } from "@am-ai/core/global"
+import { InstallationChannel } from "@am-ai/core/installation/version"
 import { Database } from "@/storage/db"
 
 describe("Database.Path", () => {

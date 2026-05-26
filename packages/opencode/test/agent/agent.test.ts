@@ -4,8 +4,8 @@ import path from "path"
 import { disposeAllInstances, TestInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 import { Agent } from "../../src/agent/agent"
-import { Global } from "@opencode-ai/core/global"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Global } from "@am-ai/core/global"
+import { Flag } from "@am-ai/core/flag/flag"
 import { Permission } from "../../src/permission"
 import { Truncate } from "../../src/tool/truncate"
 
@@ -24,14 +24,14 @@ function load<A>(fn: (svc: Agent.Interface) => Effect.Effect<A>) {
 function withExperimentalScout<A, E, R>(enabled: boolean, self: Effect.Effect<A, E, R>) {
   return Effect.acquireUseRelease(
     Effect.sync(() => {
-      const original = Flag.OPENCODE_EXPERIMENTAL_SCOUT
-      Flag.OPENCODE_EXPERIMENTAL_SCOUT = enabled
+      const original = Flag.AM_EXPERIMENTAL_SCOUT
+      Flag.AM_EXPERIMENTAL_SCOUT = enabled
       return original
     }),
     () => self,
     (original) =>
       Effect.sync(() => {
-        Flag.OPENCODE_EXPERIMENTAL_SCOUT = original
+        Flag.AM_EXPERIMENTAL_SCOUT = original
       }),
   )
 }
@@ -616,11 +616,11 @@ description: Permission skill.
         ),
       )
 
-      const home = process.env.OPENCODE_TEST_HOME
-      process.env.OPENCODE_TEST_HOME = test.directory
+      const home = process.env.AM_TEST_HOME
+      process.env.AM_TEST_HOME = test.directory
       yield* Effect.addFinalizer(() =>
         Effect.sync(() => {
-          process.env.OPENCODE_TEST_HOME = home
+          process.env.AM_TEST_HOME = home
         }),
       )
 

@@ -1,6 +1,6 @@
 import { Identifier } from "@/id/id"
 import { SyncEvent } from "@/sync"
-import { withStatics } from "@opencode-ai/core/schema"
+import { withStatics } from "@am-ai/core/schema"
 import * as Schema from "effect/Schema"
 
 export const ID = Schema.String.pipe(

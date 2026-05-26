@@ -2,11 +2,11 @@ import { describe, expect } from "bun:test"
 import { Deferred, Effect, Exit, Layer } from "effect"
 import { Session as SessionNs } from "@/session/session"
 import { GlobalBus, type GlobalEvent } from "../../src/bus/global"
-import * as Log from "@opencode-ai/core/util/log"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import * as Log from "@am-ai/core/util/log"
+import { Flag } from "@am-ai/core/flag/flag"
 import { MessageV2 } from "../../src/session/message-v2"
 import { MessageID, PartID, type SessionID } from "../../src/session/schema"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
 import { provideInstance, tmpdirScoped } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 
@@ -56,7 +56,7 @@ describe("session.created event", () => {
 
   it.instance("session.created event should be emitted before session.updated", () =>
     Effect.gen(function* () {
-      if (Flag.OPENCODE_EXPERIMENTAL_WORKSPACES) return
+      if (Flag.AM_EXPERIMENTAL_WORKSPACES) return
 
       const session = yield* SessionNs.Service
       const events: string[] = []

@@ -1,9 +1,9 @@
 import path from "path"
 import { Effect, Layer, Option, Schema, Context, SynchronizedRef } from "effect"
-import { Identifier } from "@opencode-ai/core/util/identifier"
-import { NonNegativeInt, withStatics } from "@opencode-ai/core/schema"
-import { Global } from "@opencode-ai/core/global"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
+import { Identifier } from "@am-ai/core/util/identifier"
+import { NonNegativeInt, withStatics } from "@am-ai/core/schema"
+import { Global } from "@am-ai/core/global"
+import { AppFileSystem } from "@am-ai/core/filesystem"
 
 export const OAUTH_DUMMY_KEY = "opencode-oauth-dummy-key"
 
@@ -98,7 +98,7 @@ export interface Interface {
   readonly forService: (serviceID: ServiceID) => Effect.Effect<Account[], AuthError>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/v2/Auth") {}
+export class Service extends Context.Service<Service, Interface>()("@am/v2/Auth") {}
 
 export const layer = Layer.effect(
   Service,
@@ -108,9 +108,9 @@ export const layer = Layer.effect(
     const file = path.join(global.data, "auth-v2.json")
 
     const load: () => Effect.Effect<Writable, AuthError> = Effect.fnUntraced(function* () {
-      if (process.env.OPENCODE_AUTH_CONTENT) {
+      if (process.env.AM_AUTH_CONTENT) {
         try {
-          return JSON.parse(process.env.OPENCODE_AUTH_CONTENT)
+          return JSON.parse(process.env.AM_AUTH_CONTENT)
         } catch {}
       }
 

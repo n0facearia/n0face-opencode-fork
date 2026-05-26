@@ -8,7 +8,7 @@ import { ExperimentalHttpApiServer } from "../../src/server/routes/instance/http
 import { PtyID } from "../../src/pty/schema"
 import { resetDatabase } from "../fixture/db"
 import { disposeAllInstances, tmpdir } from "../fixture/fixture"
-import * as Log from "@opencode-ai/core/util/log"
+import * as Log from "@am-ai/core/util/log"
 
 void Log.init({ print: false })
 
@@ -18,8 +18,8 @@ function app(input: { password?: string; username?: string }) {
       Layer.provide(
         ConfigProvider.layer(
           ConfigProvider.fromUnknown({
-            OPENCODE_SERVER_PASSWORD: input.password,
-            OPENCODE_SERVER_USERNAME: input.username,
+            AM_SERVER_PASSWORD: input.password,
+            AM_SERVER_USERNAME: input.username,
           }),
         ),
       ),

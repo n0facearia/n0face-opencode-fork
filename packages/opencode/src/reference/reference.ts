@@ -1,8 +1,8 @@
 import path from "path"
 import { Effect, Context, Layer, Scope } from "effect"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
+import { AppFileSystem } from "@am-ai/core/filesystem"
+import { Flag } from "@am-ai/core/flag/flag"
+import { Global } from "@am-ai/core/global"
 import { Config } from "@/config/config"
 import { InstanceState } from "@/effect/instance-state"
 import { Git } from "@/git"
@@ -46,7 +46,7 @@ export interface Interface {
   readonly contains: (target?: string) => Effect.Effect<boolean>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Reference") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Reference") {}
 
 export function referencePath(input: { directory: string; worktree: string; value: string }) {
   if (input.value.startsWith("~/")) return path.join(Global.Path.home, input.value.slice(2))
@@ -181,7 +181,7 @@ export const layer = Layer.effect(
         )
 
         const materializeAll = yield* Effect.cached(
-          Flag.OPENCODE_EXPERIMENTAL_SCOUT
+          Flag.AM_EXPERIMENTAL_SCOUT
             ? Effect.gen(function* () {
                 yield* Effect.forEach(
                   materializeByPath,
@@ -200,7 +200,7 @@ export const layer = Layer.effect(
 
     return Service.of({
       init: Effect.fn("Reference.init")(function* () {
-        if (!Flag.OPENCODE_EXPERIMENTAL_SCOUT) return
+        if (!Flag.AM_EXPERIMENTAL_SCOUT) return
         yield* InstanceState.useEffect(state, (s) => s.materializeAll).pipe(Effect.forkIn(scope), Effect.asVoid)
       }),
       list: Effect.fn("Reference.list")(function* () {
@@ -210,7 +210,7 @@ export const layer = Layer.effect(
         return yield* InstanceState.use(state, (s) => s.references.find((reference) => reference.name === name))
       }),
       ensure: Effect.fn("Reference.ensure")(function* (target?: string) {
-        if (!Flag.OPENCODE_EXPERIMENTAL_SCOUT) return
+        if (!Flag.AM_EXPERIMENTAL_SCOUT) return
         const full = normalizedTarget(target)
         if (!full) return yield* InstanceState.useEffect(state, (s) => s.materializeAll)
         return yield* InstanceState.useEffect(
@@ -219,7 +219,7 @@ export const layer = Layer.effect(
         )
       }),
       contains: Effect.fn("Reference.contains")(function* (target?: string) {
-        if (!Flag.OPENCODE_EXPERIMENTAL_SCOUT) return false
+        if (!Flag.AM_EXPERIMENTAL_SCOUT) return false
         const full = normalizedTarget(target)
         if (!full) return false
         return yield* InstanceState.use(state, (s) =>

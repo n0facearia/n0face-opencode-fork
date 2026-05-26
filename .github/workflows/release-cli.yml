@@ -81,12 +81,12 @@ jobs:
       - name: Package binary
         run: |
           DIST="packages/opencode/dist"
-          BINARY=$(find "$DIST" -name "opencode" -type f | head -1)
+          BINARY=$(find "$DIST" -name "am" -type f | head -1)
           if [ -n "$BINARY" ]; then
             DIRNAME=$(dirname "$(dirname "$BINARY")")
             BASENAME=$(basename "$DIRNAME")
             cd "$(dirname "$BINARY")"
-            tar -czf "${BASENAME}.tar.gz" opencode
+            tar -czf "${BASENAME}.tar.gz" am
             echo "asset_path=$(pwd)/${BASENAME}.tar.gz" >> "$GITHUB_ENV"
             echo "asset_name=${BASENAME}.tar.gz" >> "$GITHUB_ENV"
           fi

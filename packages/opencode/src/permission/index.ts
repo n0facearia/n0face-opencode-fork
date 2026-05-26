@@ -7,7 +7,7 @@ import { MessageID, SessionID } from "@/session/schema"
 import { PermissionTable } from "@/session/session.sql"
 import { Database } from "@/storage/db"
 import { eq } from "drizzle-orm"
-import * as Log from "@opencode-ai/core/util/log"
+import * as Log from "@am-ai/core/util/log"
 import { Wildcard } from "@/util/wildcard"
 import { Deferred, Effect, Layer, Schema, Context } from "effect"
 import os from "os"
@@ -129,7 +129,7 @@ export function evaluate(permission: string, pattern: string, ...rulesets: Rules
   return evalRule(permission, pattern, ...rulesets)
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/Permission") {}
+export class Service extends Context.Service<Service, Interface>()("@am/Permission") {}
 
 export const layer = Layer.effect(
   Service,

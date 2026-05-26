@@ -1,10 +1,10 @@
 import { afterEach, describe, expect } from "bun:test"
 import path from "path"
 import { Effect, Layer } from "effect"
-import { AppFileSystem } from "@opencode-ai/core/filesystem"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
+import { AppFileSystem } from "@am-ai/core/filesystem"
+import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
+import { Flag } from "@am-ai/core/flag/flag"
+import { Global } from "@am-ai/core/global"
 import { Git } from "../../src/git"
 import { Reference } from "../../src/reference/reference"
 import { disposeAllInstances, provideTmpdirInstance, tmpdirScoped } from "../fixture/fixture"
@@ -21,29 +21,29 @@ const it = testEffect(
 const experimentalScout = <A, E, R>(self: Effect.Effect<A, E, R>) =>
   Effect.acquireUseRelease(
     Effect.sync(() => {
-      const previous = Flag.OPENCODE_EXPERIMENTAL_SCOUT
-      Flag.OPENCODE_EXPERIMENTAL_SCOUT = true
+      const previous = Flag.AM_EXPERIMENTAL_SCOUT
+      Flag.AM_EXPERIMENTAL_SCOUT = true
       return previous
     }),
     () => self,
     (previous) =>
       Effect.sync(() => {
-        Flag.OPENCODE_EXPERIMENTAL_SCOUT = previous
+        Flag.AM_EXPERIMENTAL_SCOUT = previous
       }),
   )
 
 const githubBase = <A, E, R>(url: string, self: Effect.Effect<A, E, R>) =>
   Effect.acquireUseRelease(
     Effect.sync(() => {
-      const previous = process.env.OPENCODE_REPO_CLONE_GITHUB_BASE_URL
-      process.env.OPENCODE_REPO_CLONE_GITHUB_BASE_URL = url
+      const previous = process.env.AM_REPO_CLONE_GITHUB_BASE_URL
+      process.env.AM_REPO_CLONE_GITHUB_BASE_URL = url
       return previous
     }),
     () => self,
     (previous) =>
       Effect.sync(() => {
-        if (previous) process.env.OPENCODE_REPO_CLONE_GITHUB_BASE_URL = previous
-        else delete process.env.OPENCODE_REPO_CLONE_GITHUB_BASE_URL
+        if (previous) process.env.AM_REPO_CLONE_GITHUB_BASE_URL = previous
+        else delete process.env.AM_REPO_CLONE_GITHUB_BASE_URL
       }),
   )
 

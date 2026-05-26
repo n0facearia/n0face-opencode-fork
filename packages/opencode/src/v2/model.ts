@@ -1,4 +1,4 @@
-import { withStatics } from "@opencode-ai/core/schema"
+import { withStatics } from "@am-ai/core/schema"
 import { ModelStatus } from "@/provider/model-status"
 import { Array, Context, Effect, HashMap, Layer, Option, Order, pipe, Schema } from "effect"
 import { DateTimeUtcFromMillis } from "effect/Schema"
@@ -140,7 +140,7 @@ export interface Interface {
   readonly small: (provider: ProviderID) => Effect.Effect<Option.Option<Info>>
 }
 
-export class Service extends Context.Service<Service, Interface>()("@opencode/v2/Model") {}
+export class Service extends Context.Service<Service, Interface>()("@am/v2/Model") {}
 
 export const layer = Layer.effect(
   Service,
