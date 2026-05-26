@@ -111,21 +111,23 @@ install_binary() {
   }
 
   echo -e "${MUTED}Installing dependencies...${NC}"
-  bun install --cwd "$BUILD_DIR" --ignore-scripts 2>/dev/null || {
+  if ! bun install --cwd "$BUILD_DIR" --ignore-scripts >/dev/null 2>&1; then
     echo -e "${RED}Failed to install dependencies${NC}"
     rm -rf "$BUILD_DIR"; exit 1
-  }
+  fi
 
   echo -e "${MUTED}Building binary (may take a few minutes)...${NC}"
-  bun run --cwd "$BUILD_DIR/packages/opencode" build --single --skip-install 2>/dev/null || {
+  if ! bun run --cwd "$BUILD_DIR/packages/opencode" build --single --skip-install >/dev/null 2>&1; then
     echo -e "${RED}Failed to build AM${NC}"
     rm -rf "$BUILD_DIR"; exit 1
-  }
+  fi
 
   local BUILT
   BUILT=$(find "$BUILD_DIR/packages/opencode/dist" -name "opencode" -type f 2>/dev/null | head -1)
   if [ -z "$BUILT" ] || [ ! -f "$BUILT" ]; then
-    echo -e "${RED}Built binary not found${NC}"
+    echo -e "${RED}Built binary not found in $BUILD_DIR/packages/opencode/dist${NC}"
+    echo -e "${RED}Build output directory contents:${NC}"
+    ls -la "$BUILD_DIR/packages/opencode/dist" 2>/dev/null || echo "Directory not found"
     rm -rf "$BUILD_DIR"; exit 1
   fi
 
