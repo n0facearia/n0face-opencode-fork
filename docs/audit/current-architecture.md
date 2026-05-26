@@ -82,7 +82,7 @@ script/
 
 ### 2.1 `packages/opencode` — CLI Core (named `n0face`)
 
-**package.json name**: `n0face`  
+**package.json name**: `am`  
 **binary**: `bin/am` (Go-compiled binary launcher, JS bootstrap script that locates and spawns the correct platform-specific binary)
 **entry**: `src/index.ts` — yargs-based CLI
 **version**: 1.14.48
@@ -387,7 +387,7 @@ The agent system uses Effect to manage AI agent lifecycle:
 - Custom prompts exist in `src/agent/prompt/` (compaction, explore, scout, summary, title)
 - The system uses the concept of "subagents" (forked AI agents with their own prompts)
 
-**n0face-mode agents** (in `.am/`):
+**AM mode agents** (in `.am/`):
 - `cleanup.mode.md` — Code quality agent (green)
 - `design.mode.md` — UI/UX design agent (purple)
 - `security.mode.md` — Security audit agent (red)
@@ -656,7 +656,7 @@ Skill system is a plugin mechanism for extending agent capabilities:
 Key environment variables (100+ total):
 
 **Operational**:
-- `N0FACE=1` — Set in production binary
+- `AM=1` — Set in production binary
 - `AGENT=1` — Set in CLI middleware
 - `OPENCODE=1` — Set in CLI middleware
 - `OPENCODE_PID` — Process ID tracking
@@ -686,14 +686,14 @@ Key environment variables (100+ total):
 - `OPENCODE_TEST_MANAGED_CONFIG_DIR` — Test config directory
 - `OPENCODE_REPO_CLONE_GITHUB_BASE_URL` — Test repo clone base URL
 
-### 3.15 n0face Fork-Specific Additions
+### 3.15 AM Fork-Specific Additions
 
 From `CONTEXT.md`:
 1. **Mascot feature**: Cat sprites in TUI session header (`packages/opencode/src/cli/logo.ts`, `mascot.tsx`)
 2. **Tabbed Thinking/Result view**: Two tabs in session header (`session/index.tsx`)
 3. **Home screen layout**: Three-column layout with mascot, welcome text, info panel (`home.tsx`)
 
-The `n0face project plan.md` file is empty (placeholder).
+The AM project plan file is empty (placeholder).
 
 ## 4. .n0face Directory — Target Architecture
 
@@ -753,7 +753,7 @@ The `.am/.gitignore` intentionally ignores `package.json` and `package-lock.json
 The codebase is deeply integrated with Effect v4 (beta.65). Nearly every service is defined as an Effect Service with layers, managed scopes, and Effect.gen. The LLM package is entirely Effect-native.
 
 ### 6.2 Two Conflicting Package Names
-- `packages/opencode/package.json` name is `"am"` (binary: `n0face`)
+- `packages/opencode/package.json` name is `"am"` (binary: `am`)
 - `packages/core/package.json` name is `"@opencode-ai/core"` (binary: `opencode`)
 This creates confusion about branding.
 
@@ -769,4 +769,4 @@ Two parallel LLM stacks exist:
 The `.am/` directory defines three modes (cleanup, design, security) that are NOT currently loaded by the runtime. The `.opencode/` directory has two different agents (triage, duplicate-pr). This represents a gap between the current and planned architecture.
 
 ### 6.6 Naming: "opencode" vs "am"
-The `process.env.N0FACE = "1"` flag is set but the project still predominantly uses "opencode" naming (package names, env vars, URLs, branding). Only the binary name and package.json name reflect the n0face rebranding.
+The `process.env.AM = "1"` flag is set but the project still predominantly uses "opencode" naming (package names, env vars, URLs, branding). Only the binary name and package.json name reflect the AM rebranding.

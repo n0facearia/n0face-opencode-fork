@@ -1,12 +1,12 @@
-# Mode Mapping: Current Systems → Planned n0face Architecture
+# Mode Mapping: Current Systems → Planned AM Architecture
 
 Generated: 2026-05-25
 
 ## 1. Mapping Table
 
-| # | Current System | Location | Planned n0face Equivalent | Migration Action |
+| # | Current System | Location | Planned AM Equivalent | Migration Action |
 |---|---|---|---|---|
-| 1 | **Agent definitions** | `.opencode/agent/triage.md`, `.opencode/agent/duplicate-pr.md` | `.am/agent/` | **Refactor** — Move agent configs to `.am/agent/` structure; n0face modes (cleanup, design, security) already exist there |
+| 1 | **Agent definitions** | `.opencode/agent/triage.md`, `.opencode/agent/duplicate-pr.md` | `.am/agent/` | **Refactor** — Move agent configs to `.am/agent/` structure; AM modes (cleanup, design, security) already exist there |
 | 2 | **Command definitions** | `.opencode/command/*.md` (8 files) | `.am/command/` | **Refactor** — Move commands; `.am/command/` already has `continue-project.md` and `new-project.md` |
 | 3 | **Mode system prompts** | `src/session/prompt/*.txt` (12 provider-specific prompts) | `.am/*.mode.md` | **Refactor** — Replace provider-specific prompts with mode-specific prompts (cleanup, design, security) |
 | 4 | **Agent runtime** | `packages/opencode/src/agent/agent.ts` | `packages/n0face/src/agent/` | **Keep** — Core agent runtime is reusable; needs mode-awareness integration |
@@ -40,7 +40,7 @@ Generated: 2026-05-25
 | 32 | **Glossary/i18n** | `.opencode/glossary/` (16 languages) | `.am/glossary/` | **Refactor** — Move translation glossaries to `.am/` |
 | 33 | **Themes** | `.opencode/themes/` + `packages/ui/src/theme/` | `.am/themes/` | **Refactor** — Move custom themes to `.am/` |
 | 34 | **UI config** | `.opencode/tui.json` | `.am/tui.json` | **Refactor** — Move TUI config to `.am/` |
-| 35 | **Main config** | `.opencode/opencode.jsonc` | `.am/n0face.jsonc` | **Refactor** — Rename to n0face config |
+| 35 | **Main config** | `.opencode/opencode.jsonc` | `.am/am.jsonc` | **Refactor** — Rename to AM config |
 | 36 | **Env declarations** | `.opencode/env.d.ts` | `.am/env.d.ts` | **Refactor** — Move type declarations |
 | 37 | **Custom tools** | `.opencode/tool/github-triage.ts`, `github-pr-search.ts` | `.am/tool/` | **Refactor** — Move custom tools to `.am/` |
 | 38 | **Plugins** | `.opencode/plugins/` | `.am/plugins/` | **Refactor** — Move plugins to `.am/` |
@@ -59,7 +59,7 @@ Generated: 2026-05-25
 | 51 | **Environment** | `packages/opencode/src/env/` | `packages/n0face/src/env/` | **Keep** — Env var management |
 | 52 | **Worktree** | `packages/opencode/src/worktree/` | `packages/n0face/src/worktree/` | **Keep** — Git worktree |
 | 53 | **CLI subcommands** | `packages/opencode/src/cli/cmd/*/` | `packages/n0face/src/cli/cmd/*/` | **Keep** — Command implementations are reusable |
-| 54 | **n0face plan.md** | Root `n0face project plan.md` (empty) | `.am/plan.md` | **Create** — Migrate plan to `.am/` |
+| 54 | **AM plan.md** | Root `am project plan.md` (empty) | `.am/plan.md` | **Create** — Migrate plan to `.am/` |
 
 ## 2. Systems That Can Stay Unchanged
 
@@ -87,16 +87,16 @@ These systems are mode-agnostic and require only package rename:
 | LSP integration (`src/lsp/`) | Language services |
 | Permission system (`src/permission/`) | Security model |
 | LLM package (`packages/llm/`) | Provider abstraction |
-| Binary launcher (`bin/n0face`) | Already branded as n0face |
+| Binary launcher (`bin/n0face`) | Already branded as AM |
 
 ## 3. Systems That Need Refactors
 
 | System | Current Location | Planned Location | Refactor Required |
 |--------|-----------------|------------------|-------------------|
 | **Agent/mode definitions** | `.opencode/agent/*.md` | `.am/agent/*.md` | Move files and adapt to mode-based routing |
-| **Command definitions** | `.opencode/command/*.md` | `.am/command/*.md` | Move files, add n0face-specific commands |
+| **Command definitions** | `.opencode/command/*.md` | `.am/command/*.md` | Move files, add AM-specific commands |
 | **Mode system prompts** | `src/session/prompt/*.txt` | `.am/*.mode.md` | Migrate from provider-specific prompts to mode-specific prompts (cleanup, design, security) |
-| **Main config** | `.opencode/opencode.jsonc` | `.am/n0face.jsonc` | Rename; update all config path references |
+| **Main config** | `.opencode/opencode.jsonc` | `.am/am.jsonc` | Rename; update all config path references |
 | **TUI config** | `.opencode/tui.json` | `.am/tui.json` | Move |
 | **Skills** | `.opencode/skills/` | `.am/skills/` | Move and re-index |
 | **Themes** | `.opencode/themes/` | `.am/themes/` | Move |
@@ -106,18 +106,18 @@ These systems are mode-agnostic and require only package rename:
 | **State schema** | `src/storage/schema.sql.ts` | `.am/state/` | Extract schema definitions to `.am/state/` for portability |
 | **Memory/prompt system** | `src/session/prompt.ts` (2135 lines) | `.am/agent/` + refactored prompt loader | Decouple static prompts from agent; move mode prompts out of code |
 | **Config paths** | `src/config/paths.ts` | `.am/` paths | Update all path constants from `.opencode/` to `.am/` |
-| **Config references** | All `process.env.OPENCODE_*` | `process.env.N0FACE_*` | Rename env vars (may be breaking) |
+| **Config references** | All `process.env.OPENCODE_*` | `process.env.AM_*` | Rename env vars (may be breaking) |
 
 ## 4. Systems That Should Be Deleted Entirely
 
 | System | Current Location | Rationale |
 |--------|-----------------|-----------|
-| **Upstream CI workflows** | `.github/workflows/` (if unrelated to n0face) | Replace with n0face-specific CI |
+| **Upstream CI workflows** | `.github/workflows/` (if unrelated to n0face) | Replace with AM-specific CI |
 | **sst infrastructure** | `infra/`, `sst.config.ts`, `sst-env.d.ts` | n0face will not use SST for deployment |
-| **Enterprise web app** | `packages/enterprise/` | n0face has different enterprise model |
+| **Enterprise web app** | `packages/enterprise/` | AM has different enterprise model |
 | **`packages/core/bin/opencode`** | Core binary entry | Branded as "opencode", not "n0face" |
 | **Upstream .opencode content** | `.opencode/` (entire directory) | Replace with `.am/` |
-| **Translated READMEs** | `README.*.md` (26 language files) | n0face has different messaging |
+| **Translated READMEs** | `README.*.md` (26 language files) | AM has different messaging |
 | **Unused GitHub agents** | `.opencode/agent/triage.md`, `duplicate-pr.md` | These are specific to upstream repo management |
 | **Unused GitHub tools** | `.opencode/tool/github-triage.ts`, `github-pr-search.ts` | Specific to upstream GitHub workflows |
 | **Upstream-specific commands** | `.opencode/command/changelog.md` | Changelog generation is upstream-specific |
@@ -132,8 +132,8 @@ These systems are mode-agnostic and require only package rename:
 | **Config system** (`src/config/config.ts`) | Layered config merge, remote config, variable substitution | Add mode-aware config keys; update default paths |
 | **Plugin system** (`src/plugin/`) | Plugin loading, lifecycle, API | Mode-aware plugins |
 | **Skill system** (`src/skill/`) | Skill discovery, skill execution | Mode-specific skills |
-| **CLI entry** (`src/index.ts`) | Command routing, yargs parser | Add n0face-specific branding, rename binary references |
-| **TUI** (`src/cli/cmd/tui/`) | Component library, routing, keybindings | Add mode indicator UI, update mascot to n0face branding |
+| **CLI entry** (`src/index.ts`) | Command routing, yargs parser | Add AM-specific branding, rename binary references |
+| **TUI** (`src/cli/cmd/tui/`) | Component library, routing, keybindings | Add mode indicator UI, update mascot to AM branding |
 
 ## 6. Missing Systems (Need Creation)
 
@@ -142,13 +142,13 @@ These systems are mode-agnostic and require only package rename:
 | **Mode router** | Select active mode (cleanup/design/security) at session start | High |
 | **Mode-specific tool permissions** | Restrict available tools per mode | High |
 | **Mode context loader** | Load `.am/*.mode.md` as system prompt | High |
-| **n0face.jsonc** | Main config file replacing `opencode.jsonc` | High |
+| **am.jsonc** | Main config file replacing `opencode.jsonc` | High |
 | **State directory** | `.am/state/` for session/memory persistence | Medium |
 | **PROJECT_SUMMARY.md** | Auto-generated project summary (referenced by continue-project command) | Medium |
 | **MODE_CONTEXT.md** | Auto-generated mode context file | Medium |
-| **n0face CLI branding** | Update all CLI output, help text, version string to "n0face" | Medium |
-| **n0face docs** | New documentation in `.am/` replacing opencode docs | Low |
-| **n0face website** | Replace upstream marketing site with n0face landing page | Low |
+| **AM CLI branding** | Update all CLI output, help text, version string to "AM" | Medium |
+| **AM docs** | New documentation in `.am/` replacing opencode docs | Low |
+| **AM website** | Replace upstream marketing site with AM landing page | Low |
 
 ## 7. Directory Rename Plan
 

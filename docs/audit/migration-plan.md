@@ -1,4 +1,4 @@
-# Migration Plan: opencode-ui → n0face Architecture
+# Migration Plan: opencode-ui → AM Architecture
 
 Generated: 2026-05-25
 
@@ -64,14 +64,14 @@ The migration should proceed in phases, each building on the previous. Phases ar
 
 ### Phase 6: Runtime Rebranding (Medium Risk)
 - [ ] Update `packages/opencode/src/index.ts`:
-  - Change `process.env.OPENCODE = "1"` → `process.env.N0FACE = "1"` (already partially done)
+  - Change `process.env.OPENCODE = "1"` → `process.env.AM = "1"` (already done)
   - Update help text, version output, CLI branding
-- [ ] Update `process.env.AGENT` → `process.env.N0FACE_AGENT`
-- [ ] Update `process.env.OPENCODE_PID` → `process.env.N0FACE_PID`
-- [ ] Update `process.env.OPENCODE_PURE` → `process.env.N0FACE_PURE`
-- [ ] Update `process.env.OPENCODE_CLIENT` → `process.env.N0FACE_CLIENT`
-- [ ] Rename internal variables: `opencode` → `n0face` in logs, error messages
-- [ ] Update `scriptName` in yargs from `"opencode"` to `"n0face"`
+- [ ] Update `process.env.AGENT` → `process.env.AM_AGENT`
+- [ ] Update `process.env.OPENCODE_PID` → `process.env.AM_PID`
+- [ ] Update `process.env.OPENCODE_PURE` → `process.env.AM_PURE`
+- [ ] Update `process.env.OPENCODE_CLIENT` → `process.env.AM_CLIENT`
+- [ ] Rename internal variables: `opencode` → `am` in logs, error messages
+- [ ] Update `scriptName` in yargs from `"opencode"` to `"am"`
 - [ ] Tests: verify output strings, env vars
 
 ### Phase 7: Mode-Aware Tool Permissions (High Risk)
@@ -281,11 +281,11 @@ The SQLite database moves from `~/.config/opencode/` to `~/.config/n0face/`:
 #### Decision 5: Env Var Migration
 | Old Var | New Var | Fallback |
 |---------|---------|----------|
-| `OPENCODE` | `N0FACE` | Always set both |
-| `OPENCODE_PID` | `N0FACE_PID` | Read `OPENCODE_PID` if `N0FACE_PID` unset |
-| `OPENCODE_PURE` | `N0FACE_PURE` | Read `OPENCODE_PURE` if `N0FACE_PURE` unset |
-| `OPENCODE_CLIENT` | `N0FACE_CLIENT` | Default if both unset |
-| `OPENCODE_*` | `N0FACE_*` | General fallback utility |
+| `OPENCODE` | `AM` | Always set both |
+| `OPENCODE_PID` | `AM_PID` | Read `OPENCODE_PID` if `AM_PID` unset |
+| `OPENCODE_PURE` | `AM_PURE` | Read `OPENCODE_PURE` if `AM_PURE` unset |
+| `OPENCODE_CLIENT` | `AM_CLIENT` | Default if both unset |
+| `OPENCODE_*` | `AM_*` | General fallback utility |
 
 ### 6.3 File-by-File Change Map
 

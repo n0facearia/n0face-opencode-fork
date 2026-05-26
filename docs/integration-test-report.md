@@ -1,4 +1,4 @@
-# Integration Test Report — n0face Mode System
+# Integration Test Report — AM Mode System
 
 **Test date:** 2026-05-26
 **Demo project:** TaskApp (task management application)

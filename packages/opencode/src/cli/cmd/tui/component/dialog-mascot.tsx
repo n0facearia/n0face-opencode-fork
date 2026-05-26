@@ -50,8 +50,8 @@ const oldMascotShapes: Record<MascotMode, LogoShape> = {
 
 function currentPresetName(kv: ReturnType<typeof useKV>): string | undefined {
   const data = kv.get("mascot_data") as Record<MascotMode, LogoShape> | undefined
-  if (!data) return "N0face"
-  if (shapesEqual(data, builtinMascot.shapes)) return "N0face"
+  if (!data) return "AM"
+  if (shapesEqual(data, builtinMascot.shapes)) return "AM"
   if (shapesEqual(data, oldMascotShapes)) return "Old Mascot"
   if (shapesEqual(data, legacyShapes)) return "cat"
   const presets = kv.get("mascot_presets") as MascotPreset[] | undefined
@@ -71,7 +71,7 @@ export function DialogMascot() {
 
   const options = [
     {
-      title: "N0face",
+      title: "AM",
       value: "builtin",
       onSelect() {
         kv.set("mascot_data", builtinMascot.shapes)

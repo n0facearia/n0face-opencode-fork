@@ -80,7 +80,7 @@ export const RebuildCommand = {
 
       const distDir = path.join(sourceDir, "packages/opencode/dist")
       const entries = readdirSync(distDir)
-      const built = entries.find((e: string) => e.startsWith("n0face-")) || entries.find((e: string) => e === "opencode")
+      const built = entries.find((e: string) => e.startsWith("am-")) || entries.find((e: string) => e === "opencode")
       if (!built) throw new Error(`built binary not found in ${distDir}`)
 
       const srcBin = path.join(distDir, built, "bin/opencode")

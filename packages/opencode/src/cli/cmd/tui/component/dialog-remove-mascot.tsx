@@ -23,7 +23,7 @@ const oldMascotShapes: Record<MascotMode, LogoShape> = {
   planning: { left: ["┌─────────────┐ ", "│             │ ", "│ █     █     │ ", "│              │ ", "│  ────────    │ ", "└─────────────┘ ", ""], right: ["", "", "", "", "", "", ""] },
 }
 
-const builtinNames = ["N0face", "cat", "Old Mascot"] as const
+const builtinNames = ["AM", "cat", "Old Mascot"] as const
 
 function shapesEqual(a: Record<MascotMode, LogoShape>, b: Record<MascotMode, LogoShape>) {
   return JSON.stringify(a) === JSON.stringify(b)
@@ -31,8 +31,8 @@ function shapesEqual(a: Record<MascotMode, LogoShape>, b: Record<MascotMode, Log
 
 function currentPresetName(kv: ReturnType<typeof useKV>): string | undefined {
   const data = kv.get("mascot_data") as Record<MascotMode, LogoShape> | undefined
-  if (!data) return "N0face"
-  if (shapesEqual(data, builtinMascot.shapes)) return "N0face"
+  if (!data) return "AM"
+  if (shapesEqual(data, builtinMascot.shapes)) return "AM"
   if (shapesEqual(data, oldMascotShapes)) return "Old Mascot"
   if (shapesEqual(data, legacyCatShapes)) return "cat"
   const presets = kv.get("mascot_presets") as MascotPreset[] | undefined
@@ -53,7 +53,7 @@ export function DialogRemoveMascot() {
 
   const options = [
     {
-      title: "N0face",
+      title: "AM",
       value: "am",
       description: "(default)",
       disabled: true,
@@ -96,7 +96,7 @@ export function DialogRemoveMascot() {
           {
             title: "No custom mascots to remove",
             value: "none",
-            description: "N0face, cat, and Old Mascot are built-in defaults",
+            description: "AM, cat, and Old Mascot are built-in defaults",
             onSelect() {
               dialog.clear()
             },

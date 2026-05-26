@@ -6,6 +6,17 @@ APP="am"
 BIN_DIR="$HOME/.am/bin"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/am"
 
+# Check if we're already inside the repository
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd 2>/dev/null || true)"
+if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/package.json" ] && grep -q '"name": "opencode"' "$SCRIPT_DIR/package.json" 2>/dev/null; then
+  LOCAL_REPO="$SCRIPT_DIR"
+elif [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/../package.json" ] && grep -q '"name": "opencode"' "$SCRIPT_DIR/../package.json" 2>/dev/null; then
+  # Script is in repo root but we cd'd to script dir
+  LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
+else
+  LOCAL_REPO=""
+fi
+
 MUTED='\033[0;2m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -69,56 +80,120 @@ install_binary() {
   mkdir -p "$BIN_DIR"
   mkdir -p "$HOME/.local/bin"
 
+  # Try prebuilt binary from GitHub releases
+  # The build script creates tarballs named am-{os}-{arch}.tar.gz (package name)
   local target="${os}-${arch}"
-  local filename="${APP}-${target}.tar.gz"
+  local pkg_name="am"
+  local filename="${pkg_name}-${target}.tar.gz"
   local release_url="https://github.com/$REPO/releases/latest/download/$filename"
 
   if curl -sfL -o /dev/null "$release_url" 2>/dev/null; then
     echo -e "${MUTED}Downloading AM binary...${NC}"
     curl -# -L "$release_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
+    if [ -f "$BIN_DIR/opencode" ]; then
+      mv "$BIN_DIR/opencode" "$BIN_DIR/am"
+    elif [ -f "$BIN_DIR/n0face" ]; then
+      mv "$BIN_DIR/n0face" "$BIN_DIR/am"
+    fi
+    cp "$BIN_DIR/am" "$HOME/.local/bin/am"
+    echo -e "  ${GREEN}✓${NC} Installed AM binary to $BIN_DIR/am"
+    return 0
+  fi
+
+  # Fallback: try legacy binary name (am-{os}-{arch}.tar.gz)
+  local legacy_filename="${APP}-${target}.tar.gz"
+  local legacy_url="https://github.com/$REPO/releases/latest/download/$legacy_filename"
+  if curl -sfL -o /dev/null "$legacy_url" 2>/dev/null; then
+    echo -e "${MUTED}Downloading AM binary (legacy naming)...${NC}"
+    curl -# -L "$legacy_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
     [ -f "$BIN_DIR/opencode" ] && mv "$BIN_DIR/opencode" "$BIN_DIR/am"
     cp "$BIN_DIR/am" "$HOME/.local/bin/am"
     echo -e "  ${GREEN}✓${NC} Installed AM binary to $BIN_DIR/am"
     return 0
   fi
 
-  if ! command -v git &>/dev/null || ! command -v bun &>/dev/null; then
-    if command -v opencode &>/dev/null; then
-      cp "$(which opencode)" "$BIN_DIR/am"
-      cp "$BIN_DIR/am" "$HOME/.local/bin/am"
-      echo -e "  ${ORANGE}⚠${NC} AM aliased to existing opencode binary (git+bun required to build)"
-      return 0
-    fi
-    echo -e "${RED}git and bun are required to build AM. Install them first.${NC}"
+  # Check prerequisites for building from source
+  if ! command -v git &>/dev/null; then
+    echo -e "${RED}git is required to build AM from source.${NC}"
+    echo -e "${RED}Install git (e.g., 'apt install git' or 'brew install git') and try again.${NC}"
+    exit 1
+  fi
+  if ! command -v bun &>/dev/null; then
+    echo -e "${RED}bun is required to build AM from source.${NC}"
+    echo -e "${RED}Install bun (e.g., 'curl -fsSL https://bun.sh/install | bash') and try again.${NC}"
     exit 1
   fi
 
+  git_version=$(git --version 2>/dev/null || echo "unknown")
+  bun_version=$(bun --version 2>/dev/null || echo "unknown")
   echo -e "${MUTED}Building AM from source...${NC}"
+  echo -e "  git: $git_version"
+  echo -e "  bun: $bun_version"
+
   local BUILD_DIR
   BUILD_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t am-build)
 
-  git clone --depth=1 "https://github.com/$REPO.git" "$BUILD_DIR" 2>/dev/null || {
-    echo -e "${RED}Failed to clone repository${NC}"
+  # Use local repo if we're inside it
+  if [ -n "$LOCAL_REPO" ] && [ -d "$LOCAL_REPO/packages/opencode" ]; then
+    echo -e "${MUTED}Using local repository...${NC}"
     rm -rf "$BUILD_DIR"
-    if command -v opencode &>/dev/null; then
-      cp "$(which opencode)" "$BIN_DIR/am"
-      cp "$BIN_DIR/am" "$HOME/.local/bin/am"
-      echo -e "  ${ORANGE}⚠${NC} AM aliased to existing opencode binary"
-      return 0
+    BUILD_DIR="$LOCAL_REPO"
+  else
+    # Clone with retry logic
+    echo -e "${MUTED}Cloning repository...${NC}"
+    local clone_success=0
+    for attempt in 1 2 3; do
+      if [ "$attempt" -gt 1 ]; then
+        echo -e "${MUTED}  Retry attempt $attempt/3...${NC}"
+        sleep 2
+      fi
+
+      # Try with GITHUB_TOKEN first if available
+      if [ -n "${GITHUB_TOKEN:-}" ] || [ -n "${GH_TOKEN:-}" ]; then
+        local token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+        if GIT_TERMINAL_PROMPT=0 git clone --depth=1 "https://x-access-token:${token}@github.com/$REPO.git" "$BUILD_DIR"; then
+          clone_success=1
+          break
+        fi
+      fi
+
+      if GIT_TERMINAL_PROMPT=0 git clone --depth=1 "https://github.com/$REPO.git" "$BUILD_DIR"; then
+        clone_success=1
+        break
+      fi
+    done
+
+    if [ "$clone_success" -eq 0 ]; then
+      echo -e "${RED}Failed to clone repository after 3 attempts.${NC}"
+      echo -e "${RED}This could be due to:${NC}"
+      echo -e "${MUTED}  - Network connectivity issues${NC}"
+      echo -e "${MUTED}  - GitHub rate limiting (anonymous clones are limited)${NC}"
+      echo -e "${MUTED}  - The repository being temporarily unavailable${NC}"
+      echo ""
+      echo -e "${MUTED}To retry with authentication (bypasses rate limits), set:${NC}"
+      echo -e "  export GITHUB_TOKEN=ghp_...${NC}"
+      echo ""
+      echo -e "${MUTED}Or try manually:${NC}"
+      echo -e "  git clone https://github.com/$REPO.git${NC}"
+      echo -e "  cd n0face-opencode-fork${NC}"
+      echo -e "  bun install${NC}"
+      echo -e "  bun run --cwd packages/opencode build --single${NC}"
+      echo ""
+      rm -rf "$BUILD_DIR"
+      exit 1
     fi
-    echo -e "${RED}Failed to install AM binary${NC}"
-    exit 1
-  }
+  fi
 
   echo -e "${MUTED}Installing dependencies...${NC}"
-  if ! bun install --cwd "$BUILD_DIR" --ignore-scripts >/dev/null 2>&1; then
+  if ! bun install --cwd "$BUILD_DIR" --ignore-scripts 2>&1; then
     echo -e "${RED}Failed to install dependencies${NC}"
     rm -rf "$BUILD_DIR"; exit 1
   fi
 
   echo -e "${MUTED}Building binary (may take a few minutes)...${NC}"
-  if ! bun run --cwd "$BUILD_DIR/packages/opencode" build --single --skip-install >/dev/null 2>&1; then
+  if ! bun run --cwd "$BUILD_DIR/packages/opencode" build --single --skip-install 2>&1; then
     echo -e "${RED}Failed to build AM${NC}"
+    echo -e "${RED}Check the error output above for details.${NC}"
     rm -rf "$BUILD_DIR"; exit 1
   fi
 
@@ -134,8 +209,22 @@ install_binary() {
   cp "$BUILT" "$BIN_DIR/am"
   chmod +x "$BIN_DIR/am"
   cp "$BIN_DIR/am" "$HOME/.local/bin/am"
-  rm -rf "$BUILD_DIR"
+
+  # Only clean up if we cloned (not if using local repo)
+  if [ "$BUILD_DIR" != "$LOCAL_REPO" ]; then
+    rm -rf "$BUILD_DIR"
+  fi
+
   echo -e "  ${GREEN}✓${NC} Installed AM binary to $BIN_DIR/am"
+
+  # Verify the binary works
+  if "$BIN_DIR/am" --version >/dev/null 2>&1; then
+    local am_version
+    am_version=$("$BIN_DIR/am" --version 2>/dev/null)
+    echo -e "  ${GREEN}✓${NC} Verified: ${am_version}"
+  else
+    echo -e "  ${ORANGE}⚠${NC} Binary installed but smoke test failed"
+  fi
 }
 
 install_binary
