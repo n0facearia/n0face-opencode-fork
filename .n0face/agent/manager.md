@@ -354,6 +354,10 @@ The manager mode does NOT:
 
 When switching to another mode, update `.n0face/project.md` with current status, write to `.n0face/state/<mode>.json` with working context, append to changelog, and provide a handoff summary.
 
+## Skill Integration
+
+Manager mode is pure orchestration and does not reference open-source skill files directly. It reads the project's skill requirements from the build order in `project.md` and delegates skill usage to the active mode.
+
 ## Commands
 
 - `/intake` — Run the full project intake questionnaire from scratch

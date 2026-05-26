@@ -249,6 +249,8 @@ Reference these files for patterns:
 - `.n0face/skills/open-design/plugins/_official/examples/dashboard/SKILL.md` — dashboard and data-heavy UI patterns
 - `.n0face/skills/open-design/plugins/_official/design-systems/application/DESIGN.md` — application design system tokens and architecture
 
+For design system inspiration and real-world DESIGN.md examples from 70+ major brands, reference [getdesign.md](https://getdesign.md/) — a curated collection of production DESIGN.md files from Google's DESIGN.md spec ecosystem. Browse patterns from companies like Airbnb, Apple, Stripe, Linear, and more.
+
 ## Commands
 
 - `/audit` — Run a full UI audit against the existing design system or best practices

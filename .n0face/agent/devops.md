@@ -189,6 +189,8 @@ Reference these files for patterns:
 - `.n0face/skills/agent-skills/shipping-and-launch/SKILL.md` — deployment readiness, pre-deployment checklist
 - `.n0face/skills/agent-skills/ci-cd-and-automation/SKILL.md` — CI/CD pipeline patterns
 - `.n0face/skills/agent-skills/incremental-implementation/SKILL.md` — one workflow file at a time
+- `.n0face/skills/wshobson-agents/devops-engineering/cicd-automation/SKILL.md` — CI/CD workflow design patterns
+- `.n0face/skills/wshobson-agents/devops-engineering/cloud-infrastructure/SKILL.md` — cloud deployment and infrastructure patterns
 
 ## Commands
 

@@ -9,49 +9,45 @@
 
 ---
 
-## What is n0face-opencode-fork
+## Project Name
 
-A feature fork of [OpenCode](https://github.com/sst/opencode) that replaces the two-mode (plan → build) loop with a **10-mode composable pipeline**. Each mode is an independent, self-contained prompt file with a single responsibility — manager, design, frontend, backend, database, security, testing, devops, cleanup, documentation. Modes communicate through shared JSON state and a canonical `project.md` file. You can run them in any order, rerun individual modes, and skip modes entirely.
+**n0face-opencode-fork** — a developer-grade, terminal-based AI coding assistant built on [OpenCode](https://github.com/sst/opencode).
 
-This is not a plugin or extension — it is the same binary with a different set of system prompts, a reworked TUI (animated mascot, tabbed thinking/result view, three-column home screen), and a config directory isolated to `.n0face/` so it never conflicts with upstream OpenCode.
+## What it does
 
-## Core Philosophy
+Replaces the upstream two-mode loop (plan → build) with a **10-mode composable pipeline**. Each mode is an independent prompt file with a single responsibility — manager, design, frontend, backend, database, security, testing, devops, cleanup, documentation. Modes communicate through shared JSON state and a canonical `project.md` file. Run them in any order, rerun individual modes, or skip modes entirely.
 
-- **LLM-agnostic by design.** No mode file contains model-specific syntax (no XML tags, no `Claude`/`GPT`/`Gemini` references, no role-play framing). The same 10 prompts work on any LLM that OpenCode supports.
-- **State-driven, not chat-driven.** Every mode reads `.n0face/project.md` and its own `state/<mode>.json` at startup, and writes decisions + file lists back at the end. Questions are never re-asked once answered.
-- **Single-responsibility modes.** Each mode owns exactly one concern. Manager does not code. Documentation does not design. Cleanup does not deploy. This keeps prompt files tractable and testable.
-- **Developer is the approver, not the agent.** Pre-work questions block code/output until answered. Build orders and contracts require explicit developer confirmation. No mode auto-applies fixes.
-- **Append-only journal.** All mode activity logs to `.n0face/changelog.md` with a canonical timestamp format. Never edit existing entries. This gives a full audit trail across sessions and modes.
-- **Opt-in learning layer.** When `learning_layer: enabled` is set in `project.md`, each mode appends structured session notes (action, rationale, key context) to `.n0face/learn/`. Disabled by default — zero files created unless explicitly enabled.
+Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, and three-column home screen — all while keeping a config directory isolated to `.n0face/` so it never conflicts with upstream OpenCode.
 
-## Architecture Overview
+## Features
 
-```
-.n0face/
-├── agent/             # 10 mode prompt files (the system)
-│   ├── manager.md     # intake, planning, cross-mode orchestration
-│   ├── design.md      # design system, UI audit, tokens
-│   ├── frontend.md    # component implementation
-│   ├── backend.md     # API, services, business logic
-│   ├── database.md    # schema, migrations, ORM
-│   ├── security.md    # vulnerability audit, dependency review
-│   ├── testing.md     # test strategy, coverage
-│   ├── devops.md      # CI/CD, Docker, deployment
-│   ├── cleanup.md     # linting, dead code, performance
-│   └── documentation.md  # README, ARCHITECTURE, CONTRIBUTING (terminal)
-├── state/             # Per-mode JSON state (touched_files, decisions, last_session)
-├── command/           # Slash command files (/new-project, /import-md)
-├── skills/            # Imported skill definitions from upstream repos
-├── learn/             # Learning layer notes (created only when enabled)
-├── project.md         # Canonical project state (modes completed, decisions, known issues)
-└── changelog.md       # Append-only session journal
-```
+- **10 agent modes** — manager orchestrates, design defines tokens, frontend/backend/database build, security/testing/devops harden, cleanup polishes, documentation synthesizes
+- **LLM-agnostic** — all mode prompts are plain Markdown with zero model-specific syntax. Works with Claude, GPT-4o, Gemini, and any other LLM OpenCode supports
+- **Shared state** — modes read/write `project.md` and `state/<mode>.json`; questions are never re-asked
+- **Developer approval** — every build order, diff, and destructive action requires confirmation. No auto-apply
+- **Append-only changelog** — all sessions log to `.n0face/changelog.md` with canonical timestamps
+- **Opt-in learning layer** — when enabled, each mode writes structured session notes explaining what it did and why
+- **Animated mascot** — cat sprites in the session header (idle/thinking/planning states)
+- **Tabbed view** — switch between Result and Thinking panels in the TUI
+- **Config isolation** — `.n0face/` directory never touches `.opencode/`; both can coexist
+- **Skill system** — 123 imported skill files from 3 upstream repos provide domain-specific patterns
 
-Modes share state through two mechanisms:
-1. **`project.md`** — modes completed/remaining, architecture decisions, known issues
-2. **`state/<mode>.json`** — per-mode touched files, decisions, and last session timestamp
+## Tech Stack
 
-Handoff is conditional: each mode reads `project.md` and checks which modes are completed/remaining before suggesting the next mode.
+| Layer | Technology |
+|-------|-----------|
+| Runtime | [Bun](https://bun.sh) 1.3+ |
+| Language | TypeScript (strict mode) |
+| TUI framework | [opentui](https://github.com/sst/opentui) (SolidJS) |
+| Linter | [oxlint](https://oxc.rs) |
+| Test | Vitest |
+| Build | [Turbo](https://turbo.build) repo |
+| Monorepo | Bun workspaces (20 packages) |
+
+## Prerequisites
+
+- **Bun 1.3+** — required for building and development
+- **Git** — to clone the repo
 
 ## Installation
 
@@ -61,7 +57,7 @@ Handoff is conditional: each mode reads `project.md` and checks which modes are 
 curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash
 ```
 
-Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.n0face/bin` to PATH, and installs mode configs to `~/.config/n0face/`. After install, run `n0face` in any project directory.
+Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.n0face/bin` to PATH, and installs all 10 mode configs to `~/.config/n0face/`.
 
 ### One-command uninstall
 
@@ -84,48 +80,32 @@ bun run build
 n0face rebuild
 ```
 
-Clones/updates source from GitHub, installs dependencies, builds the native binary, and replaces `~/.local/bin/n0face`.
+## Environment Setup
 
-## Configuration
-
-n0face uses the same configuration system as OpenCode but reads from an isolated directory:
+n0face uses OpenCode's configuration system with an isolated config directory:
 
 - **Project config**: `.n0face/n0face.json` or `.n0face/n0face.jsonc`
 - **Global config**: `~/.config/n0face/`
 
 ### Setting up an LLM provider
 
-Create `.n0face/n0face.jsonc` in your project root:
-
-```jsonc
+```bash
+mkdir -p ~/.config/n0face
+cat > ~/.config/n0face/n0face.jsonc << 'EOF'
 {
   "provider": "anthropic",
   "apiKey": "sk-ant-...",
   "model": "claude-sonnet-4-20250514"
 }
-```
-
-Or use the global config at `~/.config/n0face/n0face.jsonc`:
-
-```bash
-mkdir -p ~/.config/n0face
-cat > ~/.config/n0face/n0face.jsonc << 'EOF'
-{
-  "provider": "openai",
-  "apiKey": "sk-proj-...",
-  "model": "gpt-4o"
-}
 EOF
 ```
 
-For environment variables:
+Or use environment variables (auto-detected by OpenCode):
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 export OPENAI_API_KEY=sk-proj-...
 ```
-
-OpenCode scans for provider key env vars automatically. See the [OpenCode docs](https://opencode.ai/docs) for all available config options.
 
 ### Separating from upstream OpenCode
 
@@ -138,17 +118,88 @@ n0face never touches `.opencode/`. You can have both installed side by side:
 | Agent files     | `.n0face/agent/*.md`       | `.opencode/agent/*.md`    |
 | Binary          | `~/.n0face/bin/n0face`     | system-specific path      |
 
-## Supported LLMs
+## Running Locally
 
-Any provider and model that OpenCode supports works with n0face. The mode files contain no model-specific syntax, so all LLMs produce equivalent behavior:
+```bash
+git clone https://github.com/n0facearia/n0face-opencode-fork.git
+cd n0face-opencode-fork
+bun install
+bun dev
+```
 
-- **Anthropic**: Claude Sonnet 4, Claude 3.5 Haiku, Claude 3 Opus
-- **OpenAI**: GPT-4o, GPT-4o-mini, o3, o4-mini
-- **Google**: Gemini 2.5 Pro, Gemini 2.5 Flash
-- **AWS**: Bedrock (Claude, Llama, Mistral)
-- **GCP**: Vertex AI (Claude, Gemini)
-- **OpenAI-compatible**: Together, Fireworks, Groq, DeepSeek, Perplexity, OpenRouter, Ollama (local)
-- **Azure**: OpenAI endpoints
+| Command | What it does |
+|---------|-------------|
+| `bun dev` | Start TUI dev server (from `packages/opencode`) |
+| `bun dev:desktop` | Start Electron desktop app |
+| `bun dev:web` | Start web app dev server |
+| `bun lint` | Run oxlint across the repo |
+| `bun typecheck` | Run TypeScript type checking across all packages |
+| `bun run build` | Build the native binary (from `packages/opencode`) |
+
+## Running Tests
+
+Tests must be run from individual package directories, not from repo root:
+
+```bash
+cd packages/opencode
+bun test
+```
+
+Or run type checks:
+
+```bash
+cd packages/opencode
+bun typecheck
+```
+
+## Deployment
+
+The native binary is built and distributed via GitHub Releases. The `install.sh` script downloads the latest release for the target platform.
+
+```bash
+cd packages/opencode
+bun run build
+```
+
+Outputs a standalone binary that is published as a release asset. The auto-update mechanism checks both `n0facearia/n0face-opencode-fork` and `anomalyco/opencode` for new versions on startup.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for:
+
+- How to add a new mode (10-step guide)
+- How to add a new skill
+- Prompt writing rules (LLM-agnostic, state-driven, canonical formats)
+- Testing requirements before submitting
+
+For a full walkthrough of the mode system and available commands, see [TUTORIAL.md](./TUTORIAL.md).
+
+---
+
+## Architecture Overview
+
+```
+.n0face/
+├── agent/             # 10 mode prompt files (the system)
+│   ├── manager.md     # intake, planning, cross-mode orchestration
+│   ├── design.md      # design system, UI audit, tokens
+│   ├── frontend.md    # component implementation
+│   ├── backend.md     # API, services, business logic
+│   ├── database.md    # schema, migrations, ORM
+│   ├── security.md    # vulnerability audit, dependency review
+│   ├── testing.md     # test strategy, coverage
+│   ├── devops.md      # CI/CD, Docker, deployment
+│   ├── cleanup.md     # linting, dead code, performance
+│   └── documentation.md  # README, ARCHITECTURE, CONTRIBUTING (terminal)
+├── state/             # Per-mode JSON state (touched_files, decisions, last_session)
+├── command/           # Slash command files (/new-project, /import-md)
+├── skills/            # Imported skill definitions from 3 upstream repos
+├── learn/             # Learning layer notes (created only when enabled)
+├── project.md         # Canonical project state (modes completed, decisions, known issues)
+└── changelog.md       # Append-only session journal
+```
+
+Modes share state through `project.md` (modes completed/remaining, decisions, known issues) and `state/<mode>.json` (per-mode touched files, decisions, last session). Handoff is conditional: each mode reads `project.md` to determine the next logical mode.
 
 ## The Mode System
 
@@ -176,6 +227,15 @@ Any provider and model that OpenCode supports works with n0face. The mode files 
 
 Any mode can be skipped. Any mode can be re-run. Handoff reads `project.md` → `Modes remaining` to decide the next mode.
 
+## Core Philosophy
+
+- **LLM-agnostic by design.** No mode file contains model-specific syntax. The same 10 prompts work on any LLM that OpenCode supports.
+- **State-driven, not chat-driven.** Every mode reads `project.md` and its state JSON at startup, writes decisions back at the end. Questions are never re-asked.
+- **Single-responsibility modes.** Each mode owns exactly one concern. Manager does not code. Documentation does not design. Cleanup does not deploy.
+- **Developer is the approver, not the agent.** Pre-work questions block code until answered. Build orders require confirmation. No mode auto-applies fixes.
+- **Append-only journal.** All mode activity logs to `changelog.md` with canonical timestamps. Never edit existing entries.
+- **Opt-in learning layer.** When enabled in `project.md`, each mode writes structured session notes. Disabled by default — zero files created.
+
 ## The Learning Layer
 
 An opt-in cross-session memory system. When enabled in `project.md`:
@@ -197,72 +257,22 @@ Each mode appends structured notes to `.n0face/learn/<mode>.md` after every sess
 ```
 
 - Disabled by default (`learning_layer: disabled`) — no files created, no I/O overhead
-- Each entry is separated by `---`
 - A 2-minute self-prompt timer encourages richer notes on long sessions
 - Modes check the setting at startup; if disabled, they skip the entire section
 
 To enable: edit `project.md` and change `learning_layer: disabled` to `learning_layer: enabled`.
 
-## Development Workflow
+## Supported LLMs
 
-### Prerequisites
+Any provider and model that OpenCode supports works with n0face:
 
-- **Bun 1.3+** — required for building and development
-- **Git** — to clone the repo
-
-### Setup
-
-```bash
-git clone https://github.com/n0facearia/n0face-opencode-fork.git
-cd n0face-opencode-fork
-bun install
-```
-
-### Development commands
-
-| Command | What it does |
-|---------|-------------|
-| `bun dev` | Start TUI dev server (from `packages/opencode`) |
-| `bun dev:desktop` | Start Electron desktop app |
-| `bun dev:web` | Start web app dev server |
-| `bun lint` | Run oxlint across the repo |
-| `bun typecheck` | Run TypeScript type checking across all packages |
-| `bun run build` | Build the native binary (from `packages/opencode`) |
-
-### Project structure
-
-```
-packages/
-├── opencode/          # TUI/CLI binary (main entry point)
-│   └── src/
-│       ├── cli/       # CLI commands, TUI components, routes
-│       ├── session/   # Session management, prompt loading
-│       ├── tool/      # Tool implementations (plan, read, edit, etc.)
-│       └── provider/  # LLM provider integrations
-├── app/               # Web application
-├── desktop/           # Electron desktop wrapper
-├── console/           # Console/web app
-├── sdk/               # JavaScript SDK
-├── slack/             # Slack integration
-└── ui/                # Shared UI components
-```
-
-### Making changes to mode prompts
-
-Mode files live in `.n0face/agent/*.md`. To develop or test changes:
-
-1. Edit the relevant `.md` file
-2. Test it on a real project (see Testing Requirements in `CONTRIBUTING.md`)
-3. If adding a new mode, follow the guide in `CONTRIBUTING.md#how-to-add-a-new-mode`
-
-### Building for release
-
-```bash
-cd packages/opencode
-bun run build
-```
-
-Outputs a native binary suitable for distribution. The `install.sh` script downloads this binary from GitHub Releases.
+- **Anthropic**: Claude Sonnet 4, Claude 3.5 Haiku, Claude 3 Opus
+- **OpenAI**: GPT-4o, GPT-4o-mini, o3, o4-mini
+- **Google**: Gemini 2.5 Pro, Gemini 2.5 Flash
+- **AWS**: Bedrock (Claude, Llama, Mistral)
+- **GCP**: Vertex AI (Claude, Gemini)
+- **OpenAI-compatible**: Together, Fireworks, Groq, DeepSeek, Perplexity, OpenRouter, Ollama (local)
+- **Azure**: OpenAI endpoints
 
 ---
 
