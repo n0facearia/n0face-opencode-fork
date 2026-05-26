@@ -49,7 +49,7 @@ The migration should proceed in phases, each building on the previous. Phases ar
 - [ ] Move `.opencode/command/` → `.am/command/`
 - [ ] Filter commands: keep `learn`, `issues`, `translate`, `spellcheck`, `rmslop`, `ai-deps`
 - [ ] Drop upstream-specific: `changelog`, `commit` (optional)
-- [ ] `.am/command/import-md.md`, `new-project.md` already exist
+- [ ] `.am/command/continue-project.md`, `new-project.md` already exist
 - [ ] Update command loader to read from `.am/command/`
 - [ ] Tests: command loading from new path
 

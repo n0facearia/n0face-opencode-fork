@@ -55,7 +55,7 @@ Then run `am` from anywhere.
 | **Message tabs** | None | Result / Thinking toggle |
 | **Home screen** | Single column | Three-column layout |
 | **Mode prompts** | 2 built-in | 5 modes with system prompts |
-| **Setup commands** | None | `/new-project`, `/import-md` |
+| **Setup commands** | None | `/new-project`, `/continue-project` |
 | **Install script** | `curl opencode.ai/install` | `curl raw.githubusercontent.com/...` |
 
 ### Custom Agents
@@ -71,7 +71,7 @@ Then run `am` from anywhere.
 | Command | Description |
 |---------|-------------|
 | `/new-project` | Set up a new project with mode system |
-| `/import-md` | Import mode system into existing project |
+| `/continue-project` | Import mode system into existing project |
 
 ---
 
@@ -185,7 +185,7 @@ am
 Then in am:
 
 ```
-/import-md
+/continue-project
 ```
 
 This auto-detects your project's name, type, and stack from `package.json`, `Cargo.toml`, `go.mod`, etc., and creates the mode system files without overwriting anything that already exists.

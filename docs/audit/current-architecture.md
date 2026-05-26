@@ -580,7 +580,7 @@ The command system:
 - `/rmslop` — Remove AI-generated "slop" code
 
 **AM custom commands** (from `.am/command/`):
-- `/import-md` — Import the AM mode system into an existing project; auto-detects project metadata (package.json, Cargo.toml, go.mod, README.md) and creates only missing files (PROJECT_SUMMARY.md, MODE_CONTEXT.md, .am/ mode files/agents)
+- `/continue-project` — Import the AM mode system into an existing project; auto-detects project metadata (package.json, Cargo.toml, go.mod, README.md) and creates only missing files (PROJECT_SUMMARY.md, MODE_CONTEXT.md, .am/ mode files/agents)
 - `/new-project` — Scaffold a new project with the full AM mode system; prompts for project name, type (web/api/cli), technology stack, and description; creates PROJECT_SUMMARY.md, MODE_CONTEXT.md, and .am/ directory structure
 
 ### 3.9 Existing Skills/Prompts
@@ -710,7 +710,7 @@ The `.am/` directory contains the planned AM architecture mode definitions:
 │   ├── design.md             # Design agent config
 │   └── security.md           # Security agent config
 └── command/
-    ├── import-md.md          # Import mode system command
+    ├── continue-project.md          # Import mode system command
     └── new-project.md        # New project scaffolding command
 ```
 

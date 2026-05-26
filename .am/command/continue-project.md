@@ -1,8 +1,8 @@
 ---
-description: Import the mode system into an existing project
+description: Continue on an existing project, importing the mode system
 ---
 
-Import the mode system into an existing project.
+Continue on an existing project, importing the mode system.
 
 Auto-detects project metadata from:
 - `package.json` (name, type)

@@ -216,7 +216,7 @@ install_file ".am/changelog.md" "$CONFIG_DIR/changelog.md"
 
 # ── Slash commands ───────────────────────────────────────────────
 install_file ".am/command/new-project.md" "$CONFIG_DIR/command/new-project.md"
-install_file ".am/command/import-md.md"   "$CONFIG_DIR/command/import-md.md"
+install_file ".am/command/continue-project.md"   "$CONFIG_DIR/command/continue-project.md"
 
 # ── Reference docs ───────────────────────────────────────────────
 install_file "TUTORIAL.md" "$CONFIG_DIR/TUTORIAL.md"
@@ -248,5 +248,5 @@ echo "    exec \$SHELL"
 echo ""
 echo "  Press Tab to cycle modes: plan → build → design → frontend → backend"
 echo "  More modes: database → cleanup → security → testing → devops → documentation"
-echo "  Start: /new-project  |  Import existing project: /import-md"
+echo "  Start: /new-project  |  Import existing project: /continue-project"
 echo ""

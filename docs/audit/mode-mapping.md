@@ -7,7 +7,7 @@ Generated: 2026-05-25
 | # | Current System | Location | Planned n0face Equivalent | Migration Action |
 |---|---|---|---|---|
 | 1 | **Agent definitions** | `.opencode/agent/triage.md`, `.opencode/agent/duplicate-pr.md` | `.am/agent/` | **Refactor** — Move agent configs to `.am/agent/` structure; n0face modes (cleanup, design, security) already exist there |
-| 2 | **Command definitions** | `.opencode/command/*.md` (8 files) | `.am/command/` | **Refactor** — Move commands; `.am/command/` already has `import-md.md` and `new-project.md` |
+| 2 | **Command definitions** | `.opencode/command/*.md` (8 files) | `.am/command/` | **Refactor** — Move commands; `.am/command/` already has `continue-project.md` and `new-project.md` |
 | 3 | **Mode system prompts** | `src/session/prompt/*.txt` (12 provider-specific prompts) | `.am/*.mode.md` | **Refactor** — Replace provider-specific prompts with mode-specific prompts (cleanup, design, security) |
 | 4 | **Agent runtime** | `packages/opencode/src/agent/agent.ts` | `packages/n0face/src/agent/` | **Keep** — Core agent runtime is reusable; needs mode-awareness integration |
 | 5 | **Config system** | `packages/opencode/src/config/` (23 files) | `.am/` + `packages/n0face/src/config/` | **Keep** — Config system is already Effect-based and layered; needs rebranding |
@@ -144,7 +144,7 @@ These systems are mode-agnostic and require only package rename:
 | **Mode context loader** | Load `.am/*.mode.md` as system prompt | High |
 | **n0face.jsonc** | Main config file replacing `opencode.jsonc` | High |
 | **State directory** | `.am/state/` for session/memory persistence | Medium |
-| **PROJECT_SUMMARY.md** | Auto-generated project summary (referenced by import-md command) | Medium |
+| **PROJECT_SUMMARY.md** | Auto-generated project summary (referenced by continue-project command) | Medium |
 | **MODE_CONTEXT.md** | Auto-generated mode context file | Medium |
 | **n0face CLI branding** | Update all CLI output, help text, version string to "n0face" | Medium |
 | **n0face docs** | New documentation in `.am/` replacing opencode docs | Low |

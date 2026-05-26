@@ -192,7 +192,7 @@ For a full walkthrough of the mode system and available commands, see [TUTORIAL.
 │   ├── cleanup.md     # linting, dead code, performance
 │   └── documentation.md  # README, ARCHITECTURE, CONTRIBUTING (terminal)
 ├── state/             # Per-mode JSON state (touched_files, decisions, last_session)
-├── command/           # Slash command files (/new-project, /import-md)
+├── command/           # Slash command files (/new-project, /continue-project)
 ├── skills/            # Imported skill definitions from 3 upstream repos
 ├── learn/             # Learning layer notes (created only when enabled)
 ├── project.md         # Canonical project state (modes completed, decisions, known issues)
@@ -234,11 +234,29 @@ The entire system is a **state machine driven by Markdown files**. Modes never t
 ### The session lifecycle
 
 ```
-User says "build my app"
-        │
-        ▼
+                  ┌────────────────────────────┐
+                  │  NEW PROJECT?              │
+                  │                            │
+                  │  ┌─ /new-project           │
+                  │  │   scaffolds .am/        │
+                  │  │   creates project.md    │
+                  │  │   initializes state/    │
+                  │  └─────────────────────────│
+                  │                            │
+                  │  ┌─ /continue-project      │
+                  │  │   imports into existing │
+                  │  │   project, detects      │
+                  │  │   metadata, creates     │
+                  │  │   only missing files    │
+                  │  └─────────────────────────│
+                  │                            │
+                  │  Then run:  am             │
+                  └────────────┬───────────────┘
+User says "build my app"       │
+        │                      │
+        ▼                      ▼
 ┌─────────────────────────────────────────────────┐
-│  MANAGER runs first                              │
+│  MANAGER reads project.md (created by setup)    │
 │                                                  │
 │  1. Asks intake questions (project type,         │
 │     stack, goals, constraints)                   │
