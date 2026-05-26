@@ -227,6 +227,119 @@ Modes share state through `project.md` (modes completed/remaining, decisions, kn
 
 Any mode can be skipped. Any mode can be re-run. Handoff reads `project.md` → `Modes remaining` to decide the next mode.
 
+## How It Works
+
+The entire system is a **state machine driven by Markdown files**. Modes never talk to each other directly — they read and write to a shared filesystem state, then suggest the next mode.
+
+### The session lifecycle
+
+```
+User says "build my app"
+        │
+        ▼
+┌─────────────────────────────────────────────────┐
+│  MANAGER runs first                              │
+│                                                  │
+│  1. Asks intake questions (project type,         │
+│     stack, goals, constraints)                   │
+│  2. Writes build order into project.md           │
+│  3. Initializes state/<mode>.json for each mode  │
+│  4. Sets Modes remaining in project.md           │
+│  5. Hands off → suggest <first_mode>             │
+└─────────────────────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────────────────────┐
+│  Each mode executes independently                │
+│                                                  │
+│  1. Read project.md (state of the world)         │
+│  2. Read state/<mode>.json (prior session)       │
+│  3. Ask pre-work questions (blocks until answered)│
+│  4. Do the work (code, docs, config)             │
+│  5. Append to changelog.md                       │
+│  6. Write state/<mode>.json (touched files,      │
+│     decisions)                                   │
+│  7. Update project.md (mark mode completed)      │
+│  8. Read project.md → check Modes remaining      │
+│  9. Output: ## HANDOFF — suggest <next_mode>     │
+└─────────────────────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────────────────────┐
+│  Next mode repeats the same cycle                │
+│                                                  │
+│  → design → frontend → backend → database        │
+│  → security → testing → devops → cleanup         │
+│  → documentation (terminal, no handoff)          │
+└─────────────────────────────────────────────────┘
+```
+
+### File wiring
+
+Three files connect every mode into a coherent pipeline:
+
+**`project.md`** — the project's memory. Written by manager at intake, updated by every mode on completion. Holds the build order, decisions log, known issues, and the two critical lists: `Modes completed` and `Modes remaining`. Every mode reads this at startup to know what's been done and what's next.
+
+**`state/<mode>.json`** — each mode's private session log. Written at the end of every run. Contains `touched_files`, `decisions` (what was decided and why), and `last_session` (timestamp). On re-runs, the mode reads this file to skip already-answered questions.
+
+**`changelog.md`** — append-only journal of every mode action across all sessions. Entries are never edited, only appended. Format:
+
+```
+## [YYYY-MM-DD HH:MM] — <mode> mode
+- <action performed>
+- <decision made and rationale>
+- Files touched: <comma-separated>
+- Suggested next: <mode> — <reason>
+```
+
+### Mode internals
+
+Every mode file is a self-contained prompt with exactly 11 sections in order:
+
+| # | Section | What it does |
+|---|---------|-------------|
+| 1 | **ROLE** | One-paragraph definition of the mode's responsibility and boundaries |
+| 2 | **STARTUP BEHAVIOR** | Reads `project.md` and `state/<mode>.json`; blocks if missing |
+| 3 | **PRE-WORK QUESTIONS** | Blocking questions that pause until answered clearly |
+| 4 | **WORKFLOW** | Step-by-step execution process |
+| 5 | **OUTPUTS** | Every file the mode creates or modifies |
+| 6 | **CHANGELOG** | Canonical entry format to use |
+| 7 | **STATE** | What to read/write in `state/<mode>.json` |
+| 8 | **LEARNING LAYER** | Conditional — only runs when `learning_layer: enabled` |
+| 9 | **HANDOFF** | Reads `project.md`, suggests next mode |
+| 10 | **NEVER RE-ASK** | Guard against repeating answered questions |
+| 11 | **BOUNDARIES** | Explicit list of what the mode does NOT do |
+
+### Handoff mechanics
+
+The last line of every mode's output (except documentation, which is terminal) is:
+
+```
+## HANDOFF — suggest <mode>
+```
+
+The handoff logic reads `project.md` — specifically `Modes completed`, `Modes remaining`, and `Known issues` — and decides the next mode based on what's left. If `Known issues` lists a security concern, security mode runs before testing. If an issue blocks the pipeline, the handoff suggests manager to re-plan.
+
+This is not a fixed pipeline. The manager's build order defines the sequence, but any mode can suggest a different next mode based on current state.
+
+### Build order flexibility
+
+The manager creates a build order during intake, but you can override it at any time:
+
+```
+Edit project.md → change Modes remaining order → next handoff follows it
+```
+
+This means:
+- **Skip modes**: remove a mode from `Modes remaining`
+- **Re-run modes**: clear a mode from `Modes completed` (it will re-run with fresh state)
+- **Re-order**: change the sequence to match your priorities
+- **Mid-project pivot**: add a new mode mid-stream by editing `project.md`
+
+### Why this works
+
+The file-based design means the system is **fully transparent, fully inspectable, and fully editable** at every step. You can open `project.md` at any point and see exactly what's been done, what's pending, and what decisions were made. No hidden state, no database, no lock-in.
+
 ## Core Philosophy
 
 - **LLM-agnostic by design.** No mode file contains model-specific syntax. The same 10 prompts work on any LLM that OpenCode supports.
