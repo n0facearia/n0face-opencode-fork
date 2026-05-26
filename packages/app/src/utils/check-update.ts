@@ -21,7 +21,7 @@ function semverGt(a: string, b: string): boolean {
 async function fetchLatestRelease(repo: string): Promise<string | null> {
   try {
     const res = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, {
-      headers: { Accept: "application/json", "User-Agent": "opencode-app" },
+      headers: { Accept: "application/json", "User-Agent": "am-app" },
     })
     if (!res.ok) return null
     const data = await res.json() as { tag_name?: string }

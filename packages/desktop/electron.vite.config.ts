@@ -43,21 +43,21 @@ export default defineConfig({
     },
     plugins: [
       {
-        name: "opencode:node-pty-narrower",
+        name: "am:node-pty-narrower",
         enforce: "pre",
         resolveId(s) {
           if (s === "@lydell/node-pty") return nodePtyPkg
         },
       },
       {
-        name: "opencode:virtual-server-module",
+        name: "am:virtual-server-module",
         enforce: "pre",
         resolveId(id) {
-          if (id === "virtual:opencode-server") return this.resolve(`${AM_SERVER_DIST}/node.js`)
+          if (id === "virtual:am-server") return this.resolve(`${AM_SERVER_DIST}/node.js`)
         },
       },
       {
-        name: "opencode:copy-server-assets",
+        name: "am:copy-server-assets",
         async writeBundle() {
           for (const l of await fs.readdir(AM_SERVER_DIST)) {
             if (!l.endsWith(".wasm")) continue

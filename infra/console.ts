@@ -7,7 +7,7 @@ import { SECRET } from "./secret"
 ////////////////
 
 const cluster = planetscale.getDatabaseOutput({
-  name: "opencode",
+  name: "am",
   organization: "anomalyco",
 })
 

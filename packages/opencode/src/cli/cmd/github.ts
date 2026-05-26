@@ -403,7 +403,7 @@ jobs:
           persist-credentials: false
 
       - name: Run opencode
-        uses: anomalyco/opencode/github@latest${envStr}
+        uses: n0facearia/n0face-opencode-fork/github@latest${envStr}
         with:
           model: ${provider}/${model}`,
           )

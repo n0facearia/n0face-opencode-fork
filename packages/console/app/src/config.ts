@@ -7,7 +7,7 @@ export const config = {
 
   // GitHub
   github: {
-    repoUrl: "https://github.com/anomalyco/opencode",
+    repoUrl: "https://github.com/n0facearia/n0face-opencode-fork",
     starsFormatted: {
       compact: "150K",
       full: "150,000",
