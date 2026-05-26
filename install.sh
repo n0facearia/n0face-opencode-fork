@@ -42,8 +42,9 @@ fi
 echo ""
 echo "  ┌─ n0face Installer ─────────────────────────────────────┐"
 echo "  │                                                          │"
-echo "  │  Installs n0face CLI + custom agent modes:               │"
-echo "  │  design, cleanup, security                               │"
+echo "  │  Installs n0face CLI + 10-mode agent system:             │"
+echo "  │  manager, design, frontend, backend, database,           │"
+echo "  │  cleanup, security, testing, devops, documentation       │"
 echo "  └──────────────────────────────────────────────────────────┘"
 echo ""
 
@@ -158,13 +159,11 @@ fi
 echo ""
 echo "  ┌─ Installing Mode Configs ──────────────────────────┐"
 echo "  │                                                      │"
-echo "  │  design, cleanup, and security modes                 │"
+echo "  │  10 agent modes + state files + project templates    │"
 echo "  └──────────────────────────────────────────────────────┘"
 echo ""
 
 BASE="https://raw.githubusercontent.com/$REPO/main"
-mkdir -p "$CONFIG_DIR/agent" "$CONFIG_DIR/command"
-
 created=0; skipped=0
 install_file() {
   local src="$1" dst="$2"
@@ -182,15 +181,53 @@ install_file() {
   fi
 }
 
+# ── Create required subdirectories ──────────────────────────────
+mkdir -p "$CONFIG_DIR/agent"
+mkdir -p "$CONFIG_DIR/command"
+mkdir -p "$CONFIG_DIR/state"
+
+# ── Agent mode files (10 modes) ─────────────────────────────────
+install_file ".n0face/agent/manager.md"       "$CONFIG_DIR/agent/manager.md"
+install_file ".n0face/agent/design.md"        "$CONFIG_DIR/agent/design.md"
+install_file ".n0face/agent/frontend.md"      "$CONFIG_DIR/agent/frontend.md"
+install_file ".n0face/agent/backend.md"       "$CONFIG_DIR/agent/backend.md"
+install_file ".n0face/agent/database.md"      "$CONFIG_DIR/agent/database.md"
+install_file ".n0face/agent/cleanup.md"       "$CONFIG_DIR/agent/cleanup.md"
+install_file ".n0face/agent/security.md"      "$CONFIG_DIR/agent/security.md"
+install_file ".n0face/agent/testing.md"       "$CONFIG_DIR/agent/testing.md"
+install_file ".n0face/agent/devops.md"        "$CONFIG_DIR/agent/devops.md"
+install_file ".n0face/agent/documentation.md" "$CONFIG_DIR/agent/documentation.md"
+
+# ── State files (one per mode, initialized as empty JSON) ───────
+install_file ".n0face/state/manager.json"       "$CONFIG_DIR/state/manager.json"
+install_file ".n0face/state/design.json"        "$CONFIG_DIR/state/design.json"
+install_file ".n0face/state/frontend.json"      "$CONFIG_DIR/state/frontend.json"
+install_file ".n0face/state/backend.json"       "$CONFIG_DIR/state/backend.json"
+install_file ".n0face/state/database.json"      "$CONFIG_DIR/state/database.json"
+install_file ".n0face/state/cleanup.json"       "$CONFIG_DIR/state/cleanup.json"
+install_file ".n0face/state/security.json"      "$CONFIG_DIR/state/security.json"
+install_file ".n0face/state/testing.json"       "$CONFIG_DIR/state/testing.json"
+install_file ".n0face/state/devops.json"        "$CONFIG_DIR/state/devops.json"
+install_file ".n0face/state/documentation.json" "$CONFIG_DIR/state/documentation.json"
+
+# ── Project template files ───────────────────────────────────────
+install_file ".n0face/project.md"   "$CONFIG_DIR/project.md"
+install_file ".n0face/changelog.md" "$CONFIG_DIR/changelog.md"
+
+# ── Slash commands ───────────────────────────────────────────────
+install_file ".n0face/command/new-project.md" "$CONFIG_DIR/command/new-project.md"
+install_file ".n0face/command/import-md.md"   "$CONFIG_DIR/command/import-md.md"
+
+# ── Reference docs ───────────────────────────────────────────────
+install_file "TUTORIAL.md" "$CONFIG_DIR/TUTORIAL.md"
+
+# ── Legacy .mode.md files (kept for backwards compatibility) ─────
+# These are the original 3-mode files from v0.1.0.
+# They are still installed so existing users who reference them
+# directly are not broken. The new system uses agent/*.md instead.
 install_file ".n0face/design.mode.md"   "$CONFIG_DIR/design.mode.md"
 install_file ".n0face/cleanup.mode.md"  "$CONFIG_DIR/cleanup.mode.md"
 install_file ".n0face/security.mode.md" "$CONFIG_DIR/security.mode.md"
-install_file ".n0face/agent/design.md"   "$CONFIG_DIR/agent/design.md"
-install_file ".n0face/agent/cleanup.md"  "$CONFIG_DIR/agent/cleanup.md"
-install_file ".n0face/agent/security.md" "$CONFIG_DIR/agent/security.md"
-install_file ".n0face/command/new-project.md" "$CONFIG_DIR/command/new-project.md"
-install_file ".n0face/command/import-md.md"   "$CONFIG_DIR/command/import-md.md"
-install_file "TUTORIAL.md" "$CONFIG_DIR/TUTORIAL.md"
 
 # ─── Summary ──────────────────────────────────────────────────────
 
@@ -209,6 +246,7 @@ echo ""
 echo "  If n0face is not found, restart your shell or run:"
 echo "    exec $SHELL"
 echo ""
-echo "  Press Tab to cycle modes: plan → build → design → cleanup → security"
-echo "  Commands: /new-project, /import-md"
+echo "  Press Tab to cycle modes: plan → build → design → frontend → backend"
+echo "  More modes: database → cleanup → security → testing → devops → documentation"
+echo "  Run /new-project to start, or /import-md for an existing project"
 echo ""

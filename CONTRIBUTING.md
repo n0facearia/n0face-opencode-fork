@@ -1,299 +1,234 @@
-# Contributing to OpenCode
+# Contributing to n0face-opencode-fork
 
-We want to make it easy for you to contribute to OpenCode. Here are the most common type of changes that get merged:
+This guide covers how to extend the fork's mode system — adding new agent modes, importing skills, writing effective prompts, and testing changes.
 
-- Bug fixes
-- Additional LSPs / Formatters
-- Improvements to LLM performance
-- Support for new providers
-- Fixes for environment-specific quirks
-- Missing standard behavior
-- Documentation improvements
+---
 
-However, any UI or core product feature must go through a design review with the core team before implementation.
+## How to Add a New Mode
 
-If you are unsure if a PR would be accepted, feel free to ask a maintainer or look for issues with any of the following labels:
+Each mode is a single Markdown file under `.n0face/agent/<name>.md`. It must contain all required sections in order. Use an existing mode file as a template.
 
-- [`help wanted`](https://github.com/anomalyco/opencode/issues?q=is%3Aissue%20state%3Aopen%20label%3Ahelp-wanted)
-- [`good first issue`](https://github.com/anomalyco/opencode/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22)
-- [`bug`](https://github.com/anomalyco/opencode/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
-- [`perf`](https://github.com/anomalyco/opencode/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22perf%22)
+### Step 1: Create the agent file
 
-> [!NOTE]
-> PRs that ignore these guardrails will likely be closed.
+Create `.n0face/agent/<name>.md` with the frontmatter:
 
-Want to take on an issue? Leave a comment and a maintainer may assign it to you unless it is something we are already working on.
-
-## Adding New Providers
-
-New providers shouldn't require many if ANY code changes, but if you want to add support for a new provider first make a PR to:
-https://github.com/anomalyco/models.dev
-
-## Developing OpenCode
-
-- Requirements: Bun 1.3+
-- Install dependencies and start the dev server from the repo root:
-
-  ```bash
-  bun install
-  bun dev
-  ```
-
-### Running against a different directory
-
-By default, `bun dev` runs OpenCode in the `packages/opencode` directory. To run it against a different directory or repository:
-
-```bash
-bun dev <directory>
+```yaml
+---
+mode: primary
+hidden: false
+color: "#HEXCODE"
+description: One-sentence description of the mode's responsibility
+---
 ```
 
-To run OpenCode in the root of the opencode repo itself:
+### Step 2: Define the role (section 1)
 
-```bash
-bun dev .
+One paragraph that states exactly what the mode does — and what it does NOT do. Be explicit about boundaries.
+
+### Step 3: Define startup behavior (section 2)
+
+List the files the mode reads at startup, in order:
+
+1. Read `.n0face/project.md` for project state
+2. Read `.n0face/state/<mode>.json` for previous session state
+3. Do NOT proceed if required state files are missing
+4. Never re-ask questions already answered in `project.md`
+
+### Step 4: Define pre-work questions (section 3)
+
+Ask questions that block further progress until answered. Format as numbered questions, one at a time. Adapt follow-ups based on previous answers. Do not proceed until each question has a clear answer.
+
+### Step 5: Define outputs (section 4+)
+
+Specify every file the mode creates or modifies. Each output must include:
+- File name and location
+- Contents/structure requirements
+- Any format rules (e.g., ADR format, ASCII diagrams, canonical headers)
+
+### Step 6: Define handoff logic
+
+The mode must read `project.md` — check `Modes completed`, `Modes remaining`, `Known issues` — and output a conditional handoff suggestion. The last line of the handoff must be:
+
+```
+## HANDOFF — suggest <next_mode>
 ```
 
-### Building a "localcode"
+Documentation mode is the exception: it is terminal and does not hand off.
 
-To compile a standalone executable:
+### Step 7: Add state file
 
-```bash
-./packages/opencode/script/build.ts --single
+Create `.n0face/state/<mode>.json` with an initial JSON object:
+
+```json
+{
+  "touched_files": [],
+  "decisions": [],
+  "last_session": null
+}
 ```
 
-Then run it with:
+### Step 8: Add changelog rules
 
-```bash
-./packages/opencode/dist/opencode-<platform>/bin/opencode
+Include the canonical changelog format in the file:
+
+```
+## [YYYY-MM-DD HH:MM] — <mode> mode
+- <action performed>
+- <decision made and rationale>
+- Files touched: <comma-separated>
+- Suggested next: <mode> — <reason>
 ```
 
-Replace `<platform>` with your platform (e.g., `darwin-arm64`, `linux-x64`).
+### Step 9: Add learning layer support
 
-- Core pieces:
-  - `packages/opencode`: OpenCode core business logic & server.
-  - `packages/opencode/src/cli/cmd/tui/`: The TUI code, written in SolidJS with [opentui](https://github.com/sst/opentui)
-  - `packages/app`: The shared web UI components, written in SolidJS
-  - `packages/desktop`: The native desktop app, built with Electron (wraps `packages/app`)
-  - `packages/plugin`: Source for `@opencode-ai/plugin`
+At the end of the file, add a conditional learning layer section:
 
-### Understanding bun dev vs opencode
-
-During development, `bun dev` is the local equivalent of the built `opencode` command. Both run the same CLI interface:
-
-```bash
-# Development (from project root)
-bun dev --help           # Show all available commands
-bun dev serve            # Start headless API server
-bun dev web              # Start server + open web interface
-bun dev <directory>      # Start TUI in specific directory
-
-# Production
-opencode --help          # Show all available commands
-opencode serve           # Start headless API server
-opencode web             # Start server + open web interface
-opencode <directory>     # Start TUI in specific directory
+```
+## LEARNING LAYER
+Check project.md for `learning_layer: enabled`. If disabled, skip.
+If enabled, append to .n0face/learn/<mode>.md with format:
+## Session: <timestamp>
+### Action: <what was done>
+**Why:** <rationale>
+**What you should know:** <key context>
+**If you want to go deeper:** <suggestions>
+---
+Self-prompt if 2+ minutes of response cycles have elapsed.
+Do NOT create the learn/ directory — the mode only writes to it.
 ```
 
-### Running the API Server
+### Step 10: Test it
 
-To start the OpenCode headless API server:
+Follow the testing requirements below. Test on a real project, not a synthetic example.
 
-```bash
-bun dev serve
+---
+
+## How to Add a New Skill
+
+Skills are reusable reference files imported from upstream repos. They live under `.n0face/skills/<name>/`.
+
+### Adding a skill
+
+1. Clone or copy the skill content to `.n0face/skills/<name>/`
+2. Create or update `.n0face/skills/SOURCES.md` with the origin URL and checksum
+3. Reference the skill in a mode file using a relative path:
+
+```
+Read `.n0face/skills/<name>/SKILL.md` for reference patterns.
 ```
 
-This starts the headless server on port 4096 by default. You can specify a different port:
+Do not embed skill content directly in mode files. Mode files reference skills by path; skills are loaded separately.
 
-```bash
-bun dev serve --port 8080
+### Skill directory structure
+
+```
+.n0face/skills/
+├── SOURCES.md             # Registry: origin URL + checksum per skill
+├── <skill-name>/
+│   ├── SKILL.md           # Entry point (loaded first)
+│   └── ...                # Supporting files (templates, examples)
 ```
 
-### Running the Web App
+---
 
-To test UI changes during development:
+## Prompt Writing Rules
 
-1. **First, start the OpenCode server** (see [Running the API Server](#running-the-api-server) section above)
-2. **Then run the web app:**
+These rules apply to all `.n0face/agent/*.md` mode files. They ensure every mode is LLM-agnostic, testable, and maintainable.
 
-```bash
-bun run --cwd packages/app dev
+### 1. LLM-agnostic
+
+No model names (`Claude`, `GPT`, `Gemini`, `Llama`). No vendor-specific framing (`Anthropic`, `OpenAI`). No model-specific syntax (XML tags, chat templates, role markers like `<system>`/`<user>`/`<assistant>`). The same file must produce equivalent behavior on any supported LLM.
+
+### 2. Single responsibility
+
+One mode, one concern. If a mode would do two unrelated things, split it. Manager does not code. Documentation does not design. Cleanup does not deploy.
+
+### 3. Read state first
+
+Every mode must read `.n0face/project.md` and `.n0face/state/<mode>.json` before doing anything else. Block startup if required files are missing.
+
+### 4. Block on ambiguity
+
+Pre-work questions must block further progress until answered. Do not continue if a question returns a vague answer — ask a follow-up. Do not guess missing values.
+
+### 5. Never re-ask
+
+If a decision is recorded in `project.md`, use it. Only ask about what is unresolved. Check state JSON for previously answered questions.
+
+### 6. Append-only logging
+
+Changelog entries are never edited, only appended. Use the canonical format:
+
+```
+## [YYYY-MM-DD HH:MM] — <mode> mode
 ```
 
-This starts a local dev server at http://localhost:5173 (or similar port shown in output). Most UI changes can be tested here, but the server must be running for full functionality.
+### 7. Canonical section formats
 
-### Running the Desktop App
+The following sections must appear verbatim in every mode file:
+- **Changelog entry format** — fixed timestamp + action + decision + files + suggestion
+- **Handoff format** — reads project.md, outputs `## HANDOFF — suggest <mode>`
+- **Learning layer format** — conditional on `project.md`, uses `## Session:` / `### Action:` structure
 
-The desktop app is an Electron application that wraps the web UI.
+### 8. Developer approval
 
-To run the desktop app in development:
+No auto-apply behavior. Every code change, schema migration, deployment config, or destructive operation requires explicit developer confirmation before execution.
 
-```bash
-bun run --cwd packages/desktop dev
-```
+### 9. Handoff via project.md
 
-To create a production build and package the app:
+Every mode (except documentation) must read `project.md` — check `Modes completed`, `Modes remaining`, `Known issues` — and output a conditional handoff suggestion based on what remains.
 
-```bash
-bun run --cwd packages/desktop build
-bun run --cwd packages/desktop package
-```
+### 10. State persistence
 
-> [!NOTE]
-> If you make changes to the API or SDK (e.g. `packages/opencode/src/server/server.ts`), run `./script/generate.ts` to regenerate the SDK and related files.
+Every mode must write its state JSON at the end of the session with `touched_files`, `decisions`, and `last_session` fields. The state file is the record of what the mode did, independent of the chat transcript.
 
-Please try to follow the [style guide](./AGENTS.md)
+---
 
-### Setting up a Debugger
+## Testing Requirements
 
-Bun debugging is currently rough around the edges. We hope this guide helps you get set up and avoid some pain points.
+### Before submitting a new mode
 
-The most reliable way to debug OpenCode is to run it manually in a terminal via `bun run --inspect=<url> dev ...` and attach
-your debugger via that URL. Other methods can result in breakpoints being mapped incorrectly, at least in VSCode (YMMV).
+1. **Test on a real project.** Create or use an existing project that exercises the mode's full workflow — pre-work questions, outputs, handoff, state persistence, and rerun behavior.
+2. **Document the test.** Create `docs/<mode>-test-report.md` with:
+   - Project used (name, size in files, tech stack)
+   - What the mode was asked to do
+   - What it produced (list of output files)
+   - Any failures encountered and how they were fixed
+   - Whether the handoff correctly identified the next mode
+   - Whether rerunning the mode correctly skipped already-answered questions
+3. **Test rerun behavior.** Run the mode twice on the same project. The second run must not re-ask questions answered in the first run (verified by state JSON).
+4. **Verify LLM portability.** Search the mode file for any model-specific syntax or references. The file must not contain `Claude`, `GPT`, `Gemini`, `Llama`, `Anthropic`, `OpenAI`, `chatgpt`, or any XML tag patterns (`<context>`, `<instruction>`, etc.).
+5. **Verify changelog format.** Run the mode and confirm its changelog entry follows the canonical format (timestamp + action + decision + files + suggestion).
+6. **Verify handoff works.** Run the mode and confirm the handoff correctly reads `project.md` and suggests the appropriate next mode based on remaining modes.
 
-Caveats:
+### Before submitting changes to an existing mode
 
-- If you want to run the OpenCode TUI and have breakpoints triggered in the server code, you might need to run `bun dev spawn` instead of
-  the usual `bun dev`. This is because `bun dev` runs the server in a worker thread and breakpoints might not work there.
-- If `spawn` does not work for you, you can debug the server separately:
-  - Debug server: `bun run --inspect=ws://localhost:6499/ --cwd packages/opencode ./src/index.ts serve --port 4096`,
-    then attach TUI with `opencode attach http://localhost:4096`
-  - Debug TUI: `bun run --inspect=ws://localhost:6499/ --cwd packages/opencode --conditions=browser ./src/index.ts`
+1. Run the mode on the same demo project used in the original test
+2. Compare outputs — confirm intended behavior changed and unintended behavior did not
+3. If the change adds new pre-work questions, verify they correctly check state JSON before asking
 
-Other tips and tricks:
+---
 
-- You might want to use `--inspect-wait` or `--inspect-brk` instead of `--inspect`, depending on your workflow
-- Specifying `--inspect=ws://localhost:6499/` on every invocation can be tiresome, you may want to `export BUN_OPTIONS=--inspect=ws://localhost:6499/` instead
+## Documentation Standards
 
-#### VSCode Setup
+Every mode file must contain all of the following sections in order:
 
-If you use VSCode, you can use our example configurations [.vscode/settings.example.json](.vscode/settings.example.json) and [.vscode/launch.example.json](.vscode/launch.example.json).
+1. **ROLE** — one-paragraph definition of the mode's responsibility
+2. **STARTUP BEHAVIOR** — ordered list of files to read, conditions to check
+3. **PRE-WORK QUESTIONS** — numbered blocking questions (if applicable)
+4. **WORKFLOW** — step-by-step process for the mode's core task
+5. **OUTPUTS** — specification of every file the mode creates
+6. **CHANGELOG** — canonical entry format to use
+7. **STATE** — what to read/write in `state/<mode>.json`
+8. **LEARNING LAYER** — conditional section (must check `project.md` setting)
+9. **HANDOFF** — read `project.md` and suggest next mode
+10. **NEVER RE-ASK** — guardrail against repeating answered questions
+11. **BOUNDARIES** — explicit list of what the mode does NOT do
 
-Some debug methods that can be problematic:
+Sections may be numbered (e.g., `## 1. ROLE`) or unnumbered, but the order must be consistent.
 
-- Debug configurations with `"request": "launch"` can have breakpoints incorrectly mapped and thus unusable
-- The same problem arises when running OpenCode in the VSCode `JavaScript Debug Terminal`
+---
 
-With that said, you may want to try these methods, as they might work for you.
+## Developing the Binary
 
-## Pull Request Expectations
-
-### Issue First Policy
-
-**All PRs must reference an existing issue.** Before opening a PR, open an issue describing the bug or feature. This helps maintainers triage and prevents duplicate work. PRs without a linked issue may be closed without review.
-
-- Use `Fixes #123` or `Closes #123` in your PR description to link the issue
-- For small fixes, a brief issue is fine - just enough context for maintainers to understand the problem
-
-### General Requirements
-
-- Keep pull requests small and focused
-- Explain the issue and why your change fixes it
-- Before adding new functionality, ensure it doesn't already exist elsewhere in the codebase
-
-### UI Changes
-
-If your PR includes UI changes, please include screenshots or videos showing the before and after. This helps maintainers review faster and gives you quicker feedback.
-
-### Logic Changes
-
-For non-UI changes (bug fixes, new features, refactors), explain **how you verified it works**:
-
-- What did you test?
-- How can a reviewer reproduce/confirm the fix?
-
-### No AI-Generated Walls of Text
-
-Long, AI-generated PR descriptions and issues are not acceptable and may be ignored. Respect the maintainers' time:
-
-- Write short, focused descriptions
-- Explain what changed and why in your own words
-- If you can't explain it briefly, your PR might be too large
-
-### PR Titles
-
-PR titles should follow conventional commit standards:
-
-- `feat:` new feature or functionality
-- `fix:` bug fix
-- `docs:` documentation or README changes
-- `chore:` maintenance tasks, dependency updates, etc.
-- `refactor:` code refactoring without changing behavior
-- `test:` adding or updating tests
-
-You can optionally include a scope to indicate which package is affected:
-
-- `feat(app):` feature in the app package
-- `fix(desktop):` bug fix in the desktop package
-- `chore(opencode):` maintenance in the opencode package
-
-Examples:
-
-- `docs: update contributing guidelines`
-- `fix: resolve crash on startup`
-- `feat: add dark mode support`
-- `feat(app): add dark mode support`
-- `fix(desktop): resolve crash on startup`
-- `chore: bump dependency versions`
-
-### Style Preferences
-
-These are not strictly enforced, they are just general guidelines:
-
-- **Functions:** Keep logic within a single function unless breaking it out adds clear reuse or composition benefits.
-- **Destructuring:** Do not do unnecessary destructuring of variables.
-- **Control flow:** Avoid `else` statements.
-- **Error handling:** Prefer `.catch(...)` instead of `try`/`catch` when possible.
-- **Types:** Reach for precise types and avoid `any`.
-- **Variables:** Stick to immutable patterns and avoid `let`.
-- **Naming:** Choose concise single-word identifiers when they remain descriptive.
-- **Runtime APIs:** Use Bun helpers such as `Bun.file()` when they fit the use case.
-
-## Feature Requests
-
-For net-new functionality, start with a design conversation. Open an issue describing the problem, your proposed approach (optional), and why it belongs in OpenCode. The core team will help decide whether it should move forward; please wait for that approval instead of opening a feature PR directly.
-
-## Trust & Vouch System
-
-This project uses [vouch](https://github.com/mitchellh/vouch) to manage contributor trust. The vouch list is maintained in [`.github/VOUCHED.td`](.github/VOUCHED.td).
-
-### How it works
-
-- **Vouched users** are explicitly trusted contributors.
-- **Denounced users** are explicitly blocked. Issues and pull requests from denounced users are automatically closed. If you have been denounced, you can request to be unvouched by reaching out to a maintainer on [Discord](https://opencode.ai/discord)
-- **Everyone else** can participate normally — you don't need to be vouched to open issues or PRs.
-
-### For maintainers
-
-Collaborators with write access can manage the vouch list by commenting on any issue:
-
-- `vouch` — vouch for the issue author
-- `vouch @username` — vouch for a specific user
-- `denounce` — denounce the issue author
-- `denounce @username` — denounce a specific user
-- `denounce @username <reason>` — denounce with a reason
-- `unvouch` / `unvouch @username` — remove someone from the list
-
-Changes are committed automatically to `.github/VOUCHED.td`.
-
-### Denouncement policy
-
-Denouncement is reserved for users who repeatedly submit low-quality AI-generated contributions, spam, or otherwise act in bad faith. It is not used for disagreements or honest mistakes.
-
-## Issue Requirements
-
-All issues **must** use one of our issue templates:
-
-- **Bug report** — for reporting bugs (requires a description)
-- **Feature request** — for suggesting enhancements (requires verification checkbox and description)
-- **Question** — for asking questions (requires the question)
-
-Blank issues are not allowed. When a new issue is opened, an automated check verifies that it follows a template and meets our contributing guidelines. If an issue doesn't meet the requirements, you'll receive a comment explaining what needs to be fixed and have **2 hours** to edit the issue. After that, it will be automatically closed.
-
-Issues may be flagged for:
-
-- Not using a template
-- Required fields left empty or filled with placeholder text
-- AI-generated walls of text
-- Missing meaningful content
-
-If you believe your issue was incorrectly flagged, let a maintainer know.
+See the upstream [OpenCode contributing guide](https://github.com/sst/opencode/blob/dev/CONTRIBUTING.md) for instructions on building, debugging, and submitting PRs to the TUI/CLI binary. This repo's binary changes (mascot, tabbed views, home screen) follow the same development workflow.
