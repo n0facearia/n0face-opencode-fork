@@ -14,7 +14,12 @@ NC='\033[0m'
 
 # ─── Uninstall mode ──────────────────────────────────────────────────
 
+UNINSTALL=0
 if [ "${0:-}" = "--uninstall" ] || [ "${1:-}" = "--uninstall" ]; then
+  UNINSTALL=1
+fi
+
+if [ "$UNINSTALL" = "1" ]; then
   echo ""
   echo "  ┌─ AM Uninstaller ────────────────────────────────────────┐"
   echo "  │                                                          │"
@@ -36,8 +41,9 @@ if [ "${0:-}" = "--uninstall" ] || [ "${1:-}" = "--uninstall" ]; then
 
   echo "  ✅ AM removed"
   echo ""
-  exit 0
 fi
+
+if [ "$UNINSTALL" = "0" ]; then
 
 echo ""
 echo "  ┌─ AM Installer ──────────────────────────────────────────┐"
@@ -250,3 +256,5 @@ echo "  Press Tab to cycle modes: plan → build → design → frontend → bac
 echo "  More modes: database → cleanup → security → testing → devops → documentation"
 echo "  Start: /new-project  |  Import existing project: /continue-project"
 echo ""
+
+fi
