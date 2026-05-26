@@ -252,9 +252,8 @@ The entire system is a **state machine driven by Markdown files**. Modes never t
                   │                            │
                   │  Then run:  am             │
                   └────────────┬───────────────┘
-User says "build my app"       │
-        │                      │
-        ▼                      ▼
+                               │
+                               ▼
 ┌─────────────────────────────────────────────────┐
 │  MANAGER reads project.md (created by setup)    │
 │                                                  │
