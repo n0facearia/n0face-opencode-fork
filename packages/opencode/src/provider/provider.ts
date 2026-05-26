@@ -28,6 +28,7 @@ import { optionalOmitUndefined } from "@opencode-ai/core/schema"
 import * as ProviderTransform from "./transform"
 import { ModelID, ProviderID } from "./schema"
 import { ModelStatus } from "./model-status"
+import { startFreebuffProxy, FREEBUFF_PROXY_PORT } from "./freebuff-proxy"
 
 const log = Log.create({ service: "provider" })
 
@@ -830,6 +831,16 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
           },
         },
       }),
+    freebuff: Effect.fnUntraced(function* (_input: Info) {
+      yield* Effect.promise(() => startFreebuffProxy())
+      return {
+        autoload: true,
+        options: {
+          baseURL: `http://127.0.0.1:${FREEBUFF_PROXY_PORT}/v1`,
+          apiKey: "freebuff-local",
+        },
+      }
+    }),
   }
 }
 
@@ -1012,6 +1023,71 @@ function cost(c: ModelsDev.Model["cost"]): Model["cost"] {
   return result
 }
 
+function createFreebuffProvider(): Info {
+  const modelID = "freebuff"
+  const providerID = ProviderID.make("freebuff")
+  const model: Model = {
+    id: ModelID.make(modelID),
+    providerID,
+    name: "Freebuff",
+    family: "freebuff",
+    api: {
+      id: modelID,
+      url: `http://127.0.0.1:${FREEBUFF_PROXY_PORT}/v1`,
+      npm: "@ai-sdk/openai-compatible",
+    },
+    status: "active",
+    headers: {},
+    options: {},
+    cost: {
+      input: 0,
+      output: 0,
+      cache: {
+        read: 0,
+        write: 0,
+      },
+    },
+    limit: {
+      context: 200000,
+      input: undefined,
+      output: 65536,
+    },
+    capabilities: {
+      temperature: false,
+      reasoning: true,
+      attachment: false,
+      toolcall: false,
+      input: {
+        text: true,
+        audio: false,
+        image: false,
+        video: false,
+        pdf: false,
+      },
+      output: {
+        text: true,
+        audio: false,
+        image: false,
+        video: false,
+        pdf: false,
+      },
+      interleaved: false,
+    },
+    release_date: "",
+    variants: {},
+  }
+  return {
+    id: providerID,
+    source: "custom",
+    name: "Freebuff",
+    env: [],
+    options: {},
+    models: {
+      [modelID]: model,
+    },
+  }
+}
+
 function fromModelsDevModel(provider: ModelsDev.Provider, model: ModelsDev.Model): Model {
   const base: Model = {
     id: ModelID.make(model.id),
@@ -1118,6 +1194,7 @@ const layer: Layer.Layer<
         const cfg = yield* config.get()
         const modelsDev = yield* modelsDevSvc.get()
         const database = mapValues(modelsDev, fromModelsDevProvider)
+        database["freebuff"] = createFreebuffProvider()
 
         const providers: Record<ProviderID, Info> = {} as Record<ProviderID, Info>
         const languages = new Map<string, LanguageModelV3>()
