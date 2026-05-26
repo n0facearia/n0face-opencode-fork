@@ -149,7 +149,7 @@ export const layer = Layer.effect(
                 },
                 edit: {
                   "*": "deny",
-                  [path.join(process.env.N0FACE === "1" ? ".n0face" : ".opencode", "plans", "*.md")]: "allow",
+                  [path.join(process.env.AM === "1" ? ".am" : ".opencode", "plans", "*.md")]: "allow",
                   [path.relative(ctx.worktree, path.join(Global.Path.data, path.join("plans", "*.md")))]: "allow",
                 },
               }),

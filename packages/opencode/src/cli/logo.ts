@@ -13,7 +13,7 @@ export const logo = {
   ],
 }
 
-const n0faceMascot = {
+const amMascot = {
   left: [
     "▄█     █▄    ",
     " ███████████  ",
@@ -37,8 +37,8 @@ export const MASCOT_VERSION = 3
 export const builtinMascot = {
   version: MASCOT_VERSION,
   shapes: {
-    idle: n0faceMascot,
-    thinking: n0faceMascot,
-    planning: n0faceMascot,
+    idle: amMascot,
+    thinking: amMascot,
+    planning: amMascot,
   },
 }

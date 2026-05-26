@@ -1,7 +1,7 @@
 # Cross-LLM Portability Report
 
 **Audit date:** 2026-05-26
-**Files audited:** `.n0face/agent/*.md` (10 files)
+**Files audited:** `.am/agent/*.md` (10 files)
 
 ---
 
@@ -49,7 +49,7 @@ The following patterns are used consistently and are provider-agnostic:
 - **Markdown headers** (`##`, `###`) for section hierarchy
 - **Backtick code blocks** for commands and templates
 - **Bullet lists** for enumerating choices and rules
-- **HTML comments** in `.n0face/changelog.md` for format reference
+- **HTML comments** in `.am/changelog.md` for format reference
 - **Plain-language instructions** with explicit do/don't rules
 
 ---

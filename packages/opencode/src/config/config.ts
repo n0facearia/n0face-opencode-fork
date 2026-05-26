@@ -321,7 +321,7 @@ export interface Interface {
 export class Service extends Context.Service<Service, Interface>()("@opencode/Config") {}
 
 function configFileNames() {
-  const base = process.env.N0FACE === "1" ? "n0face" : "opencode"
+  const base = process.env.AM === "1" ? "am" : "opencode"
   return [`${base}.jsonc`, `${base}.json`, "config.json"]
 }
 
@@ -418,7 +418,7 @@ export const layer = Layer.effect(
             .pipe(Effect.catch(() => Effect.void))
         }
       }
-      const base = process.env.N0FACE === "1" ? "n0face" : "opencode"
+      const base = process.env.AM === "1" ? "am" : "opencode"
       result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, "config.json")))
       result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, `${base}.json`)))
       result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, `${base}.jsonc`)))
@@ -566,7 +566,7 @@ export const layer = Layer.effect(
         }
 
         if (!Flag.OPENCODE_DISABLE_PROJECT_CONFIG) {
-          const configBase = process.env.N0FACE === "1" ? "n0face" : "opencode"
+          const configBase = process.env.AM === "1" ? "am" : "opencode"
           for (const file of yield* ConfigPaths.files(configBase, ctx.directory, ctx.worktree).pipe(Effect.orDie)) {
             yield* merge(file, yield* loadFile(file), "local")
           }
@@ -585,7 +585,7 @@ export const layer = Layer.effect(
         const deps: Fiber.Fiber<void, never>[] = []
 
         for (const dir of directories) {
-          const configBase = process.env.N0FACE === "1" ? "n0face" : "opencode"
+          const configBase = process.env.AM === "1" ? "am" : "opencode"
           if (dir.endsWith(`.${configBase}`) || dir === Flag.OPENCODE_CONFIG_DIR) {
             for (const file of [`${configBase}.json`, `${configBase}.jsonc`]) {
               const source = path.join(dir, file)
@@ -625,7 +625,7 @@ export const layer = Layer.effect(
           result.command = mergeDeep(result.command ?? {}, yield* Effect.promise(() => ConfigCommand.load(dir)))
           result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.load(dir)))
           result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.loadMode(dir)))
-          // Auto-discovered plugins under `.opencode/plugin(s)` (or `.n0face/plugin(s)`) are already local files, so ConfigPlugin.load
+          // Auto-discovered plugins under `.opencode/plugin(s)` (or `.am/plugin(s)`) are already local files, so ConfigPlugin.load
           // returns normalized Specs and we only need to attach origin metadata here.
           const list = yield* Effect.promise(() => ConfigPlugin.load(dir))
           yield* mergePluginOrigins(dir, list)
@@ -682,7 +682,7 @@ export const layer = Layer.effect(
 
         const managedDir = ConfigManaged.managedConfigDir()
         if (existsSync(managedDir)) {
-          const base = process.env.N0FACE === "1" ? "n0face" : "opencode"
+          const base = process.env.AM === "1" ? "am" : "opencode"
           for (const file of [`${base}.json`, `${base}.jsonc`]) {
             const source = path.join(managedDir, file)
             yield* merge(source, yield* loadFile(source), "global")

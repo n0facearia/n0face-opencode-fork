@@ -240,7 +240,7 @@ function createThemeInstaller(
     const src = Filesystem.resolveFilePath(root, file)
     const name = path.basename(src, path.extname(src))
     const source_dir = path.dirname(meta.source)
-    const configDir = process.env.N0FACE === "1" ? ".n0face" : ".opencode"
+    const configDir = process.env.AM === "1" ? ".am" : ".opencode"
     const local_dir =
       path.basename(source_dir) === configDir
         ? path.join(source_dir, "themes")
@@ -829,7 +829,7 @@ function defaultPluginOrigin(state: RuntimeState, spec: string): ConfigPlugin.Or
   return {
     spec,
     scope: "local",
-    source: state.api.state.path.config || path.join(state.directory, process.env.N0FACE === "1" ? ".n0face" : ".opencode", "tui.json"),
+    source: state.api.state.path.config || path.join(state.directory, process.env.AM === "1" ? ".am" : ".opencode", "tui.json"),
   }
 }
 

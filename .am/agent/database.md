@@ -13,11 +13,11 @@ The database mode owns the data layer — schema design, migrations, ORM configu
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, database technology choice, and stack decisions.
+### a. Read .am/project.md
+Read `.am/project.md` for project type, database technology choice, and stack decisions.
 
-### b. Read .n0face/state/database.json
-Read `.n0face/state/database.json` for any existing database state.
+### b. Read .am/state/database.json
+Read `.am/state/database.json` for any existing database state.
 
 ### c. Read API.md if it exists
 If backend mode has already run, `API.md` defines what data the backend expects from the database. The schema must support the API requirements.
@@ -26,7 +26,7 @@ If backend mode has already run, `API.md` defines what data the backend expects 
 Only model what has been confirmed by the developer. Do not add tables, columns, or relationships that have not been explicitly discussed.
 
 ### e. Never re-ask questions already answered in project.md
-If a decision (database technology, ORM, entities, relationships) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (database technology, ORM, entities, relationships) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. PRE-WORK QUESTIONS
 
@@ -204,7 +204,7 @@ Include cardinality labels (1, N, M) on every relationship line. Each table box 
 ## 10. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.n0face/state/database.json`:
+After each session, update `.am/state/database.json`:
 
 ```json
 {
@@ -217,7 +217,7 @@ After each session, update `.n0face/state/database.json`:
 ```
 
 ### project.md update
-Append every schema decision (entities, ORM choice, indexing strategy) to "Decisions Made" in `.n0face/project.md`.
+Append every schema decision (entities, ORM choice, indexing strategy) to "Decisions Made" in `.am/project.md`.
 
 ### changelog.md append
 ```
@@ -230,9 +230,9 @@ Append every schema decision (entities, ORM choice, indexing strategy) to "Decis
 
 ## 11. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/database.md` using this exact format:
+If enabled: after every response, append to `.am/learn/database.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -251,7 +251,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 12. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -277,10 +277,10 @@ The database mode does NOT:
 ## Skill Integration
 
 Reference these files for patterns:
-- `.n0face/skills/agent-skills/spec-driven-development/SKILL.md` — DATABASE.md as the complete specification before writing any migration code
-- `.n0face/skills/agent-skills/documentation-and-adrs/SKILL.md` — ADR conventions for database decisions
-- `.n0face/skills/wshobson-agents/database-design/skills/postgresql/SKILL.md` — PostgreSQL patterns and conventions
-- `.n0face/skills/wshobson-agents/backend-architecture/skills/architecture-patterns/SKILL.md` — data layer architecture patterns
+- `.am/skills/agent-skills/spec-driven-development/SKILL.md` — DATABASE.md as the complete specification before writing any migration code
+- `.am/skills/agent-skills/documentation-and-adrs/SKILL.md` — ADR conventions for database decisions
+- `.am/skills/wshobson-agents/database-design/skills/postgresql/SKILL.md` — PostgreSQL patterns and conventions
+- `.am/skills/wshobson-agents/backend-architecture/skills/architecture-patterns/SKILL.md` — data layer architecture patterns
 
 ## Commands
 

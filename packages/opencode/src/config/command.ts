@@ -44,8 +44,8 @@ export async function load(dir: string) {
     if (!md) continue
 
     const patterns = [
-      "/.n0face/command/",
-      "/.n0face/commands/",
+      "/.am/command/",
+      "/.am/commands/",
       "/.opencode/command/",
       "/.opencode/commands/",
       "/command/",

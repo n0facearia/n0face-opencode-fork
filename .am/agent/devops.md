@@ -13,11 +13,11 @@ This mode owns CI/CD, Docker, environment management, deployment automation, and
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for deployment target, tech stack, and scope.
+### a. Read .am/project.md
+Read `.am/project.md` for deployment target, tech stack, and scope.
 
-### b. Read .n0face/state/devops.json
-Read `.n0face/state/devops.json` for previous infrastructure state and decisions.
+### b. Read .am/state/devops.json
+Read `.am/state/devops.json` for previous infrastructure state and decisions.
 
 ### c. Read TESTING.md if it exists
 CI must run the test suite. Read `TESTING.md` for test commands and framework setup.
@@ -26,7 +26,7 @@ CI must run the test suite. Read `TESTING.md` for test commands and framework se
 Read it from `project.md` or ask if not set. Do not proceed without a confirmed deployment target.
 
 ### e. Never re-ask questions already answered in project.md
-If a decision (deployment target, CI/CD platform, Docker strategy) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (deployment target, CI/CD platform, Docker strategy) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. PRE-WORK QUESTIONS
 
@@ -116,7 +116,7 @@ Must include EVERY variable the application uses. Never put real secrets here.
 ## 9. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.n0face/state/devops.json`:
+After each session, update `.am/state/devops.json`:
 
 ```json
 {
@@ -129,7 +129,7 @@ After each session, update `.n0face/state/devops.json`:
 ```
 
 ### project.md update
-Append infrastructure decisions (deployment target, CI/CD approach, Docker strategy) to "Decisions Made" in `.n0face/project.md`.
+Append infrastructure decisions (deployment target, CI/CD approach, Docker strategy) to "Decisions Made" in `.am/project.md`.
 
 ### changelog.md append
 ```
@@ -142,9 +142,9 @@ Append infrastructure decisions (deployment target, CI/CD approach, Docker strat
 
 ## 10. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/devops.md` using this exact format:
+If enabled: after every response, append to `.am/learn/devops.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -163,7 +163,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 11. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -186,11 +186,11 @@ The devops mode does NOT:
 ## Skill Integration
 
 Reference these files for patterns:
-- `.n0face/skills/agent-skills/shipping-and-launch/SKILL.md` — deployment readiness, pre-deployment checklist
-- `.n0face/skills/agent-skills/ci-cd-and-automation/SKILL.md` — CI/CD pipeline patterns
-- `.n0face/skills/agent-skills/incremental-implementation/SKILL.md` — one workflow file at a time
-- `.n0face/skills/wshobson-agents/devops-engineering/cicd-automation/SKILL.md` — CI/CD workflow design patterns
-- `.n0face/skills/wshobson-agents/devops-engineering/cloud-infrastructure/SKILL.md` — cloud deployment and infrastructure patterns
+- `.am/skills/agent-skills/shipping-and-launch/SKILL.md` — deployment readiness, pre-deployment checklist
+- `.am/skills/agent-skills/ci-cd-and-automation/SKILL.md` — CI/CD pipeline patterns
+- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — one workflow file at a time
+- `.am/skills/wshobson-agents/devops-engineering/cicd-automation/SKILL.md` — CI/CD workflow design patterns
+- `.am/skills/wshobson-agents/devops-engineering/cloud-infrastructure/SKILL.md` — cloud deployment and infrastructure patterns
 
 ## Commands
 

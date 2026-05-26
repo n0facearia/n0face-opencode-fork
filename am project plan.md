@@ -1,12 +1,12 @@
-# n0face-opencode-fork — Full Project Plan
+# am-opencode-fork — Full Project Plan
 
-> **Purpose of this document:** This is the single source of truth for the n0face-opencode-fork project. It can be shared with any LLM to give it full context of the project vision, architecture, rules, and step-by-step build plan without needing prior conversation history.
+> **Purpose of this document:** This is the single source of truth for the am-opencode-fork project. It can be shared with any LLM to give it full context of the project vision, architecture, rules, and step-by-step build plan without needing prior conversation history.
 
 ---
 
 ## 1. Project Vision
 
-**n0face-opencode-fork** is a developer-grade, terminal-based AI coding assistant built on top of [OpenCode](https://github.com/sst/opencode). It is not a replacement for existing AI tools — it is a **compositor**: it brings together the best open-source skill systems, linters, analyzers, and agent patterns into a single cohesive experience, so a developer can take a project from idea to clean, production-ready code entirely within their terminal.
+**am-opencode-fork** is a developer-grade, terminal-based AI coding assistant built on top of [OpenCode](https://github.com/sst/opencode). It is not a replacement for existing AI tools — it is a **compositor**: it brings together the best open-source skill systems, linters, analyzers, and agent patterns into a single cohesive experience, so a developer can take a project from idea to clean, production-ready code entirely within their terminal.
 
 ### Core Philosophy
 
@@ -26,7 +26,7 @@ A developer who already knows how to code and wants a smarter, faster, cleaner w
 ## 2. Repository Structure
 
 ```
-.n0face/
+.am/
 ├── project.md                  # Shared project state — all modes read and write this
 ├── changelog.md                # Auto-maintained log of every agent action across sessions
 ├── learn/                      # Optional learning layer output (only exists if enabled)
@@ -72,11 +72,11 @@ A developer who already knows how to code and wants a smarter, faster, cleaner w
 
 Each mode is a "worker" with a defined role, a set of open-source skills it uses, tools it can call, and a clear handoff protocol. All modes:
 
-1. Read `.n0face/project.md` at the start of every session.
-2. Write their decisions and outputs back to `.n0face/project.md` and their own `.n0face/state/<mode>.json`.
-3. Append a summary of what they did to `.n0face/changelog.md`.
+1. Read `.am/project.md` at the start of every session.
+2. Write their decisions and outputs back to `.am/project.md` and their own `.am/state/<mode>.json`.
+3. Append a summary of what they did to `.am/changelog.md`.
 4. End every session by suggesting the next logical mode (semi-auto collaboration).
-5. If the learning layer is enabled, append to `.n0face/learn/<mode>.md` and auto-update it every 2 minutes during an active session AND after every agent response.
+5. If the learning layer is enabled, append to `.am/learn/<mode>.md` and auto-update it every 2 minutes during an active session AND after every agent response.
 
 ---
 
@@ -102,7 +102,7 @@ Each mode is a "worker" with a defined role, a set of open-source skills it uses
 14. Are there any third-party APIs or services this must integrate with?
 15. What is your definition of "done" for this project?
 16. Are there any hard constraints? (must use X library, must avoid Y, must work offline, etc.)
-17. Do you want the learning layer enabled? (generates and auto-updates `.n0face/learn/` files)
+17. Do you want the learning layer enabled? (generates and auto-updates `.am/learn/` files)
 18. What coding style rules do you want enforced? (tabs/spaces, quote style, max line length, etc.)
 19. Do you want inline code comments explaining what each part does?
 20. Any other context the agent should know before starting?
@@ -117,7 +117,7 @@ After intake, the manager writes `project.md` and proposes a **build order** —
 
 **Open-source skills used:**
 
-- [nexu-io/open-design](https://github.com/nexu-io/open-design) — 31 composable skills and 72 brand-grade design systems. The relevant `SKILL.md` and `DESIGN.md` files are pulled into `.n0face/skills/open-design/` and injected into the agent's context automatically.
+- [nexu-io/open-design](https://github.com/nexu-io/open-design) — 31 composable skills and 72 brand-grade design systems. The relevant `SKILL.md` and `DESIGN.md` files are pulled into `.am/skills/open-design/` and injected into the agent's context automatically.
 - Specifically: `web-prototype`, `saas-landing`, `dashboard`, and `component-library` skills from open-design.
 
 **What this mode asks before touching anything:**
@@ -339,7 +339,7 @@ After intake, the manager writes `project.md` and proposes a **build order** —
 
 ## 4. Shared Project State
 
-### `.n0face/project.md`
+### `.am/project.md`
 
 This file is the brain of the project. Every mode reads it at startup and writes to it when making decisions. It contains:
 
@@ -370,11 +370,11 @@ This file is the brain of the project. Every mode reads it at startup and writes
 <anything unresolved that a future mode needs to handle>
 ```
 
-### `.n0face/state/<mode>.json`
+### `.am/state/<mode>.json`
 
 Each mode's own memory. Contains mode-specific state like: which files it has touched, what it found, what it proposed, what the developer accepted/rejected.
 
-### `.n0face/changelog.md`
+### `.am/changelog.md`
 
 Auto-maintained by every mode. Append-only. Format:
 
@@ -393,7 +393,7 @@ Auto-maintained by every mode. Append-only. Format:
 
 ### When enabled (set during intake):
 
-After every agent response, and on a 2-minute timer (it checks if there has been any changes in the project since the last update) during an active session, the agent appends to `.n0face/learn/<mode>.md`. The file is structured as:
+After every agent response, and on a 2-minute timer (it checks if there has been any changes in the project since the last update) during an active session, the agent appends to `.am/learn/<mode>.md`. The file is structured as:
 
 ```markdown
 # What the [mode] mode did — and why
@@ -412,7 +412,7 @@ The file is cumulative — it grows throughout the project and becomes a learnin
 
 ### When disabled:
 
-None of the `.n0face/learn/` files are created. The modes work exactly the same but without the educational append.
+None of the `.am/learn/` files are created. The modes work exactly the same but without the educational append.
 
 ---
 
@@ -477,7 +477,7 @@ This is the sequence in which to build the fork. Each step is independently comp
 - Document what already exists and what needs to be changed
 - Map the current mode files to the new planned structure
 
-**Step 1.2 — Set up the `.n0face/` directory structure**
+**Step 1.2 — Set up the `.am/` directory structure**
 
 - Create all folders: `agent/`, `skills/`, `state/`, `learn/`
 - Create the `project.md` template
@@ -486,14 +486,14 @@ This is the sequence in which to build the fork. Each step is independently comp
 
 **Step 1.3 — Pull open-source skills**
 
-- Clone/copy the relevant SKILL.md files from open-design into `.n0face/skills/open-design/`
-- Clone/copy the relevant skill files from addyosmani/agent-skills into `.n0face/skills/agent-skills/`
-- Clone/copy the relevant agent files from wshobson/agents into `.n0face/skills/wshobson-agents/`
+- Clone/copy the relevant SKILL.md files from open-design into `.am/skills/open-design/`
+- Clone/copy the relevant skill files from addyosmani/agent-skills into `.am/skills/agent-skills/`
+- Clone/copy the relevant agent files from wshobson/agents into `.am/skills/wshobson-agents/`
 - No modification — keep them as upstream files so they can be updated
 
 **Step 1.4 — Write the Project Manager mode**
 
-- Write `.n0face/agent/manager.md` with the full 20-question intake questionnaire
+- Write `.am/agent/manager.md` with the full 20-question intake questionnaire
 - Write the logic for generating the build order
 - Write the logic for creating `project.md` from intake answers
 - Test it: start a fresh project and run the full intake
@@ -502,53 +502,53 @@ This is the sequence in which to build the fork. Each step is independently comp
 
 **Step 2.1 — Write the Backend mode**
 
-- Write `.n0face/agent/backend.md` integrating agent-skills and wshobson patterns
+- Write `.am/agent/backend.md` integrating agent-skills and wshobson patterns
 - Test: create a simple REST API from scratch using only this mode
 
 **Step 2.2 — Write the Design mode**
 
-- Write `.n0face/agent/design.md` integrating open-design skills
+- Write `.am/agent/design.md` integrating open-design skills
 - Test: generate a design system for a sample SaaS project
 
 **Step 2.3 — Write the Frontend mode**
 
-- Write `.n0face/agent/frontend.md`
+- Write `.am/agent/frontend.md`
 - Test: implement a design-system-based component using only this mode
 
 **Step 2.4 — Write the Database mode**
 
-- Write `.n0face/agent/database.md`
+- Write `.am/agent/database.md`
 - Test: design a schema for a simple app with users and posts
 
 ### Phase 3 — Quality Modes 
 
 **Step 3.1 — Write the Cleanup mode + integrate oxlint and knip**
 
-- Write `.n0face/agent/cleanup.md`
+- Write `.am/agent/cleanup.md`
 - Write the shell-call + JSON-parse logic for oxlint and knip
 - Test: run on an intentionally messy codebase
 
 **Step 3.2 — Write the Security mode + integrate semgrep and npm audit**
 
-- Write `.n0face/agent/security.md`
+- Write `.am/agent/security.md`
 - Write the shell-call + JSON-parse logic for semgrep and npm audit
 - Test: run on a codebase with known vulnerabilities
 
 **Step 3.3 — Write the Testing mode**
 
-- Write `.n0face/agent/testing.md`
+- Write `.am/agent/testing.md`
 - Test: write tests for a sample backend route file
 
 ### Phase 4 — Infrastructure Modes
 
 **Step 4.1 — Write the DevOps mode**
 
-- Write `.n0face/agent/devops.md`
+- Write `.am/agent/devops.md`
 - Test: generate a complete GitHub Actions CI/CD setup for a Next.js + Hono project
 
 **Step 4.2 — Write the Documentation mode**
 
-- Write `.n0face/agent/documentation.md`
+- Write `.am/agent/documentation.md`
 - Test: generate a complete README from scratch using project state
 
 ### Phase 5 — Cross-Mode Systems
@@ -575,7 +575,7 @@ This is the sequence in which to build the fork. Each step is independently comp
 - Add learning-layer append logic to every mode
 - Implement the 2-minute auto-update timer
 - Implement the post-response trigger
-- Test: enable learning, run backend mode, verify `.n0face/learn/backend.md` updates in real-time
+- Test: enable learning, run backend mode, verify `.am/learn/backend.md` updates in real-time
 
 ### Phase 6 — Polish and Integration Testing
 
@@ -606,10 +606,10 @@ This is the sequence in which to build the fork. Each step is independently comp
 5. **Every decision must be written to `project.md` and `changelog.md`.**
 6. **If you are unsure about anything, ask.** A precise question is better than a wrong assumption.
 7. **Suggest the next mode at the end of every session.** Explain why.
-8. **If the learning layer is enabled, append to the correct `.n0face/learn/<mode>.md` file.**
+8. **If the learning layer is enabled, append to the correct `.am/learn/<mode>.md` file.**
 9. **Never lock in a specific LLM. Never use model-specific syntax in skill files.**
 10. **The developer is the final decision-maker. You are a very good specialist contractor, not the project owner.**
 
 ---
 
-_Document version: 1.0 — Created as the foundational planning document for n0face-opencode-fork._
+_Document version: 1.0 — Created as the foundational planning document for am-opencode-fork._

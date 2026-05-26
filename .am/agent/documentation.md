@@ -13,14 +13,14 @@ The final mode. Synthesizes all prior outputs into polished docs. This mode does
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, tech stack, scope, and architecture decisions.
+### a. Read .am/project.md
+Read `.am/project.md` for project type, tech stack, scope, and architecture decisions.
 
-### b. Read .n0face/changelog.md
-Read `.n0face/changelog.md` for the full session history and what each mode produced.
+### b. Read .am/changelog.md
+Read `.am/changelog.md` for the full session history and what each mode produced.
 
-### c. Read .n0face/state/documentation.json
-Read `.n0face/state/documentation.json` for current documentation state and pending items.
+### c. Read .am/state/documentation.json
+Read `.am/state/documentation.json` for current documentation state and pending items.
 
 ### d. Read every mode-produced doc that exists
 Read all of the following that exist:
@@ -37,7 +37,7 @@ Read all of the following that exist:
 Do not write a single line of README.md, ARCHITECTURE.md, or CONTRIBUTING.md until all of the above have been read. Synthesize from what exists — do not invent information.
 
 ### f. Never re-ask questions already answered in project.md
-If a decision (tech stack, architecture, deployment strategy) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (tech stack, architecture, deployment strategy) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. README.md REQUIREMENTS
 
@@ -110,9 +110,9 @@ After writing README.md and ARCHITECTURE.md:
 ## 6. CONTRIBUTING.md
 
 Must explain:
-- How to add a new mode (create new `.n0face/agent/<name>.md` with required sections, add handoff chain)
-- How to add a new skill (create `.n0face/skills/<source>/<name>/SKILL.md`, reference in mode files)
-- Prompt-writing rules (reference architecture plan from `.n0face/project.md` section 6 if it exists)
+- How to add a new mode (create new `.am/agent/<name>.md` with required sections, add handoff chain)
+- How to add a new skill (create `.am/skills/<source>/<name>/SKILL.md`, reference in mode files)
+- Prompt-writing rules (reference architecture plan from `.am/project.md` section 6 if it exists)
 - Testing requirements for new modes (each mode must have testable commands)
 - Documentation standards (follow the structure defined in this documentation mode)
 
@@ -124,9 +124,9 @@ Do not end with a handoff. End every session with:
 
 ## 8. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/documentation.md` using this exact format:
+If enabled: after every response, append to `.am/learn/documentation.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -146,7 +146,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 ## 9. STATE, changelog.md
 
 ### State update
-After each session, update `.n0face/state/documentation.json`:
+After each session, update `.am/state/documentation.json`:
 
 ```json
 {
@@ -161,7 +161,7 @@ After each session, update `.n0face/state/documentation.json`:
 ```
 
 ### project.md update
-Append documentation completion status to "Decisions Made" in `.n0face/project.md`.
+Append documentation completion status to "Decisions Made" in `.am/project.md`.
 
 ### changelog.md append
 ```
@@ -185,9 +185,9 @@ The documentation mode does NOT:
 ## Skill Integration
 
 Reference these files for patterns:
-- `.n0face/skills/agent-skills/documentation/SKILL.md` — documentation structure, README templates, ADR format
-- `.n0face/skills/agent-skills/code-review-and-quality/SKILL.md` — documentation quality conventions
-- `.n0face/skills/agent-skills/incremental-implementation/SKILL.md` — one document at a time, audit before write
+- `.am/skills/agent-skills/documentation/SKILL.md` — documentation structure, README templates, ADR format
+- `.am/skills/agent-skills/code-review-and-quality/SKILL.md` — documentation quality conventions
+- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — one document at a time, audit before write
 
 ## Commands
 

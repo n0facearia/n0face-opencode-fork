@@ -2,9 +2,9 @@
 set -euo pipefail
 
 REPO="n0facearia/n0face-opencode-fork"
-APP="n0face"
-BIN_DIR="$HOME/.n0face/bin"
-BUILD_DIR="${N0FACE_BUILD_DIR:-$HOME/.n0face/build}"
+APP="am"
+BIN_DIR="$HOME/.am/bin"
+BUILD_DIR="${AM_BUILD_DIR:-$HOME/.am/build}"
 
 MUTED='\033[0;2m'
 GREEN='\033[0;32m'
@@ -12,10 +12,10 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo ""
-echo "  ┌─ n0face Rebuild ──────────────────────────────────────┐"
+echo "  ┌─ AM Rebuild ──────────────────────────────────────────┐"
 echo "  │                                                          │"
 echo "  │  Clones (or pulls) the latest source and builds          │"
-echo "  │  the n0face binary from source.                          │"
+echo "  │  the AM binary from source.                              │"
 echo "  │                                                          │"
 echo "  │  Requires: git, bun                                      │"
 echo "  └──────────────────────────────────────────────────────────┘"
@@ -49,7 +49,7 @@ bun install --cwd "$BUILD_DIR" --ignore-scripts
 echo -e "${MUTED}Building binary (this may take a few minutes)...${NC}"
 bun run --cwd "$BUILD_DIR/packages/opencode" build --single --skip-install
 
-echo -e "${MUTED}Installing n0face binary...${NC}"
+echo -e "${MUTED}Installing AM binary...${NC}"
 mkdir -p "$BIN_DIR" "$HOME/.local/bin"
 
 DIST_DIR="$BUILD_DIR/packages/opencode/dist"
@@ -64,8 +64,8 @@ cp "$BUILT" "$BIN_DIR/$APP"
 chmod +x "$BIN_DIR/$APP"
 cp "$BIN_DIR/$APP" "$HOME/.local/bin/$APP"
 
-echo -e "  ${GREEN}✓${NC} n0face rebuilt from source"
+echo -e "  ${GREEN}✓${NC} AM rebuilt from source"
 echo "  Binary: $BIN_DIR/$APP"
 echo ""
-echo "  Run: n0face"
+echo "  Run: am"
 echo ""

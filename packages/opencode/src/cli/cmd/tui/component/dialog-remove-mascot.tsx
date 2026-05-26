@@ -54,7 +54,7 @@ export function DialogRemoveMascot() {
   const options = [
     {
       title: "N0face",
-      value: "n0face",
+      value: "am",
       description: "(default)",
       disabled: true,
       onSelect() {},

@@ -13,7 +13,7 @@ Auto-detects project metadata from:
 Creates only missing files:
 - `PROJECT_SUMMARY.md` (if not exists)
 - `MODE_CONTEXT.md` (if not exists)
-- `.n0face/` mode files (if not exists)
-- `.n0face/agent/` agent configs (if not exists)
+- `.am/` mode files (if not exists)
+- `.am/agent/` agent configs (if not exists)
 
 Never overwrites existing files.

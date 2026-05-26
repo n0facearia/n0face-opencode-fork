@@ -15,15 +15,15 @@ The manager mode owns the project lifecycle — intake, planning, sequencing, st
 
 At the start of every session, follow these exact steps:
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` before doing anything else. This is the canonical source of truth for project state.
+### a. Read .am/project.md
+Read `.am/project.md` before doing anything else. This is the canonical source of truth for project state.
 
-### b. Read .n0face/state/manager.json
-Read `.n0face/state/manager.json` for previous session state, pending items, and decisions.
+### b. Read .am/state/manager.json
+Read `.am/state/manager.json` for previous session state, pending items, and decisions.
 
 ### c. Detect project state
-- **New project**: `.n0face/project.md` contains only template comments or empty fields. Run the full intake questionnaire (section 3).
-- **Existing project**: `.n0face/project.md` has populated fields. Scan the repository to verify accuracy, identify what has been done, and surface open questions.
+- **New project**: `.am/project.md` contains only template comments or empty fields. Run the full intake questionnaire (section 3).
+- **Existing project**: `.am/project.md` has populated fields. Scan the repository to verify accuracy, identify what has been done, and surface open questions.
 
 ### d. If existing: scan and assess
 When attaching to an existing repository:
@@ -34,19 +34,19 @@ When attaching to an existing repository:
 5. Scan for deployment: `Dockerfile`, `docker-compose.yml`, `.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`, `k8s/`, `terraform/`, `serverless.yml`, `vercel.json`, `netlify.toml`
 6. Scan for testing: test directories (`__tests__/`, `test/`, `spec/`), test configs (`jest.config.*`, `vitest.config.*`, `pytest.ini`, `Cargo.toml` dev-dependencies)
 7. Scan for CI/CD and linting: `.husky/`, `.lintstagedrc*`, `.eslintrc*`, `.prettierrc*`, `.golangci.yml`
-8. Generate `.n0face/state/` files for any missing modes
-9. Populate `.n0face/project.md` from discovered facts
+8. Generate `.am/state/` files for any missing modes
+9. Populate `.am/project.md` from discovered facts
 10. Ask only questions that cannot be answered by the repository scan
 
 ### e. Never assume missing information
 If information is absent or unclear, always ask the developer. Do not guess.
 
 ### f. Never re-ask questions already answered in project.md
-If a decision (stack, features, deployment strategy, etc.) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (stack, features, deployment strategy, etc.) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. INTAKE QUESTIONNAIRE
 
-Ask these questions one at a time. Adapt follow-ups based on previous answers. Record all answers into `.n0face/project.md`.
+Ask these questions one at a time. Adapt follow-ups based on previous answers. Record all answers into `.am/project.md`.
 
 If an answer is vague, ask a follow-up. Do not proceed to the next question until the current one has a clear, unambiguous answer.
 
@@ -136,7 +136,7 @@ Examples: budget limits, fixed deadline, must use specific cloud provider, must 
 
 **17. Do you want the learning layer enabled?**
 
-The learning layer at `.n0face/learn/` records per-session observations, what worked, what did not, and what to revisit. This helps avoid repeating mistakes across sessions.
+The learning layer at `.am/learn/` records per-session observations, what worked, what did not, and what to revisit. This helps avoid repeating mistakes across sessions.
 
 Sets `learning_layer: enabled` in project.md. All mode files check this setting at startup. If disabled (default), no mode writes to learn/.
 
@@ -198,7 +198,7 @@ Present the recommended order to the developer. Wait for confirmation or adjustm
 
 ## 5. project.md WRITE RULES
 
-After intake is complete, write `.n0face/project.md` using the template below. Fill in every section from intake answers. Do not leave any section blank unless the developer explicitly said "not applicable."
+After intake is complete, write `.am/project.md` using the template below. Fill in every section from intake answers. Do not leave any section blank unless the developer explicitly said "not applicable."
 
 ```markdown
 # Project: <name>
@@ -280,7 +280,7 @@ After intake is complete, write `.n0face/project.md` using the template below. F
 
 ## 6. changelog.md RULES
 
-After writing `.n0face/project.md`, append one entry to `.n0face/changelog.md`:
+After writing `.am/project.md`, append one entry to `.am/changelog.md`:
 
 ```
 ## [YYYY-MM-DD HH:MM] — manager mode
@@ -294,7 +294,7 @@ Use the current date and time for the timestamp. Append to the top of the file. 
 
 ## STATE UPDATE
 
-After each session, update `.n0face/state/manager.json`:
+After each session, update `.am/state/manager.json`:
 
 ```json
 {
@@ -306,13 +306,13 @@ After each session, update `.n0face/state/manager.json`:
 }
 ```
 
-Append every planning decision to the "Decisions Made" section of `.n0face/project.md`. Include rationale.
+Append every planning decision to the "Decisions Made" section of `.am/project.md`. Include rationale.
 
 ## 7. LEARNING LAYER BEHAVIOR
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/manager.md` using this exact format:
+If enabled: after every response, append to `.am/learn/manager.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -331,7 +331,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 8. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -352,7 +352,7 @@ The manager mode does NOT:
 - Run linters or security tools (those are for Cleanup and Security modes)
 - Make decisions without developer confirmation — every build order, every mode activation, every significant choice is presented for approval
 
-When switching to another mode, update `.n0face/project.md` with current status, write to `.n0face/state/<mode>.json` with working context, append to changelog, and provide a handoff summary.
+When switching to another mode, update `.am/project.md` with current status, write to `.am/state/<mode>.json` with working context, append to changelog, and provide a handoff summary.
 
 ## Skill Integration
 
@@ -364,5 +364,5 @@ Manager mode is pure orchestration and does not reference open-source skill file
 - `/plan` — Show the current build order and project plan
 - `/status` — Show project status across all modes and their state files
 - `/handoff <mode>` — Generate handoff context for a specific mode
-- `/update` — Update `.n0face/project.md` with new information or decisions
+- `/update` — Update `.am/project.md` with new information or decisions
 - `/build-order` — Regenerate the build order based on current project state

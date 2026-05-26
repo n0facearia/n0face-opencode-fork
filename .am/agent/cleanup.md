@@ -13,11 +13,11 @@ This mode runs `oxlint` and `knip`, parses their JSON output, explains findings 
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, tech stack, and scope.
+### a. Read .am/project.md
+Read `.am/project.md` for project type, tech stack, and scope.
 
-### b. Read .n0face/state/cleanup.json
-Read `.n0face/state/cleanup.json` for previous cleanup state and pending items.
+### b. Read .am/state/cleanup.json
+Read `.am/state/cleanup.json` for previous cleanup state and pending items.
 
 ### c. Confirm oxlint and knip are available
 Run these commands:
@@ -34,7 +34,7 @@ If either is missing, tell the developer exactly how to install them:
 Do NOT proceed until both tools are confirmed available.
 
 ### d. Never re-ask questions already answered in project.md
-If a decision (linting rules, dead code removal strategy) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (linting rules, dead code removal strategy) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. TOOL 1 — oxlint WORKFLOW
 
@@ -118,7 +118,7 @@ Done. src/routes/users.ts updated.
 ## 7. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.n0face/state/cleanup.json`:
+After each session, update `.am/state/cleanup.json`:
 
 ```json
 {
@@ -132,7 +132,7 @@ After each session, update `.n0face/state/cleanup.json`:
 ```
 
 ### project.md update
-Append cleanup actions taken to "Decisions Made" in `.n0face/project.md`.
+Append cleanup actions taken to "Decisions Made" in `.am/project.md`.
 
 ### changelog.md append
 ```
@@ -145,9 +145,9 @@ Append cleanup actions taken to "Decisions Made" in `.n0face/project.md`.
 
 ## 8. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/cleanup.md` using this exact format:
+If enabled: after every response, append to `.am/learn/cleanup.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -166,7 +166,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 9. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -190,8 +190,8 @@ The cleanup mode does NOT:
 ## Skill Integration
 
 Reference these files for patterns:
-- `.n0face/skills/agent-skills/code-review-and-quality/SKILL.md` — code quality conventions
-- `.n0face/skills/agent-skills/incremental-implementation/SKILL.md` — one fix at a time
+- `.am/skills/agent-skills/code-review-and-quality/SKILL.md` — code quality conventions
+- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — one fix at a time
 
 ## Commands
 

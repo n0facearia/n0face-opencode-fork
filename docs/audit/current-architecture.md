@@ -1,4 +1,4 @@
-# Current Architecture Audit: opencode-ui (n0face fork)
+# Current Architecture Audit: opencode-ui (AM fork)
 
 Generated: 2026-05-25
 Base upstream: https://github.com/sst/opencode (v1.14.48)
@@ -12,7 +12,7 @@ Fork: https://github.com/n0facearia/n0face-opencode-fork
 opencode-ui/
 ├── packages/          # Monorepo workspace packages (Bun workspaces)
 ├── .opencode/         # Runtime opencode configuration for this repo
-├── .n0face/           # Target n0face architecture mode definitions
+├── .am/           # Target AM architecture mode definitions
 ├── specs/             # Design specs (project.md, v2/ session & todo schemas)
 ├── script/            # Root-level scripts (CI, publishing, stats, format, etc.)
 ├── docs/              # Project documentation (audit/, and other docs)
@@ -83,7 +83,7 @@ script/
 ### 2.1 `packages/opencode` — CLI Core (named `n0face`)
 
 **package.json name**: `n0face`  
-**binary**: `bin/n0face` (Go-compiled binary launcher, JS bootstrap script that locates and spawns the correct platform-specific binary)
+**binary**: `bin/am` (Go-compiled binary launcher, JS bootstrap script that locates and spawns the correct platform-specific binary)
 **entry**: `src/index.ts` — yargs-based CLI
 **version**: 1.14.48
 **scripts**: dev, test, build, typecheck (tsgo), db (drizzle-kit)
@@ -188,7 +188,7 @@ src/
 
 **Source file count**: ~500+ TypeScript source files  
 **Test file count**: ~240 test files  
-**Binary**: Go-compiled binary, not TypeScript. The `bin/n0face` script is a Node.js bootstrap that locates the correct platform binary.
+**Binary**: Go-compiled binary, not TypeScript. The `bin/am` script is a Node.js bootstrap that locates the correct platform binary.
 
 ### 2.2 `packages/core` — `@opencode-ai/core`
 
@@ -387,7 +387,7 @@ The agent system uses Effect to manage AI agent lifecycle:
 - Custom prompts exist in `src/agent/prompt/` (compaction, explore, scout, summary, title)
 - The system uses the concept of "subagents" (forked AI agents with their own prompts)
 
-**n0face-mode agents** (in `.n0face/`):
+**n0face-mode agents** (in `.am/`):
 - `cleanup.mode.md` — Code quality agent (green)
 - `design.mode.md` — UI/UX design agent (purple)
 - `security.mode.md` — Security audit agent (red)
@@ -537,7 +537,7 @@ Database tables (from schema):
    - Full terminal UI with routing, keybindings, rendering
    - Plugin system for TUI extensions
    - Route-based navigation (home, session, etc.)
-   - Mascot feature (cat sprites) — n0face fork addition
+   - Mascot feature (cat sprites) — AM fork addition
 2. **Non-TUI mode**: Simple text-based CLI (`cli/cmd/run/`)
 
 **TUI Architecture**:
@@ -579,9 +579,9 @@ The command system:
 - `/spellcheck` — Spellcheck markdown
 - `/rmslop` — Remove AI-generated "slop" code
 
-**n0face custom commands** (from `.n0face/command/`):
-- `/import-md` — Import the n0face mode system into an existing project; auto-detects project metadata (package.json, Cargo.toml, go.mod, README.md) and creates only missing files (PROJECT_SUMMARY.md, MODE_CONTEXT.md, .n0face/ mode files/agents)
-- `/new-project` — Scaffold a new project with the full n0face mode system; prompts for project name, type (web/api/cli), technology stack, and description; creates PROJECT_SUMMARY.md, MODE_CONTEXT.md, and .n0face/ directory structure
+**AM custom commands** (from `.am/command/`):
+- `/import-md` — Import the AM mode system into an existing project; auto-detects project metadata (package.json, Cargo.toml, go.mod, README.md) and creates only missing files (PROJECT_SUMMARY.md, MODE_CONTEXT.md, .am/ mode files/agents)
+- `/new-project` — Scaffold a new project with the full AM mode system; prompts for project name, type (web/api/cli), technology stack, and description; creates PROJECT_SUMMARY.md, MODE_CONTEXT.md, and .am/ directory structure
 
 ### 3.9 Existing Skills/Prompts
 
@@ -646,7 +646,7 @@ Skill system is a plugin mechanism for extending agent capabilities:
 
 ### 3.13 CLI Entry Points
 
-1. **Main binary**: `packages/opencode/bin/n0face` — Node.js bootstrap that resolves platform-specific Go binary
+1. **Main binary**: `packages/opencode/bin/am` — Node.js bootstrap that resolves platform-specific Go binary
 2. **Source entry**: `packages/opencode/src/index.ts` — Yargs CLI parser
 3. **Dev entry**: `packages/opencode/src/temporary.ts` — Temporary development entry
 4. **Core binary**: `packages/core/bin/opencode` — Alternative entry for `@opencode-ai/core`
@@ -697,10 +697,10 @@ The `n0face project plan.md` file is empty (placeholder).
 
 ## 4. .n0face Directory — Target Architecture
 
-The `.n0face/` directory contains the planned n0face architecture mode definitions:
+The `.am/` directory contains the planned AM architecture mode definitions:
 
 ```
-.n0face/
+.am/
 ├── package.json              # Dependency: @opencode-ai/plugin@1.15.3
 ├── cleanup.mode.md           # Code quality agent mode (green)
 ├── design.mode.md            # UI/UX design agent mode (purple)
@@ -719,7 +719,7 @@ Each mode defines:
 - An agent config with YAML frontmatter (mode, color, description)
 - Custom commands specific to the mode
 
-The `.n0face/.gitignore` intentionally ignores `package.json` and `package-lock.json` from being committed.
+The `.am/.gitignore` intentionally ignores `package.json` and `package-lock.json` from being committed.
 
 ## 5. .opencode Directory — Runtime Configuration
 
@@ -753,20 +753,20 @@ The `.n0face/.gitignore` intentionally ignores `package.json` and `package-lock.
 The codebase is deeply integrated with Effect v4 (beta.65). Nearly every service is defined as an Effect Service with layers, managed scopes, and Effect.gen. The LLM package is entirely Effect-native.
 
 ### 6.2 Two Conflicting Package Names
-- `packages/opencode/package.json` name is `"n0face"` (binary: `n0face`)
+- `packages/opencode/package.json` name is `"am"` (binary: `n0face`)
 - `packages/core/package.json` name is `"@opencode-ai/core"` (binary: `opencode`)
 This creates confusion about branding.
 
 ### 6.3 Go Binary + TypeScript Source Split
-The actual runtime distributed to users is a Go-compiled binary (opencode-<platform>-<arch>). The TypeScript source code in this repo is compiled/bundled into that binary. The `bin/n0face` script locates and spawns the correct binary.
+The actual runtime distributed to users is a Go-compiled binary (opencode-<platform>-<arch>). The TypeScript source code in this repo is compiled/bundled into that binary. The `bin/am` script locates and spawns the correct binary.
 
 ### 6.4 AI SDK v6 + Native Effect LLM
 Two parallel LLM stacks exist:
 1. Vercel AI SDK (`ai` package + `@ai-sdk/*`) — older/established
 2. `@opencode-ai/llm` — newer Effect-native stack
 
-### 6.5 .n0face/ vs .opencode/ Duplication
-The `.n0face/` directory defines three modes (cleanup, design, security) that are NOT currently loaded by the runtime. The `.opencode/` directory has two different agents (triage, duplicate-pr). This represents a gap between the current and planned architecture.
+### 6.5 .am/ vs .opencode/ Duplication
+The `.am/` directory defines three modes (cleanup, design, security) that are NOT currently loaded by the runtime. The `.opencode/` directory has two different agents (triage, duplicate-pr). This represents a gap between the current and planned architecture.
 
-### 6.6 Naming: "opencode" vs "n0face"
+### 6.6 Naming: "opencode" vs "am"
 The `process.env.N0FACE = "1"` flag is set but the project still predominantly uses "opencode" naming (package names, env vars, URLs, branding). Only the binary name and package.json name reflect the n0face rebranding.

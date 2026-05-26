@@ -25,7 +25,7 @@ import nord from "./theme/nord.json" with { type: "json" }
 import osakaJade from "./theme/osaka-jade.json" with { type: "json" }
 import onedark from "./theme/one-dark.json" with { type: "json" }
 import opencode from "./theme/opencode.json" with { type: "json" }
-import n0face from "./theme/n0face.json" with { type: "json" }
+import am from "./theme/am.json" with { type: "json" }
 import orng from "./theme/orng.json" with { type: "json" }
 import lucentOrng from "./theme/lucent-orng.json" with { type: "json" }
 import palenight from "./theme/palenight.json" with { type: "json" }
@@ -109,7 +109,7 @@ export const DEFAULT_THEMES: Record<string, ThemeJson> = {
   ["one-dark"]: onedark,
   ["osaka-jade"]: osakaJade,
   opencode,
-  n0face,
+  am,
   orng,
   ["lucent-orng"]: lucentOrng,
   palenight,
@@ -322,8 +322,8 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
         }
         draft.mode = mode
         draft.lock = lock
-        const active = config.theme ?? kv.get("theme", "n0face")
-        draft.active = typeof active === "string" ? active : "n0face"
+        const active = config.theme ?? kv.get("theme", "am")
+        draft.active = typeof active === "string" ? active : "am"
         draft.ready = false
       }),
     )
@@ -430,7 +430,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
         }
       }
 
-      return resolveTheme(store.themes.n0face, store.mode)
+      return resolveTheme(store.themes.am, store.mode)
     })
 
     createEffect(() => {

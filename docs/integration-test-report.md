@@ -3,7 +3,7 @@
 **Test date:** 2026-05-26
 **Demo project:** TaskApp (task management application)
 **Demo project location:** `/tmp/opencode/demo-task-app/`
-**Mode files tested:** `.n0face/agent/*.md` (10 files)
+**Mode files tested:** `.am/agent/*.md` (10 files)
 **Pipeline order:** manager → design → frontend → backend → database → cleanup → security → testing → devops → documentation
 
 ---
@@ -48,17 +48,17 @@ Alternatively, change `design.md` to use `.tsx` extension for stubs so they are 
 ## Failure 2: learn/ Directory Created With learning_layer Disabled
 
 **Mode:** manager (scaffolding) + all modes (startup)
-**What went wrong:** The learning layer was set to `disabled` in `project.md` (`## Settings - learning_layer: disabled`). All mode files correctly check this and skip writing to `.n0face/learn/<mode>.md`. However, the `.n0face/learn/` directory itself was created during initial project scaffolding.
+**What went wrong:** The learning layer was set to `disabled` in `project.md` (`## Settings - learning_layer: disabled`). All mode files correctly check this and skip writing to `.am/learn/<mode>.md`. However, the `.am/learn/` directory itself was created during initial project scaffolding.
 
-**Root cause:** The mode files instruct agents to "skip all learning layer behavior entirely" when disabled, but none of them explicitly say to avoid creating the `.n0face/learn/` directory. An agent might create the directory during initial setup (e.g., `mkdir -p .n0face/learn/`) even when the layer is disabled.
+**Root cause:** The mode files instruct agents to "skip all learning layer behavior entirely" when disabled, but none of them explicitly say to avoid creating the `.am/learn/` directory. An agent might create the directory during initial setup (e.g., `mkdir -p .am/learn/`) even when the layer is disabled.
 
 **Fix:** Add to the LEARNING LAYER section in every mode file:
 ```
-Do not create the .n0face/learn/<mode>.md file or its parent directory
+Do not create the .am/learn/<mode>.md file or its parent directory
 when learning_layer is disabled.
 ```
 
-Alternatively, add a global rule to `manager.md` section 5 (project.md template) specifying that `.n0face/learn/` should only exist when `learning_layer: enabled`.
+Alternatively, add a global rule to `manager.md` section 5 (project.md template) specifying that `.am/learn/` should only exist when `learning_layer: enabled`.
 
 ---
 
@@ -80,7 +80,7 @@ Alternatively, add a global rule to `manager.md` section 5 (project.md template)
 - [✅] changelog.md has a new entry
 - [✅] state/manager.json updated (touched_files, decisions, last_session)
 - [✅] Handoff → design mode (logical for full-stack project)
-- [✅] Outputs: `.n0face/project.md`, `.n0face/changelog.md`, `.n0face/state/manager.json`
+- [✅] Outputs: `.am/project.md`, `.am/changelog.md`, `.am/state/manager.json`
 
 ### design mode
 - [✅] project.md appended "Decisions Made"
@@ -161,7 +161,7 @@ The complete demo project is at `/tmp/opencode/demo-task-app/` containing:
 **Security:** SECURITY.md
 **Testing:** TESTING.md, test files
 **DevOps:** CI/CD workflows, Dockerfile, .env.example, DEVOPS.md
-**Mode state:** .n0face/project.md, .n0face/changelog.md, .n0face/state/*.json (10 files)
+**Mode state:** .am/project.md, .am/changelog.md, .am/state/*.json (10 files)
 
 All 65 files produced across 10 modes are inspectable.
 
@@ -181,13 +181,13 @@ All 65 files produced across 10 modes are inspectable.
 Added section `### f. Clean up design stubs` to `frontend.md` startup behavior:
 > For each component that receives a `.tsx` implementation, remove the corresponding `.ts` stub created by design mode. Do not leave both files.
 
-**File:** `.n0face/agent/frontend.md`
+**File:** `.am/agent/frontend.md`
 
 ### Fix for Failure 2 — learn/ Directory Created With learning_layer Disabled
 Added the instruction to all 10 LEARNING LAYER sections:
-> Do not create the `.n0face/learn/` directory or its files
+> Do not create the `.am/learn/` directory or its files
 
-**Files:** All `.n0face/agent/*.md` (10 files)
+**Files:** All `.am/agent/*.md` (10 files)
 
 ### Fix for Failure 3 — Handoff Loop
 No mode file change needed. The conditional handoff logic in `database.md` is correct. The build order documentation in `manager.md` section 4 already documents both possible sequences (database-first vs code-first).

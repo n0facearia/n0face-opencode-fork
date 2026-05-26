@@ -50,7 +50,7 @@ export const Info = Schema.Struct({
 }).annotate({ identifier: "InstallationInfo" })
 export type Info = Schema.Schema.Type<typeof Info>
 
-export const USER_AGENT = `n0face/${InstallationChannel}/${InstallationVersion}/${Flag.OPENCODE_CLIENT}`
+export const USER_AGENT = `am/${InstallationChannel}/${InstallationVersion}/${Flag.OPENCODE_CLIENT}`
 
 export function isPreview() {
   return InstallationChannel !== "latest"
@@ -178,7 +178,7 @@ export const layer: Layer.Layer<Service, never, HttpClient.HttpClient | ChildPro
           }
         }),
         method: Effect.fn("Installation.method")(function* () {
-          if (process.execPath.includes(path.join(".opencode", "bin")) || process.execPath.includes(path.join(".n0face", "bin"))) return "curl" as Method
+          if (process.execPath.includes(path.join(".opencode", "bin")) || process.execPath.includes(path.join(".am", "bin"))) return "curl" as Method
           if (process.execPath.includes(path.join(".local", "bin"))) return "curl" as Method
           const exec = process.execPath.toLowerCase()
 

@@ -17,11 +17,11 @@ In both cases, design mode does NOT write implementation code (React, HTML, CSS 
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, scope, visual preferences, and stack decisions.
+### a. Read .am/project.md
+Read `.am/project.md` for project type, scope, visual preferences, and stack decisions.
 
-### b. Read .n0face/state/design.json
-Read `.n0face/state/design.json` for any existing design state.
+### b. Read .am/state/design.json
+Read `.am/state/design.json` for any existing design state.
 
 ### c. Check if a design-system.md already exists in the project root
 Scan the project root for `design-system.md`.
@@ -31,7 +31,7 @@ Scan the project root for `design-system.md`.
 - **If `design-system.md` does NOT exist**: Enter design-from-scratch mode. Run the pre-work questions, then produce the design system.
 
 ### e. Never re-ask questions already answered in project.md
-If a decision (visual style, color palette, typography, component library, accessibility target) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (visual style, color palette, typography, component library, accessibility target) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. PRE-WORK QUESTIONS (for new projects)
 
@@ -65,13 +65,13 @@ Do not produce any output until all questions are answered.
 
 ## 4. DESIGN SYSTEM SELECTION
 
-Reference `.n0face/skills/open-design/` for available design systems. Based on the project type from `project.md`, present the top 5 most suitable design systems with a one-sentence explanation of why each fits.
+Reference `.am/skills/open-design/` for available design systems. Based on the project type from `project.md`, present the top 5 most suitable design systems with a one-sentence explanation of why each fits.
 
 Available open-design skills:
-- `.n0face/skills/open-design/plugins/_official/examples/web-prototype/` — rapid prototyping patterns
-- `.n0face/skills/open-design/plugins/_official/examples/saas-landing/` — marketing and landing page patterns
-- `.n0face/skills/open-design/plugins/_official/examples/dashboard/` — data-heavy dashboard patterns
-- `.n0face/skills/open-design/plugins/_official/design-systems/application/` — application design system tokens and component architecture
+- `.am/skills/open-design/plugins/_official/examples/web-prototype/` — rapid prototyping patterns
+- `.am/skills/open-design/plugins/_official/examples/saas-landing/` — marketing and landing page patterns
+- `.am/skills/open-design/plugins/_official/examples/dashboard/` — data-heavy dashboard patterns
+- `.am/skills/open-design/plugins/_official/design-systems/application/` — application design system tokens and component architecture
 
 Example recommendation format:
 
@@ -172,7 +172,7 @@ A brief summary of what is consistent and what is not. Example:
 
 ## 7. STATE UPDATE
 
-After each session, update `.n0face/state/design.json`:
+After each session, update `.am/state/design.json`:
 
 ```json
 {
@@ -186,9 +186,9 @@ After each session, update `.n0face/state/design.json`:
 
 ## 8. project.md + changelog.md UPDATES
 
-Append every design decision to the "Decisions Made" section of `.n0face/project.md`. Include rationale.
+Append every design decision to the "Decisions Made" section of `.am/project.md`. Include rationale.
 
-Append to `.n0face/changelog.md` after each session:
+Append to `.am/changelog.md` after each session:
 
 ```
 ## [YYYY-MM-DD HH:MM] — design mode
@@ -200,9 +200,9 @@ Append to `.n0face/changelog.md` after each session:
 
 ## 9. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/design.md` using this exact format:
+If enabled: after every response, append to `.am/learn/design.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -221,7 +221,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 10. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -244,10 +244,10 @@ The design mode does NOT:
 ## Skill Integration
 
 Reference these files for patterns:
-- `.n0face/skills/open-design/plugins/_official/examples/web-prototype/SKILL.md` — rapid prototyping patterns
-- `.n0face/skills/open-design/plugins/_official/examples/saas-landing/SKILL.md` — marketing and landing page patterns
-- `.n0face/skills/open-design/plugins/_official/examples/dashboard/SKILL.md` — dashboard and data-heavy UI patterns
-- `.n0face/skills/open-design/plugins/_official/design-systems/application/DESIGN.md` — application design system tokens and architecture
+- `.am/skills/open-design/plugins/_official/examples/web-prototype/SKILL.md` — rapid prototyping patterns
+- `.am/skills/open-design/plugins/_official/examples/saas-landing/SKILL.md` — marketing and landing page patterns
+- `.am/skills/open-design/plugins/_official/examples/dashboard/SKILL.md` — dashboard and data-heavy UI patterns
+- `.am/skills/open-design/plugins/_official/design-systems/application/DESIGN.md` — application design system tokens and architecture
 
 For design system inspiration and real-world DESIGN.md examples from 70+ major brands, reference [getdesign.md](https://getdesign.md/) — a curated collection of production DESIGN.md files from Google's DESIGN.md spec ecosystem. Browse patterns from companies like Airbnb, Apple, Stripe, Linear, and more.
 

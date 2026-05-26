@@ -1,5 +1,5 @@
 ---
-description: Scaffold a new project with the full n0face mode system
+description: Scaffold a new project with the full AM mode system
 ---
 
 Scaffold a new project with the full mode system.
@@ -13,7 +13,7 @@ Prompts for:
 Creates:
 - `PROJECT_SUMMARY.md` - Project overview and status tracking
 - `MODE_CONTEXT.md` - Mode system reference
-- `.n0face/` - Mode system prompts (if not exists)
-- `.n0face/agent/` - Agent configurations (if not exists)
+- `.am/` - Mode system prompts (if not exists)
+- `.am/agent/` - Agent configurations (if not exists)
 
 After scaffolding, open in VS Code if running inside it.

@@ -10,7 +10,7 @@ All files preserve their original relative paths and are unmodified.
 - **Branch**: main
 - **Imported**: 2026-05-25
 - **Files**: 17
-- **Destination**: `.n0face/skills/open-design/`
+- **Destination**: `.am/skills/open-design/`
 
 ### Imported Skills
 
@@ -30,7 +30,7 @@ Root-level files: `AGENTS.md`, `CLAUDE.md`, `LICENSE`
 - **Branch**: main
 - **Imported**: 2026-05-25
 - **Files**: 10
-- **Destination**: `.n0face/skills/agent-skills/`
+- **Destination**: `.am/skills/agent-skills/`
 
 ### Imported Skills
 
@@ -54,7 +54,7 @@ Root-level files: `AGENTS.md`, `CLAUDE.md`, `LICENSE`
 - **Branch**: main
 - **Imported**: 2026-05-25
 - **Files**: 96
-- **Destination**: `.n0face/skills/wshobson-agents/`
+- **Destination**: `.am/skills/wshobson-agents/`
 
 ### Imported Plugins
 

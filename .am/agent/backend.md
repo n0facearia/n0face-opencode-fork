@@ -13,17 +13,17 @@ The backend mode owns the server-side implementation — API design, route handl
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` before doing anything else. Extract all stack decisions, framework choices, and feature requirements.
+### a. Read .am/project.md
+Read `.am/project.md` before doing anything else. Extract all stack decisions, framework choices, and feature requirements.
 
-### b. Read .n0face/state/backend.json
-Read `.n0face/state/backend.json` for any existing backend state — previously touched files, decisions, pending items.
+### b. Read .am/state/backend.json
+Read `.am/state/backend.json` for any existing backend state — previously touched files, decisions, pending items.
 
 ### c. Check what stack decisions have already been made
 Scan the repo for: manifest files (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`), server entry points (`app.ts`, `main.py`, `server.go`), framework configs, existing route files, middleware, environment files (`.env`, `.env.example`), and any existing API docs or contract files.
 
 ### d. Never re-ask questions already answered in project.md
-If a decision (framework, auth strategy, database) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (framework, auth strategy, database) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. PRE-WORK QUESTIONS
 
@@ -125,7 +125,7 @@ ADRs go in `docs/adr/` or inline in `BACKEND.md`.
 
 ## 5. STATE UPDATE
 
-After each work session, update `.n0face/state/backend.json`:
+After each work session, update `.am/state/backend.json`:
 
 ```json
 {
@@ -141,11 +141,11 @@ If no state file exists yet, create it with `"api_contract_approved": false` and
 
 ## 6. project.md UPDATE
 
-Append every architectural decision made this session to the "Decisions Made" section of `.n0face/project.md`. Include the decision, rationale, and alternatives considered.
+Append every architectural decision made this session to the "Decisions Made" section of `.am/project.md`. Include the decision, rationale, and alternatives considered.
 
 ## 7. changelog.md APPEND
 
-After each session, append to `.n0face/changelog.md`:
+After each session, append to `.am/changelog.md`:
 
 ```
 ## [YYYY-MM-DD HH:MM] — backend mode
@@ -159,9 +159,9 @@ Use the current timestamp. Append at the top of the file.
 
 ## 8. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/backend.md` using this exact format:
+If enabled: after every response, append to `.am/learn/backend.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -180,7 +180,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 9. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -208,12 +208,12 @@ The backend mode does NOT:
 ## Skill Integration
 
 Reference these files for additional patterns:
-- `.n0face/skills/agent-skills/spec-driven-development/SKILL.md` — contract-first API design
-- `.n0face/skills/agent-skills/api-and-interface-design/SKILL.md` — consistent error semantics, input/output separation
-- `.n0face/skills/agent-skills/incremental-implementation/SKILL.md` — build in thin vertical slices
-- `.n0face/skills/agent-skills/documentation-and-adrs/SKILL.md` — ADR conventions
-- `.n0face/skills/wshobson-agents/backend-architecture/skills/architecture-patterns/SKILL.md` — layered architecture patterns
-- `.n0face/skills/wshobson-agents/backend-architecture/skills/microservices-patterns/SKILL.md` — service decomposition
+- `.am/skills/agent-skills/spec-driven-development/SKILL.md` — contract-first API design
+- `.am/skills/agent-skills/api-and-interface-design/SKILL.md` — consistent error semantics, input/output separation
+- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — build in thin vertical slices
+- `.am/skills/agent-skills/documentation-and-adrs/SKILL.md` — ADR conventions
+- `.am/skills/wshobson-agents/backend-architecture/skills/architecture-patterns/SKILL.md` — layered architecture patterns
+- `.am/skills/wshobson-agents/backend-architecture/skills/microservices-patterns/SKILL.md` — service decomposition
 
 ## Route Handler Rules
 

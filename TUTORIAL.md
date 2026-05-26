@@ -1,4 +1,4 @@
-# n0face's OpenCode Fork
+# AM for OpenCode
 
 A feature fork of [OpenCode](https://github.com/sst/opencode) — the open source AI coding agent — with custom agent modes, animated mascot, tabbed views, and project setup commands.
 
@@ -13,7 +13,7 @@ curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/mai
 Run this in any project directory to install the custom mode system. It creates:
 
 ```
-.n0face/
+.am/
 ├── design.mode.md      # UI/UX design system prompt
 ├── cleanup.mode.md     # Code quality system prompt
 └── security.mode.md    # Security audit system prompt
@@ -42,7 +42,7 @@ bun install
 bun run build
 ```
 
-Then run `n0face` from anywhere.
+Then run `am` from anywhere.
 
 ---
 
@@ -77,10 +77,10 @@ Then run `n0face` from anywhere.
 
 ## Tutorial
 
-### Starting n0face
+### Starting am
 
 ```bash
-n0face
+am
 ```
 
 ### Switching Modes
@@ -158,10 +158,10 @@ In the session header, click **Result** or **Thinking** to toggle between:
 
 ```bash
 cd ~/my-new-project
-n0face
+am
 ```
 
-Then in n0face:
+Then in am:
 
 ```
 /new-project
@@ -173,16 +173,16 @@ The command asks for:
 3. Technology stack
 4. Description
 
-It creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, `.n0face/`, and `.opencode/agent/`.
+It creates `PROJECT_SUMMARY.md`, `MODE_CONTEXT.md`, `.am/`, and `.opencode/agent/`.
 
 ### Importing Into an Existing Project
 
 ```bash
 cd ~/my-existing-project
-n0face
+am
 ```
 
-Then in n0face:
+Then in am:
 
 ```
 /import-md
@@ -202,9 +202,9 @@ Each assistant message has two views:
 
 | File | Purpose |
 |------|---------|
-| `.n0face/design.mode.md` | System prompt for Design mode |
-| `.n0face/cleanup.mode.md` | System prompt for Cleanup mode |
-| `.n0face/security.mode.md` | System prompt for Security mode |
+| `.am/design.mode.md` | System prompt for Design mode |
+| `.am/cleanup.mode.md` | System prompt for Cleanup mode |
+| `.am/security.mode.md` | System prompt for Security mode |
 | `.opencode/agent/design.md` | Agent config: frontmatter + prompt body |
 | `.opencode/agent/cleanup.md` | Agent config: frontmatter + prompt body |
 | `.opencode/agent/security.md` | Agent config: frontmatter + prompt body |
@@ -243,6 +243,6 @@ Full system prompt here...
 To remove the custom mode system from a project:
 
 ```bash
-rm -rf .n0face .opencode/agent/design.md .opencode/agent/cleanup.md .opencode/agent/security.md
+rm -rf .am .opencode/agent/design.md .opencode/agent/cleanup.md .opencode/agent/security.md
 rm -f PROJECT_SUMMARY.md MODE_CONTEXT.md TUTORIAL.md
 ```

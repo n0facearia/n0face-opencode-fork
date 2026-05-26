@@ -7,7 +7,7 @@ import { Flock } from "./util/flock"
 import { Flag } from "./flag/flag"
 
 function appName() {
-  return process.env.N0FACE === "1" ? "n0face" : "opencode"
+  return process.env.AM === "1" ? "am" : "opencode"
 }
 
 const paths = {

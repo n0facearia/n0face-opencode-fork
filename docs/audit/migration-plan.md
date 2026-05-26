@@ -7,8 +7,8 @@ Generated: 2026-05-25
 The migration should proceed in phases, each building on the previous. Phases are ordered to minimize breakage and allow incremental verification.
 
 ### Phase 0: Prerequisites (No Code Changes)
-- [ ] Create `.n0face/state/` directory structure
-- [ ] Create `.n0face/n0face.jsonc` (copy of `.opencode/opencode.jsonc`)
+- [ ] Create `.am/state/` directory structure
+- [ ] Create `.am/am.jsonc` (copy of `.opencode/opencode.jsonc`)
 - [ ] Document all internal path references to `.opencode/` (use grep)
 - [ ] Document all `process.env.OPENCODE_*` references (use grep)
 - [ ] Take baseline test run to establish passing tests
@@ -18,15 +18,15 @@ The migration should proceed in phases, each building on the previous. Phases ar
   - See `AGENTS.md` for full test constraints.
 
 ### Phase 1: Config Path Migration (Low Risk)
-- [ ] Update `src/config/paths.ts` to look for `.n0face/` first, fall back to `.opencode/`
-- [ ] Update `Config.config.ts` to use `.n0face/n0face.jsonc` as primary config
-- [ ] Add backward-compatible config loader (check `.opencode/`, then `.n0face/`)
-- [ ] Update `ConfigMarkdown` to read from `.n0face/agent/`
+- [ ] Update `src/config/paths.ts` to look for `.am/` first, fall back to `.opencode/`
+- [ ] Update `Config.config.ts` to use `.am/am.jsonc` as primary config
+- [ ] Add backward-compatible config loader (check `.opencode/`, then `.am/`)
+- [ ] Update `ConfigMarkdown` to read from `.am/agent/`
 - [ ] Run tests — should pass since both dirs exist
 
 ### Phase 2: Mode System Integration (Medium Risk)
 - [ ] Create mode router: `src/mode/index.ts` (Effect Service)
-  - Reads `.n0face/*.mode.md` files
+  - Reads `.am/*.mode.md` files
   - Determines active mode from config/context
   - Exposes `Mode.active`, `Mode.prompt`, `Mode.commands`
 - [ ] Create `ModeService` with:
@@ -38,28 +38,28 @@ The migration should proceed in phases, each building on the previous. Phases ar
 - [ ] Tests: Verify mode prompt loading, mode switching
 
 ### Phase 3: Agent Config Migration (Medium Risk)
-- [ ] Move `.opencode/agent/*.md` → `.n0face/agent/` (filter: triage and duplicate-pr are upstream-specific; keep cleanup, design, security)
-- [ ] Update agent config loader to read from `.n0face/agent/`
+- [ ] Move `.opencode/agent/*.md` → `.am/agent/` (filter: triage and duplicate-pr are upstream-specific; keep cleanup, design, security)
+- [ ] Update agent config loader to read from `.am/agent/`
 - [ ] Agent runtime (`agent.ts`) should select agent based on active mode
-- [ ] `.n0face/agent/cleanup.md`, `design.md`, `security.md` already exist with proper frontmatter
+- [ ] `.am/agent/cleanup.md`, `design.md`, `security.md` already exist with proper frontmatter
 - [ ] Remove upstream agents (triage, duplicate-pr) or move to examples
 - [ ] Tests: agent selection by mode, agent config parsing
 
 ### Phase 4: Command Migration (Low Risk)
-- [ ] Move `.opencode/command/` → `.n0face/command/`
+- [ ] Move `.opencode/command/` → `.am/command/`
 - [ ] Filter commands: keep `learn`, `issues`, `translate`, `spellcheck`, `rmslop`, `ai-deps`
 - [ ] Drop upstream-specific: `changelog`, `commit` (optional)
-- [ ] `.n0face/command/import-md.md`, `new-project.md` already exist
-- [ ] Update command loader to read from `.n0face/command/`
+- [ ] `.am/command/import-md.md`, `new-project.md` already exist
+- [ ] Update command loader to read from `.am/command/`
 - [ ] Tests: command loading from new path
 
 ### Phase 5: Skill & Tool Migration (Low Risk)
-- [ ] Move `.opencode/skills/` → `.n0face/skills/`
-- [ ] Move `.opencode/tool/` → `.n0face/tool/` (if tools are kept)
-- [ ] Move `.opencode/plugins/` → `.n0face/plugins/`
-- [ ] Move `.opencode/themes/` → `.n0face/themes/`
-- [ ] Move `.opencode/glossary/` → `.n0face/glossary/`
-- [ ] Update all loaders to read from `.n0face/` instead of `.opencode/`
+- [ ] Move `.opencode/skills/` → `.am/skills/`
+- [ ] Move `.opencode/tool/` → `.am/tool/` (if tools are kept)
+- [ ] Move `.opencode/plugins/` → `.am/plugins/`
+- [ ] Move `.opencode/themes/` → `.am/themes/`
+- [ ] Move `.opencode/glossary/` → `.am/glossary/`
+- [ ] Update all loaders to read from `.am/` instead of `.opencode/`
 - [ ] Tests: verify all resource types load from new paths
 
 ### Phase 6: Runtime Rebranding (Medium Risk)
@@ -85,20 +85,20 @@ The migration should proceed in phases, each building on the previous. Phases ar
 - [ ] Tests: mode-appropriate tool blocking/allowance
 
 ### Phase 8: Prompt System Decoupling (High Risk)
-- [ ] Extract mode prompts from `src/session/prompt/*.txt` to `.n0face/*.mode.md`
+- [ ] Extract mode prompts from `src/session/prompt/*.txt` to `.am/*.mode.md`
 - [ ] Refactor `prompt.ts` (2135 lines) into:
   - `prompt/mode.ts` — Mode prompt loading
   - `prompt/assembly.ts` — Prompt assembly logic
   - `prompt/variables.ts` — Variable substitution
   - `prompt/format.ts` — Formatting
 - [ ] Mode-specific prompts replace provider-specific prompts
-- [ ] Provider-specific tweaks move to `.n0face/provider/` config
+- [ ] Provider-specific tweaks move to `.am/provider/` config
 - [ ] Tests: prompt assembly equivalence, mode prompt override
 
 ### Phase 9: State/Memory System (Medium Risk)
-- [ ] Create `.n0face/state/schema.sql.ts` — extracted state schema
-- [ ] Create `.n0face/state/memory.ts` — memory persistence logic
-- [ ] Update storage paths to use `.n0face/state/` for session data
+- [ ] Create `.am/state/schema.sql.ts` — extracted state schema
+- [ ] Create `.am/state/memory.ts` — memory persistence logic
+- [ ] Update storage paths to use `.am/state/` for session data
 - [ ] Implement state isolation per mode (optional)
 - [ ] Tests: state read/write from new locations
 
@@ -116,7 +116,7 @@ The migration should proceed in phases, each building on the previous. Phases ar
 
 | Risk Level | File/System | Risk | Mitigation |
 |------------|-------------|------|------------|
-| **CRITICAL** | `src/config/paths.ts` | Every config path in the system depends on this | Phase 1: dual-path (check both `.opencode/` and `.n0face/`) |
+| **CRITICAL** | `src/config/paths.ts` | Every config path in the system depends on this | Phase 1: dual-path (check both `.opencode/` and `.am/`) |
 | **CRITICAL** | `src/session/prompt.ts` (2135 lines) | Monolithic, tightly coupled to provider-specific prompts | Phase 8: incremental extraction, don't rewrite in one shot |
 | **CRITICAL** | `bin/n0face` bootstrap | Searches for `opencode-<platform>-<arch>` binary names | Must continue to resolve legacy binary names during transition |
 | **HIGH** | `src/config/config.ts` (841 lines) | Core config merge, Effects, remote config, auth | Test each config path change independently |
@@ -141,7 +141,7 @@ The migration should proceed in phases, each building on the previous. Phases ar
 - **Plugin API**: `@opencode-ai/plugin` must maintain backward compatibility
 
 ### 3.2 Transition Period Config
-During migration, the system must handle **both** `.opencode/` and `.n0face/` directories:
+During migration, the system must handle **both** `.opencode/` and `.am/` directories:
 ```typescript
 // Pseudo-code for fallback strategy
 function resolveConfigPath(name: string): string {
@@ -252,15 +252,15 @@ export class Mode extends Context.Tag("n0face/Mode")<
 
 #### Decision 2: Config Has Mode Awareness
 ```typescript
-// .n0face/n0face.jsonc
+// .am/am.jsonc
 {
   "mode": {
     "default": "cleanup",  // or "design", "security"
     "allow_switch": true,
     "prompts": {
-      "cleanup": ".n0face/cleanup.mode.md",
-      "design": ".n0face/design.mode.md",
-      "security": ".n0face/security.mode.md"
+      "cleanup": ".am/cleanup.mode.md",
+      "design": ".am/design.mode.md",
+      "security": ".am/security.mode.md"
     }
   }
 }
@@ -269,8 +269,8 @@ export class Mode extends Context.Tag("n0face/Mode")<
 #### Decision 3: Provider-Specific Prompts Become Mode Prompts
 The current `src/session/prompt/*.txt` files (12 provider-specific prompts) merge into 3 mode prompts:
 - Provider-specific behavior becomes config-driven (e.g., `providers.anthropic.prompt`)
-- Mode prompts stay at `.n0face/*.mode.md`
-- Provider optimization hints are expressed in `.n0face/provider/*.ts` config
+- Mode prompts stay at `.am/*.mode.md`
+- Provider optimization hints are expressed in `.am/provider/*.ts` config
 
 #### Decision 4: Database Path Migration
 The SQLite database moves from `~/.config/opencode/` to `~/.config/n0face/`:
@@ -291,7 +291,7 @@ The SQLite database moves from `~/.config/opencode/` to `~/.config/n0face/`:
 
 #### Phase 1 Files
 ```
-packages/opencode/src/config/paths.ts   → Add .n0face/ as primary path
+packages/opencode/src/config/paths.ts   → Add .am/ as primary path
 packages/opencode/src/config/config.ts  → Add fallback config loader
 packages/opencode/src/config/markdown.ts → Update agent config path
 ```
@@ -328,7 +328,7 @@ MOD:     packages/containers/*/Dockerfile      (build paths)
 
 ### 6.4 Testing Strategy
 
-1. **Config path dual-read tests**: Verify same config loaded from `.opencode/` and `.n0face/`
+1. **Config path dual-read tests**: Verify same config loaded from `.opencode/` and `.am/`
 2. **Mode loading tests**: Verify mode prompt content, mode switching
 3. **Agent selection tests**: Verify correct agent loaded per mode
 4. **Tool permission tests**: Verify tool filtering per mode
@@ -347,9 +347,9 @@ Each phase should be a reversible commit:
 
 ## 7. Immediate Next Steps
 
-1. **Create `.n0face/state/` directory** (Phase 0)
-2. **Add `.n0face/` path to `src/config/paths.ts`** (Phase 1, ~2 hours)
+1. **Create `.am/state/` directory** (Phase 0)
+2. **Add `.am/` path to `src/config/paths.ts`** (Phase 1, ~2 hours)
 3. **Create `src/mode/` module** (Phase 2, ~4 hours)
-4. **Move agent configs to `.n0face/agent/`** (Phase 3, ~2 hours)
+4. **Move agent configs to `.am/agent/`** (Phase 3, ~2 hours)
 5. **Update config loader for dual-path** (Phase 1, ~2 hours)
 6. **Run all tests** — baseline must pass before Phase 2

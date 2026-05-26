@@ -1,4 +1,4 @@
-# Contributing to n0face-opencode-fork
+# Contributing to am-opencode-fork
 
 This guide covers how to extend the fork's mode system — adding new agent modes, importing skills, writing effective prompts, and testing changes.
 
@@ -6,11 +6,11 @@ This guide covers how to extend the fork's mode system — adding new agent mode
 
 ## How to Add a New Mode
 
-Each mode is a single Markdown file under `.n0face/agent/<name>.md`. It must contain all required sections in order. Use an existing mode file as a template.
+Each mode is a single Markdown file under `.am/agent/<name>.md`. It must contain all required sections in order. Use an existing mode file as a template.
 
 ### Step 1: Create the agent file
 
-Create `.n0face/agent/<name>.md` with the frontmatter:
+Create `.am/agent/<name>.md` with the frontmatter:
 
 ```yaml
 ---
@@ -29,8 +29,8 @@ One paragraph that states exactly what the mode does — and what it does NOT do
 
 List the files the mode reads at startup, in order:
 
-1. Read `.n0face/project.md` for project state
-2. Read `.n0face/state/<mode>.json` for previous session state
+1. Read `.am/project.md` for project state
+2. Read `.am/state/<mode>.json` for previous session state
 3. Do NOT proceed if required state files are missing
 4. Never re-ask questions already answered in `project.md`
 
@@ -57,7 +57,7 @@ Documentation mode is the exception: it is terminal and does not hand off.
 
 ### Step 7: Add state file
 
-Create `.n0face/state/<mode>.json` with an initial JSON object:
+Create `.am/state/<mode>.json` with an initial JSON object:
 
 ```json
 {
@@ -86,7 +86,7 @@ At the end of the file, add a conditional learning layer section:
 ```
 ## LEARNING LAYER
 Check project.md for `learning_layer: enabled`. If disabled, skip.
-If enabled, append to .n0face/learn/<mode>.md with format:
+If enabled, append to .am/learn/<mode>.md with format:
 ## Session: <timestamp>
 ### Action: <what was done>
 **Why:** <rationale>
@@ -105,16 +105,16 @@ Follow the testing requirements below. Test on a real project, not a synthetic e
 
 ## How to Add a New Skill
 
-Skills are reusable reference files imported from upstream repos. They live under `.n0face/skills/<name>/`.
+Skills are reusable reference files imported from upstream repos. They live under `.am/skills/<name>/`.
 
 ### Adding a skill
 
-1. Clone or copy the skill content to `.n0face/skills/<name>/`
-2. Create or update `.n0face/skills/SOURCES.md` with the origin URL and checksum
+1. Clone or copy the skill content to `.am/skills/<name>/`
+2. Create or update `.am/skills/SOURCES.md` with the origin URL and checksum
 3. Reference the skill in a mode file using a relative path:
 
 ```
-Read `.n0face/skills/<name>/SKILL.md` for reference patterns.
+Read `.am/skills/<name>/SKILL.md` for reference patterns.
 ```
 
 Do not embed skill content directly in mode files. Mode files reference skills by path; skills are loaded separately.
@@ -122,7 +122,7 @@ Do not embed skill content directly in mode files. Mode files reference skills b
 ### Skill directory structure
 
 ```
-.n0face/skills/
+.am/skills/
 ├── SOURCES.md             # Registry: origin URL + checksum per skill
 ├── <skill-name>/
 │   ├── SKILL.md           # Entry point (loaded first)
@@ -133,7 +133,7 @@ Do not embed skill content directly in mode files. Mode files reference skills b
 
 ## Prompt Writing Rules
 
-These rules apply to all `.n0face/agent/*.md` mode files. They ensure every mode is LLM-agnostic, testable, and maintainable.
+These rules apply to all `.am/agent/*.md` mode files. They ensure every mode is LLM-agnostic, testable, and maintainable.
 
 ### 1. LLM-agnostic
 
@@ -145,7 +145,7 @@ One mode, one concern. If a mode would do two unrelated things, split it. Manage
 
 ### 3. Read state first
 
-Every mode must read `.n0face/project.md` and `.n0face/state/<mode>.json` before doing anything else. Block startup if required files are missing.
+Every mode must read `.am/project.md` and `.am/state/<mode>.json` before doing anything else. Block startup if required files are missing.
 
 ### 4. Block on ambiguity
 

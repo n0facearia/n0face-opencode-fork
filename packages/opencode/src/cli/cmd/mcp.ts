@@ -398,8 +398,8 @@ export const McpLogoutCommand = effectCmd({
 
 async function resolveConfigPath(baseDir: string, global = false) {
   // Check for existing config files (prefer .jsonc over .json, check .opencode/ subdirectory too)
-  const cfgDir = process.env.N0FACE === "1" ? ".n0face" : ".opencode"
-  const cfgBase = process.env.N0FACE === "1" ? "n0face" : "opencode"
+  const cfgDir = process.env.AM === "1" ? ".am" : ".opencode"
+  const cfgBase = process.env.AM === "1" ? "am" : "opencode"
   const candidates: string[] = []
   candidates.push(path.join(baseDir, cfgDir, `${cfgBase}.json`), path.join(baseDir, cfgDir, `${cfgBase}.jsonc`))
 

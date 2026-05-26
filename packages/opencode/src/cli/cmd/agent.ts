@@ -106,7 +106,7 @@ const AgentCreateCommand = effectCmd({
           if (prompts.isCancel(scopeResult)) throw new UI.CancelledError()
           scope = scopeResult
         }
-        targetPath = path.join(scope === "global" ? Global.Path.config : path.join(ctx.worktree, process.env.N0FACE === "1" ? ".n0face" : ".opencode"), "agents")
+        targetPath = path.join(scope === "global" ? Global.Path.config : path.join(ctx.worktree, process.env.AM === "1" ? ".am" : ".opencode"), "agents")
       }
 
       // Get description

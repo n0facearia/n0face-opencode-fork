@@ -6,8 +6,8 @@ import path from "node:path"
 
 
 const REPO = "n0facearia/n0face-opencode-fork"
-const BUILD_DIR = process.env.N0FACE_BUILD_DIR || `${process.env.HOME}/.n0face/build`
-const BIN_DIR = `${process.env.HOME}/.n0face/bin`
+const BUILD_DIR = process.env.AM_BUILD_DIR || `${process.env.HOME}/.am/build`
+const BIN_DIR = `${process.env.HOME}/.am/bin`
 
 function run(cmd: string, cwd?: string) {
   execSync(cmd, { cwd, stdio: "inherit", encoding: "utf-8" })
@@ -24,7 +24,7 @@ function isLocalRepo() {
 
 export const RebuildCommand = {
   command: "rebuild",
-  describe: "rebuild n0face from source",
+  describe: "rebuild AM from source",
   handler: async () => {
     UI.empty()
     UI.println(UI.logo("  "))
@@ -75,21 +75,21 @@ export const RebuildCommand = {
       spinner.message("Building binary (this may take a few minutes)...")
       run(`bun run build --single --skip-install`, path.join(sourceDir, "packages/opencode"))
 
-      spinner.message("Installing n0face binary...")
+      spinner.message("Installing AM binary...")
       run(`mkdir -p "${BIN_DIR}" "${process.env.HOME}/.local/bin"`)
 
       const distDir = path.join(sourceDir, "packages/opencode/dist")
       const entries = readdirSync(distDir)
-      const built = entries.find((e: string) => e.startsWith("n0face-")) || entries.find((e: string) => e === "opencode")
+      const built = entries.find((e: string) => e.startsWith("am-")) || entries.find((e: string) => e === "opencode")
       if (!built) throw new Error(`built binary not found in ${distDir}`)
 
       const srcBin = path.join(distDir, built, "bin/opencode")
-      run(`cp -f "${srcBin}" "${BIN_DIR}/n0face"`)
-      run(`chmod +x "${BIN_DIR}/n0face"`)
-      run(`cp "${BIN_DIR}/n0face" "${process.env.HOME}/.local/bin/n0face"`)
+      run(`cp -f "${srcBin}" "${BIN_DIR}/am"`)
+      run(`chmod +x "${BIN_DIR}/am"`)
+      run(`cp "${BIN_DIR}/am" "${process.env.HOME}/.local/bin/am"`)
 
       spinner.stop("Rebuild complete")
-      prompts.log.success("n0face rebuilt from source")
+      prompts.log.success("AM rebuilt from source")
     } catch (e) {
       spinner.stop("Rebuild failed", 1)
       const msg = e instanceof Error ? e.message.trim() : String(e)

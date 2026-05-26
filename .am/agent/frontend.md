@@ -13,11 +13,11 @@ The frontend mode implements the UI — components, pages, routing, state manage
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, stack decisions, feature requirements, and any existing context.
+### a. Read .am/project.md
+Read `.am/project.md` for project type, stack decisions, feature requirements, and any existing context.
 
-### b. Read .n0face/state/frontend.json
-Read `.n0face/state/frontend.json` for any existing frontend state.
+### b. Read .am/state/frontend.json
+Read `.am/state/frontend.json` for any existing frontend state.
 
 ### c. Read design-system.md
 Read `design-system.md` from the project root. If it does NOT exist, STOP and say:
@@ -30,7 +30,7 @@ Do not proceed until `design-system.md` exists.
 If backend mode has already run, `BACKEND.md` and `API.md` define what data is available to the frontend — endpoints, request/response shapes, and auth requirements.
 
 ### e. Never re-ask questions already answered in project.md
-If a decision (framework, routing strategy, state management, browser support) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (framework, routing strategy, state management, browser support) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ### f. Clean up design stubs
 For each component that receives a `.tsx` implementation, remove the corresponding `.ts` stub created by design mode. Do not leave both files.
@@ -138,7 +138,7 @@ One page at a time, after components it uses exist.
 
 ## 7. INCREMENTAL IMPLEMENTATION
 
-Reference `.n0face/skills/agent-skills/incremental-implementation/SKILL.md`.
+Reference `.am/skills/agent-skills/incremental-implementation/SKILL.md`.
 
 Build one component or page at a time. Do not generate the entire codebase in one response. After each unit:
 - Show what was built (file path + brief summary of what it does)
@@ -151,7 +151,7 @@ Each increment leaves the project in a working, compilable state.
 ## 8. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.n0face/state/frontend.json`:
+After each session, update `.am/state/frontend.json`:
 
 ```json
 {
@@ -164,7 +164,7 @@ After each session, update `.n0face/state/frontend.json`:
 ```
 
 ### project.md update
-Append every frontend decision (framework, state, routing choices) to "Decisions Made" in `.n0face/project.md`.
+Append every frontend decision (framework, state, routing choices) to "Decisions Made" in `.am/project.md`.
 
 ### changelog.md append
 ```
@@ -177,9 +177,9 @@ Append every frontend decision (framework, state, routing choices) to "Decisions
 
 ## 9. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/frontend.md` using this exact format:
+If enabled: after every response, append to `.am/learn/frontend.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -198,7 +198,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 10. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -223,11 +223,11 @@ The frontend mode does NOT:
 ## Skill Integration
 
 Reference these files for patterns:
-- `.n0face/skills/agent-skills/incremental-implementation/SKILL.md` — one component at a time, working state after each increment
-- `.n0face/skills/agent-skills/test-driven-development/SKILL.md` — write a failing test before implementing each component
-- `.n0face/skills/agent-skills/documentation-and-adrs/SKILL.md` — component documentation and ADR conventions
-- `.n0face/skills/open-design/plugins/_official/examples/dashboard/SKILL.md` — dashboard component patterns
-- `.n0face/skills/open-design/plugins/_official/design-systems/application/DESIGN.md` — design system token and component architecture
+- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — one component at a time, working state after each increment
+- `.am/skills/agent-skills/test-driven-development/SKILL.md` — write a failing test before implementing each component
+- `.am/skills/agent-skills/documentation-and-adrs/SKILL.md` — component documentation and ADR conventions
+- `.am/skills/open-design/plugins/_official/examples/dashboard/SKILL.md` — dashboard component patterns
+- `.am/skills/open-design/plugins/_official/design-systems/application/DESIGN.md` — design system token and component architecture
 
 ## Commands
 

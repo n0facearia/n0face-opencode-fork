@@ -215,7 +215,7 @@ async function executeUninstall(method: Installation.Method, targets: RemovalTar
     prompts.log.info(`  rm "${targets.binary}"`)
 
     const binDir = path.dirname(targets.binary)
-    if (binDir.includes(".opencode") || binDir.includes(".n0face")) {
+    if (binDir.includes(".opencode") || binDir.includes(".am")) {
       prompts.log.info(`  rmdir "${binDir}" 2>/dev/null`)
     }
   }
@@ -266,7 +266,7 @@ async function getShellConfigFile(): Promise<string | null> {
     if (!exists) continue
 
     const content = await Filesystem.readText(file).catch(() => "")
-    if (content.includes("# opencode") || content.includes(".opencode/bin") || content.includes(".n0face/bin")) {
+    if (content.includes("# opencode") || content.includes(".opencode/bin") || content.includes(".am/bin")) {
       return file
     }
   }
@@ -291,14 +291,14 @@ async function cleanShellConfig(file: string) {
 
     if (skip) {
       skip = false
-      if (trimmed.includes(".opencode/bin") || trimmed.includes(".n0face/bin") || trimmed.includes("fish_add_path")) {
+      if (trimmed.includes(".opencode/bin") || trimmed.includes(".am/bin") || trimmed.includes("fish_add_path")) {
         continue
       }
     }
 
     if (
-      (trimmed.startsWith("export PATH=") && (trimmed.includes(".opencode/bin") || trimmed.includes(".n0face/bin"))) ||
-      (trimmed.startsWith("fish_add_path") && (trimmed.includes(".opencode") || trimmed.includes(".n0face")))
+      (trimmed.startsWith("export PATH=") && (trimmed.includes(".opencode/bin") || trimmed.includes(".am/bin"))) ||
+      (trimmed.startsWith("fish_add_path") && (trimmed.includes(".opencode") || trimmed.includes(".am")))
     ) {
       continue
     }

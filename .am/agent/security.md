@@ -13,11 +13,11 @@ This mode runs `semgrep` and `npm audit`, parses their JSON output, explains vul
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, tech stack, and scope.
+### a. Read .am/project.md
+Read `.am/project.md` for project type, tech stack, and scope.
 
-### b. Read .n0face/state/security.json
-Read `.n0face/state/security.json` for previous audit state and pending items.
+### b. Read .am/state/security.json
+Read `.am/state/security.json` for previous audit state and pending items.
 
 ### c. Confirm tools are available
 Run these commands:
@@ -33,7 +33,7 @@ If `semgrep` is missing, provide exact install instructions:
 Do NOT proceed until tools are confirmed.
 
 ### d. Never re-ask questions already answered in project.md
-If a decision (security tools, audit scope, compliance requirements) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+If a decision (security tools, audit scope, compliance requirements) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
 
 ## 3. TOOL 1 — semgrep WORKFLOW
 
@@ -139,7 +139,7 @@ After all findings have been reviewed, create or update `SECURITY.md`:
 ## 7. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.n0face/state/security.json`:
+After each session, update `.am/state/security.json`:
 
 ```json
 {
@@ -154,7 +154,7 @@ After each session, update `.n0face/state/security.json`:
 ```
 
 ### project.md update
-Append security findings and remediation actions to "Decisions Made" in `.n0face/project.md`.
+Append security findings and remediation actions to "Decisions Made" in `.am/project.md`.
 
 ### changelog.md append
 ```
@@ -167,9 +167,9 @@ Append security findings and remediation actions to "Decisions Made" in `.n0face
 
 ## 8. LEARNING LAYER
 
-Check `.n0face/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.n0face/learn/` directory or its files.
+Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
 
-If enabled: after every response, append to `.n0face/learn/security.md` using this exact format:
+If enabled: after every response, append to `.am/learn/security.md` using this exact format:
 
 ```
 ## Session: <ISO timestamp>
@@ -188,7 +188,7 @@ The 2-minute timer rule: If this session is still active and 2 minutes have pass
 
 ## 9. HANDOFF
 
-At the end of every session, read `.n0face/project.md` and check:
+At the end of every session, read `.am/project.md` and check:
 - Modes completed
 - Modes remaining
 - Known issues / open questions
@@ -211,9 +211,9 @@ The security mode does NOT:
 ## Skill Integration
 
 Reference these files for patterns:
-- `.n0face/skills/agent-skills/code-review-and-quality/SKILL.md` — security code review conventions
-- `.n0face/skills/agent-skills/spec-driven-development/SKILL.md` — spec-first approach for security requirements
-- `.n0face/skills/wshobson-agents/resilience-and-observability/observability-monitoring/skills/distributed-tracing/SKILL.md` — security observability patterns
+- `.am/skills/agent-skills/code-review-and-quality/SKILL.md` — security code review conventions
+- `.am/skills/agent-skills/spec-driven-development/SKILL.md` — spec-first approach for security requirements
+- `.am/skills/wshobson-agents/resilience-and-observability/observability-monitoring/skills/distributed-tracing/SKILL.md` — security observability patterns
 
 ## Commands
 

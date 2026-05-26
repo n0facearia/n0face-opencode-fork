@@ -197,7 +197,7 @@ const loadState = Effect.fn("TuiConfig.loadState")(function* (ctx: { directory: 
   // 4. Config directories (and OPENCODE_CONFIG_DIR) discovered while
   // walking up the tree. Also returned below so callers can install plugin
   // dependencies from each location.
-  const suffix = process.env.N0FACE === "1" ? ".n0face" : ".opencode"
+  const suffix = process.env.AM === "1" ? ".am" : ".opencode"
   const dirs = unique(directories).filter((dir) => dir.endsWith(suffix) || dir === Flag.OPENCODE_CONFIG_DIR)
 
   for (const dir of dirs) {

@@ -42,7 +42,7 @@ import { drizzle } from "drizzle-orm/bun-sqlite"
 import { ensureProcessMetadata } from "@opencode-ai/core/util/opencode-process"
 import { isRecord } from "@/util/record"
 
-process.env.N0FACE = "1"
+process.env.AM = "1"
 
 const processMetadata = ensureProcessMetadata("main")
 

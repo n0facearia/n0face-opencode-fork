@@ -5,19 +5,19 @@
     <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo" width="480">
   </picture>
 </p>
-<p align="center"><strong>n0face's OpenCode Fork</strong> — compose specialized AI agents like a pipeline.</p>
+<p align="center"><strong>AM for OpenCode</strong> — compose specialized AI agents like a pipeline.</p>
 
 ---
 
 ## Project Name
 
-**n0face-opencode-fork** — a developer-grade, terminal-based AI coding assistant built on [OpenCode](https://github.com/sst/opencode).
+**am-opencode** — a developer-grade, terminal-based AI coding assistant built on [OpenCode](https://github.com/sst/opencode).
 
 ## What it does
 
 Replaces the upstream two-mode loop (plan → build) with a **10-mode composable pipeline**. Each mode is an independent prompt file with a single responsibility — manager, design, frontend, backend, database, security, testing, devops, cleanup, documentation. Modes communicate through shared JSON state and a canonical `project.md` file. Run them in any order, rerun individual modes, or skip modes entirely.
 
-Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, and three-column home screen — all while keeping a config directory isolated to `.n0face/` so it never conflicts with upstream OpenCode.
+Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, and three-column home screen — all while keeping a config directory isolated to `.am/` so it never conflicts with upstream OpenCode.
 
 ## Features
 
@@ -25,11 +25,11 @@ Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, 
 - **LLM-agnostic** — all mode prompts are plain Markdown with zero model-specific syntax. Works with Claude, GPT-4o, Gemini, and any other LLM OpenCode supports
 - **Shared state** — modes read/write `project.md` and `state/<mode>.json`; questions are never re-asked
 - **Developer approval** — every build order, diff, and destructive action requires confirmation. No auto-apply
-- **Append-only changelog** — all sessions log to `.n0face/changelog.md` with canonical timestamps
+- **Append-only changelog** — all sessions log to `.am/changelog.md` with canonical timestamps
 - **Opt-in learning layer** — when enabled, each mode writes structured session notes explaining what it did and why
 - **Animated mascot** — cat sprites in the session header (idle/thinking/planning states)
 - **Tabbed view** — switch between Result and Thinking panels in the TUI
-- **Config isolation** — `.n0face/` directory never touches `.opencode/`; both can coexist
+- **Config isolation** — `.am/` directory never touches `.opencode/`; both can coexist
 - **Skill system** — 123 imported skill files from 3 upstream repos provide domain-specific patterns
 
 ## Tech Stack
@@ -57,7 +57,7 @@ Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, 
 curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash
 ```
 
-Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.n0face/bin` to PATH, and installs all 10 mode configs to `~/.config/n0face/`.
+Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.am/bin` to PATH, and installs all 10 mode configs to `~/.config/am/`.
 
 ### One-command uninstall
 
@@ -77,21 +77,21 @@ bun run build
 ### Rebuild from source (when already installed)
 
 ```bash
-n0face rebuild
+am rebuild
 ```
 
 ## Environment Setup
 
-n0face uses OpenCode's configuration system with an isolated config directory:
+AM uses OpenCode's configuration system with an isolated config directory:
 
-- **Project config**: `.n0face/n0face.json` or `.n0face/n0face.jsonc`
-- **Global config**: `~/.config/n0face/`
+- **Project config**: `.am/am.json` or `.am/am.jsonc`
+- **Global config**: `~/.config/am/`
 
 ### Setting up an LLM provider
 
 ```bash
-mkdir -p ~/.config/n0face
-cat > ~/.config/n0face/n0face.jsonc << 'EOF'
+mkdir -p ~/.config/am
+cat > ~/.config/am/am.jsonc << 'EOF'
 {
   "provider": "anthropic",
   "apiKey": "sk-ant-...",
@@ -109,14 +109,14 @@ export OPENAI_API_KEY=sk-proj-...
 
 ### Separating from upstream OpenCode
 
-n0face never touches `.opencode/`. You can have both installed side by side:
+AM never touches `.opencode/`. You can have both installed side by side:
 
-|                 | `n0face`                   | `opencode`                |
+|                 | `am`                       | `opencode`                |
 |-----------------|----------------------------|---------------------------|
-| Project config  | `.n0face/`                 | `.opencode/`              |
-| Global config   | `~/.config/n0face/`        | `~/.config/opencode/`     |
-| Agent files     | `.n0face/agent/*.md`       | `.opencode/agent/*.md`    |
-| Binary          | `~/.n0face/bin/n0face`     | system-specific path      |
+| Project config  | `.am/`                     | `.opencode/`              |
+| Global config   | `~/.config/am/`            | `~/.config/opencode/`     |
+| Agent files     | `.am/agent/*.md`           | `.opencode/agent/*.md`    |
+| Binary          | `~/.am/bin/am`             | system-specific path      |
 
 ## Running Locally
 
@@ -179,7 +179,7 @@ For a full walkthrough of the mode system and available commands, see [TUTORIAL.
 ## Architecture Overview
 
 ```
-.n0face/
+.am/
 ├── agent/             # 10 mode prompt files (the system)
 │   ├── manager.md     # intake, planning, cross-mode orchestration
 │   ├── design.md      # design system, UI audit, tokens
@@ -244,7 +244,7 @@ An opt-in cross-session memory system. When enabled in `project.md`:
 ## Settings - learning_layer: enabled
 ```
 
-Each mode appends structured notes to `.n0face/learn/<mode>.md` after every session:
+Each mode appends structured notes to `.am/learn/<mode>.md` after every session:
 
 ```markdown
 ## Session: 2026-05-26 14:30
@@ -264,7 +264,7 @@ To enable: edit `project.md` and change `learning_layer: disabled` to `learning_
 
 ## Supported LLMs
 
-Any provider and model that OpenCode supports works with n0face:
+Any provider and model that OpenCode supports works with AM:
 
 - **Anthropic**: Claude Sonnet 4, Claude 3.5 Haiku, Claude 3 Opus
 - **OpenAI**: GPT-4o, GPT-4o-mini, o3, o4-mini

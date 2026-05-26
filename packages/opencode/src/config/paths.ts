@@ -21,7 +21,7 @@ export const files = Effect.fn("ConfigPaths.projectFiles")(function* (
 })
 
 export function configDirName() {
-  return process.env.N0FACE === "1" ? ".n0face" : ".opencode"
+  return process.env.AM === "1" ? ".am" : ".opencode"
 }
 
 export const directories = Effect.fn("ConfigPaths.directories")(function* (directory: string, worktree?: string) {

@@ -1,4 +1,4 @@
-# opencode-ui — n0face fork
+# opencode-ui — AM fork
 
 ## Custom features added
 
@@ -42,7 +42,7 @@ Two tabs in the mascot header bar:
 Three-column layout:
 - Left: `<Mascot mode="idle" />` (12 cols)
 - Center: "Welcome back !"
-- Right: info panel with `n0face v0.1.0`, `opencode server`, `Model:`, `Session:`
+- Right: info panel with `AM v0.1.0`, `opencode server`, `Model:`, `Session:`
 
 ## Misc
 

@@ -368,7 +368,7 @@ export const Event = {
 
 export function plan(input: { slug: string; time: { created: number } }, instance: InstanceContext) {
   const base = instance.project.vcs
-    ? path.join(instance.worktree, process.env.N0FACE === "1" ? ".n0face" : ".opencode", "plans")
+    ? path.join(instance.worktree, process.env.AM === "1" ? ".am" : ".opencode", "plans")
     : path.join(Global.Path.data, "plans")
   return path.join(base, [input.time.created, input.slug].join("-") + ".md")
 }

@@ -124,8 +124,8 @@ export async function load(dir: string) {
     if (!md) continue
 
     const patterns = [
-      "/.n0face/agent/",
-      "/.n0face/agents/",
+      "/.am/agent/",
+      "/.am/agents/",
       "/.opencode/agent/",
       "/.opencode/agents/",
       "/agent/",

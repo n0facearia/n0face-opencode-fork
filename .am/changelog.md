@@ -1,4 +1,4 @@
-# n0face Changelog
+# AM Changelog
 <!-- Append-only. Never edit existing entries. Use the canonical format below: -->
 <!-- ## [YYYY-MM-DD HH:MM] — <mode> mode -->
 <!-- - <action performed> -->
