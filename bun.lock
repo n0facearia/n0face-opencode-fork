@@ -358,7 +358,7 @@
       "name": "am",
       "version": "1.14.48",
       "bin": {
-        "am": "./bin/n0face",
+        "am": "./bin/am",
       },
       "dependencies": {
         "@actions/core": "1.11.1",
