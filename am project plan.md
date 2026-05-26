@@ -1,12 +1,12 @@
-# am-opencode-fork — Full Project Plan
+# AM — opencode ultimate fork — Full Project Plan
 
-> **Purpose of this document:** This is the single source of truth for the am-opencode-fork project. It can be shared with any LLM to give it full context of the project vision, architecture, rules, and step-by-step build plan without needing prior conversation history.
+> **Purpose of this document:** This is the single source of truth for the AM — opencode ultimate fork project. It can be shared with any LLM to give it full context of the project vision, architecture, rules, and step-by-step build plan without needing prior conversation history.
 
 ---
 
 ## 1. Project Vision
 
-**am-opencode-fork** is a developer-grade, terminal-based AI coding assistant built on top of [OpenCode](https://github.com/sst/opencode). It is not a replacement for existing AI tools — it is a **compositor**: it brings together the best open-source skill systems, linters, analyzers, and agent patterns into a single cohesive experience, so a developer can take a project from idea to clean, production-ready code entirely within their terminal.
+**AM — opencode ultimate fork** is a developer-grade, terminal-based AI coding assistant built on top of [OpenCode](https://github.com/sst/opencode). It is not a replacement for existing AI tools — it is a **compositor**: it brings together the best open-source skill systems, linters, analyzers, and agent patterns into a single cohesive experience, so a developer can take a project from idea to clean, production-ready code entirely within their terminal.
 
 ### Core Philosophy
 
@@ -612,4 +612,4 @@ This is the sequence in which to build the fork. Each step is independently comp
 
 ---
 
-_Document version: 1.0 — Created as the foundational planning document for am-opencode-fork._
+_Document version: 1.0 — Created as the foundational planning document for AM — opencode ultimate fork._

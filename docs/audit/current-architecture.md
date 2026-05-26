@@ -1,4 +1,4 @@
-# Current Architecture Audit: opencode-ui (AM fork)
+# Current Architecture Audit: opencode-ui (AM — opencode ultimate fork)
 
 Generated: 2026-05-25
 Base upstream: https://github.com/sst/opencode (v1.14.48)

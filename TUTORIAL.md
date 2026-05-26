@@ -1,6 +1,6 @@
-# AM for OpenCode
+# AM — opencode ultimate fork
 
-A feature fork of [OpenCode](https://github.com/sst/opencode) — the open source AI coding agent — with custom agent modes, animated mascot, tabbed views, and project setup commands.
+The ultimate feature fork of [OpenCode](https://github.com/sst/opencode) — the open source AI coding agent — with 10 custom agent modes, animated mascot, tabbed views, and project setup commands.
 
 ---
 

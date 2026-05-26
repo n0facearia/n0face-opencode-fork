@@ -1,4 +1,4 @@
-# Contributing to am-opencode-fork
+# Contributing to AM — opencode ultimate fork
 
 This guide covers how to extend the fork's mode system — adding new agent modes, importing skills, writing effective prompts, and testing changes.
 

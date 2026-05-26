@@ -5,13 +5,13 @@
     <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo" width="480">
   </picture>
 </p>
-<p align="center"><strong>AM for OpenCode</strong> — compose specialized AI agents like a pipeline.</p>
+<p align="center"><strong>AM — opencode ultimate fork</strong> — compose specialized AI agents like a pipeline.</p>
 
 ---
 
 ## Project Name
 
-**am-opencode** — a developer-grade, terminal-based AI coding assistant built on [OpenCode](https://github.com/sst/opencode).
+**AM — opencode ultimate fork** — a developer-grade, terminal-based AI coding assistant built on [OpenCode](https://github.com/sst/opencode).
 
 ## What it does
 

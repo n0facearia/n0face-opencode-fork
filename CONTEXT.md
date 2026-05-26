@@ -1,4 +1,4 @@
-# opencode-ui — AM fork
+# opencode-ui — AM — opencode ultimate fork
 
 ## Custom features added
 
