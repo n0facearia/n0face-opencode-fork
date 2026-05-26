@@ -10,33 +10,62 @@ function appName() {
   return process.env.AM === "1" ? "am" : "opencode"
 }
 
+const overrides: Record<string, string | undefined> = {}
+
 const paths = {
   get home() {
-    return process.env.OPENCODE_TEST_HOME ?? os.homedir()
+    return overrides.home ?? process.env.OPENCODE_TEST_HOME ?? os.homedir()
+  },
+  set home(v: string) {
+    overrides.home = v
   },
   get data() {
-    return path.join(xdgData!, appName())
+    return overrides.data ?? path.join(xdgData!, appName())
+  },
+  set data(v: string) {
+    overrides.data = v
   },
   get bin() {
-    return path.join(this.cache, "bin")
+    return overrides.bin ?? path.join(this.cache, "bin")
+  },
+  set bin(v: string) {
+    overrides.bin = v
   },
   get log() {
-    return path.join(this.data, "log")
+    return overrides.log ?? path.join(this.data, "log")
+  },
+  set log(v: string) {
+    overrides.log = v
   },
   get repos() {
-    return path.join(this.data, "repos")
+    return overrides.repos ?? path.join(this.data, "repos")
+  },
+  set repos(v: string) {
+    overrides.repos = v
   },
   get cache() {
-    return path.join(xdgCache!, appName())
+    return overrides.cache ?? path.join(xdgCache!, appName())
+  },
+  set cache(v: string) {
+    overrides.cache = v
   },
   get config() {
-    return path.join(xdgConfig!, appName())
+    return overrides.config ?? path.join(xdgConfig!, appName())
+  },
+  set config(v: string) {
+    overrides.config = v
   },
   get state() {
-    return path.join(xdgState!, appName())
+    return overrides.state ?? path.join(xdgState!, appName())
+  },
+  set state(v: string) {
+    overrides.state = v
   },
   get tmp() {
-    return path.join(os.tmpdir(), appName())
+    return overrides.tmp ?? path.join(os.tmpdir(), appName())
+  },
+  set tmp(v: string) {
+    overrides.tmp = v
   },
 }
 
