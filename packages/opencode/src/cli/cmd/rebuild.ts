@@ -83,7 +83,7 @@ export const RebuildCommand = {
       const built = entries.find((e: string) => e.startsWith("am-")) || entries.find((e: string) => e === "opencode")
       if (!built) throw new Error(`built binary not found in ${distDir}`)
 
-      const srcBin = path.join(distDir, built, "bin/opencode")
+      const srcBin = path.join(distDir, built, "bin/am")
       run(`cp -f "${srcBin}" "${BIN_DIR}/am"`)
       run(`chmod +x "${BIN_DIR}/am"`)
       run(`cp "${BIN_DIR}/am" "${process.env.HOME}/.local/bin/am"`)

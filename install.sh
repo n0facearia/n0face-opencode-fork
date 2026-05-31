@@ -8,9 +8,9 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/am"
 
 # Check if we're already inside the repository
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd 2>/dev/null || true)"
-if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/package.json" ] && grep -q '"name": "opencode"' "$SCRIPT_DIR/package.json" 2>/dev/null; then
+if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/package.json" ] && grep -q '"name": "am"' "$SCRIPT_DIR/package.json" 2>/dev/null; then
   LOCAL_REPO="$SCRIPT_DIR"
-elif [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/../package.json" ] && grep -q '"name": "opencode"' "$SCRIPT_DIR/../package.json" 2>/dev/null; then
+elif [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/../package.json" ] && grep -q '"name": "am"' "$SCRIPT_DIR/../package.json" 2>/dev/null; then
   # Script is in repo root but we cd'd to script dir
   LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 else
@@ -47,7 +47,7 @@ if [ "$UNINSTALL" = "1" ]; then
   rm -rf "$CONFIG_DIR"
 
   for file in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.config/fish/config.fish"; do
-    [ -f "$file" ] && sed -i '/# AM/d;/\.am\/bin/d;/opencode\/bin/d' "$file"
+    [ -f "$file" ] && sed -i '/# AM/d;/\.am\/bin/d' "$file"
   done
 
   echo "  ✅ AM removed"
@@ -90,10 +90,8 @@ install_binary() {
   if curl -sfL -o /dev/null "$release_url" 2>/dev/null; then
     echo -e "${MUTED}Downloading AM binary...${NC}"
     curl -# -L "$release_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
-    if [ -f "$BIN_DIR/opencode" ]; then
-      mv "$BIN_DIR/opencode" "$BIN_DIR/am"
-    elif [ -f "$BIN_DIR/n0face" ]; then
-      mv "$BIN_DIR/n0face" "$BIN_DIR/am"
+    if [ -f "$BIN_DIR/am" ]; then
+      echo -e "  ${MUTED}Binary already exists at $BIN_DIR/am${NC}"
     fi
     cp "$BIN_DIR/am" "$HOME/.local/bin/am"
     echo -e "  ${GREEN}✓${NC} Installed AM binary to $BIN_DIR/am"
@@ -106,7 +104,7 @@ install_binary() {
   if curl -sfL -o /dev/null "$legacy_url" 2>/dev/null; then
     echo -e "${MUTED}Downloading AM binary (legacy naming)...${NC}"
     curl -# -L "$legacy_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
-    [ -f "$BIN_DIR/opencode" ] && mv "$BIN_DIR/opencode" "$BIN_DIR/am"
+    [ -f "$BIN_DIR/am" ] && echo -e "  ${MUTED}Binary already exists${NC}"
     cp "$BIN_DIR/am" "$HOME/.local/bin/am"
     echo -e "  ${GREEN}✓${NC} Installed AM binary to $BIN_DIR/am"
     return 0
@@ -198,7 +196,7 @@ install_binary() {
   fi
 
   local BUILT
-  BUILT=$(find "$BUILD_DIR/packages/opencode/dist" -name "opencode" -type f 2>/dev/null | head -1)
+  BUILT=$(find "$BUILD_DIR/packages/opencode/dist" -name "am" -type f 2>/dev/null | head -1)
   if [ -z "$BUILT" ] || [ ! -f "$BUILT" ]; then
     echo -e "${RED}Built binary not found in $BUILD_DIR/packages/opencode/dist${NC}"
     echo -e "${RED}Build output directory contents:${NC}"
