@@ -429,13 +429,12 @@ export function generateSystem(colors: TerminalColors, pick: "dark" | "light"): 
 }
 
 function splashTheme(theme: TuiThemeCurrent, indexed: RGBA[]): RunSplashTheme {
-  const left = nearestIndexed(indexed, theme.text)
-  const right = nearestIndexed(indexed, theme.text)
+  const white = nearestIndexed(indexed, RGBA.fromInts(255, 255, 255))
   return {
-    left,
-    right,
-    leftShadow: splashShadow(indexed, theme.background, left, 0.14),
-    rightShadow: splashShadow(indexed, theme.background, right, 0.14),
+    left: white,
+    right: white,
+    leftShadow: splashShadow(indexed, theme.background, white, 0.14),
+    rightShadow: splashShadow(indexed, theme.background, white, 0.14),
   }
 }
 
