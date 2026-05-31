@@ -46,10 +46,16 @@ export function empty() {
 }
 
 export function logo(pad?: string) {
+  const columns = process.stderr.columns || 80
+  const logoWidth = Math.max(
+    ...glyphs.left.map((row, i) => row.length + 1 + (glyphs.right[i] || "").length),
+  )
+  const centerPad = " ".repeat(Math.max(0, Math.floor((columns - logoWidth) / 2)))
+
   if (!process.stdout.isTTY && !process.stderr.isTTY) {
     const result = []
     for (const row of wordmark) {
-      if (pad) result.push(pad)
+      result.push(centerPad)
       result.push(row)
       result.push(EOL)
     }
@@ -59,7 +65,7 @@ export function logo(pad?: string) {
   const result: string[] = []
   const reset = "\x1b[0m"
   const left = {
-    fg: "\x1b[90m",
+    fg: "\x1b[97m",
     shadow: "\x1b[38;5;235m",
     bg: "\x1b[48;5;235m",
   }
@@ -93,7 +99,7 @@ export function logo(pad?: string) {
     return parts.join("")
   }
   glyphs.left.forEach((row, index) => {
-    if (pad) result.push(pad)
+    result.push(centerPad)
     result.push(draw(row, left.fg, left.shadow, left.bg))
     result.push(gap)
     const other = glyphs.right[index] ?? ""

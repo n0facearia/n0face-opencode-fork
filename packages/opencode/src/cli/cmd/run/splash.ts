@@ -205,6 +205,11 @@ function build(input: SplashWriterInput, kind: "entry" | "exit", ctx: Scrollback
   const leftShadow = color(input.theme.leftShadow, fallback(238, "#334155"))
   let height = 1
 
+  const logoWidth = Math.max(
+    ...logo.left.map((t, i) => t.length + 1 + (logo.right[i] || "").length),
+  )
+  const center = Math.max(0, Math.floor((width - logoWidth) / 2))
+
   if (kind === "entry") {
     const rightShadow = color(input.theme.rightShadow, fallback(240, "#475569"))
 
@@ -213,13 +218,13 @@ function build(input: SplashWriterInput, kind: "entry" | "exit", ctx: Scrollback
       const rightText = logo.right[i] ?? ""
 
       draw(lines, leftText, {
-        left: 0,
+        left: center,
         top: i,
         fg: left,
         shadow: leftShadow,
       })
       draw(lines, rightText, {
-        left: leftText.length + 1,
+        left: center + leftText.length + 1,
         top: i,
         fg: right,
         shadow: rightShadow,
@@ -231,8 +236,8 @@ function build(input: SplashWriterInput, kind: "entry" | "exit", ctx: Scrollback
     if (input.showSession !== false) {
       const top = logo.left.length + 1
       const label = "Session".padEnd(10, " ")
-      push(lines, 0, top, label, left, undefined, TextAttributes.DIM)
-      push(lines, label.length, top, meta.title, right, undefined, TextAttributes.BOLD)
+      push(lines, center, top, label, left, undefined, TextAttributes.DIM)
+      push(lines, center + label.length, top, meta.title, right, undefined, TextAttributes.BOLD)
       height = top + 1
     }
   }
@@ -240,13 +245,14 @@ function build(input: SplashWriterInput, kind: "entry" | "exit", ctx: Scrollback
   if (kind === "exit") {
     const mark = go.right.slice(1)
     const top = 1
-    const body_left = (mark[0]?.length ?? 0) + 2
+    const markWidth = Math.max(...mark.map((m) => m.length))
+    const body_left = center + markWidth + 2
     const session = "Session  "
     const label = "Continue "
 
     for (let i = 0; i < mark.length; i += 1) {
       draw(lines, mark[i] ?? "", {
-        left: 0,
+        left: center,
         top: top + i,
         fg: left,
         shadow: leftShadow,
