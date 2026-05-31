@@ -87,9 +87,9 @@ install_binary() {
   local filename="${pkg_name}-${target}.tar.gz"
   local release_url="https://github.com/$REPO/releases/latest/download/$filename"
 
-  if curl -sfL -o /dev/null "$release_url" 2>/dev/null; then
+  if curl -sfL --connect-timeout 10 --max-time 30 -o /dev/null "$release_url" 2>/dev/null; then
     echo -e "${MUTED}Downloading AM binary...${NC}"
-    curl -# -L "$release_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
+    curl -# -L --connect-timeout 10 --max-time 60 "$release_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
     if [ -f "$BIN_DIR/am" ]; then
       echo -e "  ${MUTED}Binary already exists at $BIN_DIR/am${NC}"
     fi
@@ -101,9 +101,9 @@ install_binary() {
   # Fallback: try legacy binary name (am-{os}-{arch}.tar.gz)
   local legacy_filename="${APP}-${target}.tar.gz"
   local legacy_url="https://github.com/$REPO/releases/latest/download/$legacy_filename"
-  if curl -sfL -o /dev/null "$legacy_url" 2>/dev/null; then
+  if curl -sfL --connect-timeout 10 --max-time 30 -o /dev/null "$legacy_url" 2>/dev/null; then
     echo -e "${MUTED}Downloading AM binary (legacy naming)...${NC}"
-    curl -# -L "$legacy_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
+    curl -# -L --connect-timeout 10 --max-time 60 "$legacy_url" | tar -xz -C "$BIN_DIR" 2>/dev/null
     [ -f "$BIN_DIR/am" ] && echo -e "  ${MUTED}Binary already exists${NC}"
     cp "$BIN_DIR/am" "$HOME/.local/bin/am"
     echo -e "  ${GREEN}✓${NC} Installed AM binary to $BIN_DIR/am"
@@ -281,7 +281,7 @@ install_file() {
     skipped=$((skipped + 1)); return 0
   fi
   local code
-  code=$(curl -fsSL -w "%{http_code}" "$BASE/$src" -o "$dst" 2>/dev/null) || true
+  code=$(curl -fsSL --connect-timeout 10 --max-time 30 -w "%{http_code}" "$BASE/$src" -o "$dst" 2>/dev/null) || true
   if [ "$code" = "200" ]; then
     echo "  ✓ ${dst#$CONFIG_DIR/}"
     created=$((created + 1))
