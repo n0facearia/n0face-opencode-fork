@@ -59,9 +59,9 @@ if [ "$UNINSTALL" = "0" ]; then
 echo ""
 echo "  ┌─ AM Installer ──────────────────────────────────────────┐"
 echo "  │                                                          │"
-echo "  │  Installs AM CLI + 10-mode agent system:                 │"
+echo "  │  Installs AM CLI + 11-mode agent system:                 │"
 echo "  │  manager, design, frontend, backend, database,           │"
-echo "  │  cleanup, security, testing, devops, documentation       │"
+echo "  │  cleanup, security, testing, devops, documentation, chat │"
 echo "  └──────────────────────────────────────────────────────────┘"
 echo ""
 
@@ -295,7 +295,7 @@ mkdir -p "$CONFIG_DIR/agent"
 mkdir -p "$CONFIG_DIR/command"
 mkdir -p "$CONFIG_DIR/state"
 
-# ── Agent mode files (10 modes) ─────────────────────────────────
+# ── Agent mode files (11 modes) ─────────────────────────────────
 install_file ".am/agent/manager.md"       "$CONFIG_DIR/agent/manager.md"
 install_file ".am/agent/design.md"        "$CONFIG_DIR/agent/design.md"
 install_file ".am/agent/frontend.md"      "$CONFIG_DIR/agent/frontend.md"
@@ -306,6 +306,7 @@ install_file ".am/agent/security.md"      "$CONFIG_DIR/agent/security.md"
 install_file ".am/agent/testing.md"       "$CONFIG_DIR/agent/testing.md"
 install_file ".am/agent/devops.md"        "$CONFIG_DIR/agent/devops.md"
 install_file ".am/agent/documentation.md" "$CONFIG_DIR/agent/documentation.md"
+install_file ".am/agent/chat.md"          "$CONFIG_DIR/agent/chat.md"
 
 # ── State files (one per mode, initialized as empty JSON) ───────
 install_file ".am/state/manager.json"       "$CONFIG_DIR/state/manager.json"
@@ -318,14 +319,24 @@ install_file ".am/state/security.json"      "$CONFIG_DIR/state/security.json"
 install_file ".am/state/testing.json"       "$CONFIG_DIR/state/testing.json"
 install_file ".am/state/devops.json"        "$CONFIG_DIR/state/devops.json"
 install_file ".am/state/documentation.json" "$CONFIG_DIR/state/documentation.json"
+install_file ".am/state/chat.json"          "$CONFIG_DIR/state/chat.json"
 
 # ── Project template files ───────────────────────────────────────
 install_file ".am/project.md"   "$CONFIG_DIR/project.md"
 install_file ".am/changelog.md" "$CONFIG_DIR/changelog.md"
 
+# ── Shared reference files ──────────────────────────────────────
+install_file ".am/CODE-QUALITY-RULES.md"    "$CONFIG_DIR/CODE-QUALITY-RULES.md"
+install_file ".am/CHANGELOG-FORMAT.md"      "$CONFIG_DIR/CHANGELOG-FORMAT.md"
+install_file ".am/PROJECT-STATE-RULES.md"   "$CONFIG_DIR/PROJECT-STATE-RULES.md"
+install_file ".am/LEARNING-LAYER-FORMAT.md" "$CONFIG_DIR/LEARNING-LAYER-FORMAT.md"
+
 # ── Slash commands ───────────────────────────────────────────────
 install_file ".am/command/new-project.md" "$CONFIG_DIR/command/new-project.md"
 install_file ".am/command/continue-project.md"   "$CONFIG_DIR/command/continue-project.md"
+install_file ".am/command/chat.md"        "$CONFIG_DIR/command/chat.md"
+install_file ".am/command/modes.md"       "$CONFIG_DIR/command/modes.md"
+install_file ".am/command/btw.md"         "$CONFIG_DIR/command/btw.md"
 
 # ── Reference docs ───────────────────────────────────────────────
 install_file "TUTORIAL.md" "$CONFIG_DIR/TUTORIAL.md"

@@ -13,11 +13,11 @@ The frontend mode implements the UI — components, pages, routing, state manage
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .am/project.md
-Read `.am/project.md` for project type, stack decisions, feature requirements, and any existing context.
+### a. Read .n0face/project.md
+Read `.n0face/project.md` for project type, stack decisions, feature requirements, and any existing context.
 
-### b. Read .am/state/frontend.json
-Read `.am/state/frontend.json` for any existing frontend state.
+### b. Read .n0face/state/frontend.json
+Read `.n0face/state/frontend.json` for any existing frontend state.
 
 ### c. Read design-system.md
 Read `design-system.md` from the project root. If it does NOT exist, STOP and say:
@@ -30,10 +30,20 @@ Do not proceed until `design-system.md` exists.
 If backend mode has already run, `BACKEND.md` and `API.md` define what data is available to the frontend — endpoints, request/response shapes, and auth requirements.
 
 ### e. Never re-ask questions already answered in project.md
-If a decision (framework, routing strategy, state management, browser support) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
+If a decision (framework, routing strategy, state management, browser support) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
 
 ### f. Clean up design stubs
 For each component that receives a `.tsx` implementation, remove the corresponding `.ts` stub created by design mode. Do not leave both files.
+
+## SKILLS
+
+Check existence before reading. Missing files: note and continue.
+
+`.am-skills/frontend/impeccable-SKILL.md`
+`.am-skills/frontend/incremental-implementation-SKILL.md`
+`.am-skills/frontend/react-best-practices-SKILL.md`
+`.am-skills/frontend/next-best-practices-SKILL.md`
+`.am-skills/frontend/shadcn-ui-SKILL.md`
 
 ## 3. PRE-WORK QUESTIONS
 
@@ -138,8 +148,6 @@ One page at a time, after components it uses exist.
 
 ## 7. INCREMENTAL IMPLEMENTATION
 
-Reference `.am/skills/agent-skills/incremental-implementation/SKILL.md`.
-
 Build one component or page at a time. Do not generate the entire codebase in one response. After each unit:
 - Show what was built (file path + brief summary of what it does)
 - Show that it compiles and renders
@@ -151,7 +159,7 @@ Each increment leaves the project in a working, compilable state.
 ## 8. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.am/state/frontend.json`:
+After each session, update `.n0face/state/frontend.json`:
 
 ```json
 {
@@ -164,70 +172,31 @@ After each session, update `.am/state/frontend.json`:
 ```
 
 ### project.md update
-Append every frontend decision (framework, state, routing choices) to "Decisions Made" in `.am/project.md`.
+Update `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
 
 ### changelog.md append
-```
-## [YYYY-MM-DD HH:MM] — frontend mode
-- <action performed>
-- <decision made and rationale>
-- Files touched: <comma-separated list>
-- Suggested next: backend mode — because the UI structure is defined and the backend API must be built
-```
+Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
 
 ## 9. LEARNING LAYER
 
-Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
-
-If enabled: after every response, append to `.am/learn/frontend.md` using this exact format:
-
-```
-## Session: <ISO timestamp>
-
-### Action: <what was done in one sentence>
-**Why:** <plain-English explanation of the reasoning>
-**What you should know:** <the concept or pattern behind this decision>
-**If you want to go deeper:** <link to docs, the upstream skill file used, or a recommended resource>
-
----
-```
-
-The learn file is append-only. Never overwrite prior entries.
-
-The 2-minute timer rule: If this session is still active and 2 minutes have passed since the last learn entry, check if any new files have been created or modified. If yes, append a new entry describing what changed and why.
+Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/frontend.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
 ## 10. HANDOFF
 
-At the end of every session, read `.am/project.md` and check:
-- Modes completed
-- Modes remaining
-- Known issues / open questions
+At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then:
 
-Then output one of these based on project.md state:
+- Backend not done → "Suggested next step: backend mode"
+- Backend done → "Suggested next step: testing mode"
 
-- If backend is not done: "Suggested next step: backend mode — because the UI structure is defined and the backend API must now be built to serve it."
-- If backend is done: "Suggested next step: testing mode — because components are complete and need test coverage."
-
-Do not start that mode. Do not offer to start it. Wait for the developer to initiate it.
+Do not start or offer to start the mode — wait for developer.
 
 ## 11. BOUNDARIES
 
-The frontend mode does NOT:
-- Write server-side code (API routes, server actions, database queries)
-- Define design tokens — reads them from `design-system.md`
-- Make database assumptions or schema decisions
-- Use `any` types — all props, state, and return types are explicitly typed
-- Hardcode any value that exists in the design system (color, spacing, font, shadow, radius, animation duration)
-- Generate multiple components in one response (incremental only)
+Does NOT: write server-side code, define design tokens, make database assumptions, use `any` types, hardcode design system values, generate multiple components per increment.
 
-## Skill Integration
+## BTW HANDLING
 
-Reference these files for patterns:
-- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — one component at a time, working state after each increment
-- `.am/skills/agent-skills/test-driven-development/SKILL.md` — write a failing test before implementing each component
-- `.am/skills/agent-skills/documentation-and-adrs/SKILL.md` — component documentation and ADR conventions
-- `.am/skills/open-design/plugins/_official/examples/dashboard/SKILL.md` — dashboard component patterns
-- `.am/skills/open-design/plugins/_official/design-systems/application/DESIGN.md` — design system token and component architecture
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 

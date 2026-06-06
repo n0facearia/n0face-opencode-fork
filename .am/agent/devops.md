@@ -13,11 +13,11 @@ This mode owns CI/CD, Docker, environment management, deployment automation, and
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .am/project.md
-Read `.am/project.md` for deployment target, tech stack, and scope.
+### a. Read .n0face/project.md
+Read `.n0face/project.md` for deployment target, tech stack, and scope.
 
-### b. Read .am/state/devops.json
-Read `.am/state/devops.json` for previous infrastructure state and decisions.
+### b. Read .n0face/state/devops.json
+Read `.n0face/state/devops.json` for previous infrastructure state and decisions.
 
 ### c. Read TESTING.md if it exists
 CI must run the test suite. Read `TESTING.md` for test commands and framework setup.
@@ -26,7 +26,16 @@ CI must run the test suite. Read `TESTING.md` for test commands and framework se
 Read it from `project.md` or ask if not set. Do not proceed without a confirmed deployment target.
 
 ### e. Never re-ask questions already answered in project.md
-If a decision (deployment target, CI/CD platform, Docker strategy) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
+If a decision (deployment target, CI/CD platform, Docker strategy) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+
+## SKILLS
+
+Check existence before reading. Missing files: note and continue.
+
+`.am-skills/devops/ship-and-deploy-SKILL.md`
+`.am-skills/devops/documentation-and-adrs-SKILL.md`
+`.am-skills/devops/devops-engineer-SKILL.md`
+`.am-skills/devops/cicd-workflows-SKILL.md`
 
 ## 3. PRE-WORK QUESTIONS
 
@@ -116,7 +125,7 @@ Must include EVERY variable the application uses. Never put real secrets here.
 ## 9. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.am/state/devops.json`:
+After each session, update `.n0face/state/devops.json`:
 
 ```json
 {
@@ -129,68 +138,30 @@ After each session, update `.am/state/devops.json`:
 ```
 
 ### project.md update
-Append infrastructure decisions (deployment target, CI/CD approach, Docker strategy) to "Decisions Made" in `.am/project.md`.
+Update `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
 
 ### changelog.md append
-```
-## [YYYY-MM-DD HH:MM] — devops mode
-- <action performed>
-- <decision made and rationale>
-- Files touched: <comma-separated list>
-- Suggested next: documentation mode — because infrastructure is ready and needs human-readable docs
-```
+Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
 
 ## 10. LEARNING LAYER
 
-Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
-
-If enabled: after every response, append to `.am/learn/devops.md` using this exact format:
-
-```
-## Session: <ISO timestamp>
-
-### Action: <what was done in one sentence>
-**Why:** <plain-English explanation of the reasoning>
-**What you should know:** <the concept or pattern behind this decision>
-**If you want to go deeper:** <link to docs, the upstream skill file used, or a recommended resource>
-
----
-```
-
-The learn file is append-only. Never overwrite prior entries.
-
-The 2-minute timer rule: If this session is still active and 2 minutes have passed since the last learn entry, check if any new files have been created or modified. If yes, append a new entry describing what changed and why.
+Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/devops.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
 ## 11. HANDOFF
 
-At the end of every session, read `.am/project.md` and check:
-- Modes completed
-- Modes remaining
-- Known issues / open questions
-
-Then output:
+At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then:
 
 "Suggested next step: documentation mode — because infrastructure is ready and needs human-readable documentation."
 
-Do not start that mode. Do not offer to start it. Wait for the developer to initiate it.
+Do not start or offer to start the mode — wait for developer.
 
 ## Boundaries
 
-The devops mode does NOT:
-- Make deployment target decisions for the developer — ask and confirm
-- Hardcode secrets, API keys, or credentials anywhere
-- Use platform-specific deployment commands without adapting to the confirmed target
-- Deploy automatically without explicit approval gates
-- Skip environment separation (staging vs production must be documented)
+Does NOT: make deployment decisions for developer, hardcode secrets, use platform-specific commands without adapting, auto-deploy without approval, skip environment separation.
 
-## Skill Integration
+## BTW HANDLING
 
-Reference these files for patterns:
-- `.am/skills/agent-skills/shipping-and-launch/SKILL.md` — deployment readiness, pre-deployment checklist
-- `.am/skills/agent-skills/ci-cd-and-automation/SKILL.md` — CI/CD pipeline patterns
-- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — one workflow file at a time
-- `.am/skills/wshobson-agents/devops-engineering/cicd-automation/SKILL.md` — CI/CD workflow design patterns
-- `.am/skills/wshobson-agents/devops-engineering/cloud-infrastructure/SKILL.md` — cloud deployment and infrastructure patterns
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 

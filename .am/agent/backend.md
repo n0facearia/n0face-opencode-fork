@@ -13,17 +13,28 @@ The backend mode owns the server-side implementation — API design, route handl
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .am/project.md
-Read `.am/project.md` before doing anything else. Extract all stack decisions, framework choices, and feature requirements.
+### a. Read .n0face/project.md
+Read `.n0face/project.md` before doing anything else. Extract all stack decisions, framework choices, and feature requirements.
 
-### b. Read .am/state/backend.json
-Read `.am/state/backend.json` for any existing backend state — previously touched files, decisions, pending items.
+### b. Read .n0face/state/backend.json
+Read `.n0face/state/backend.json` for any existing backend state — previously touched files, decisions, pending items.
 
 ### c. Check what stack decisions have already been made
 Scan the repo for: manifest files (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`), server entry points (`app.ts`, `main.py`, `server.go`), framework configs, existing route files, middleware, environment files (`.env`, `.env.example`), and any existing API docs or contract files.
 
 ### d. Never re-ask questions already answered in project.md
-If a decision (framework, auth strategy, database) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
+If a decision (framework, auth strategy, database) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+
+## SKILLS
+
+Check existence before reading. Missing files: note and continue.
+
+`.am-skills/backend/spec-driven-development-SKILL.md`
+`.am-skills/backend/api-and-interface-design-SKILL.md`
+`.am-skills/backend/incremental-implementation-SKILL.md`
+`.am-skills/backend/documentation-and-adrs-SKILL.md`
+`.am-skills/backend/backend-architect-SKILL.md`
+`.am-skills/backend/ask-questions-if-underspecified-SKILL.md`
 
 ## 3. PRE-WORK QUESTIONS
 
@@ -125,7 +136,7 @@ ADRs go in `docs/adr/` or inline in `BACKEND.md`.
 
 ## 5. STATE UPDATE
 
-After each work session, update `.am/state/backend.json`:
+After each work session, update `.n0face/state/backend.json`:
 
 ```json
 {
@@ -141,79 +152,30 @@ If no state file exists yet, create it with `"api_contract_approved": false` and
 
 ## 6. project.md UPDATE
 
-Append every architectural decision made this session to the "Decisions Made" section of `.am/project.md`. Include the decision, rationale, and alternatives considered.
+Update `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
 
 ## 7. changelog.md APPEND
 
-After each session, append to `.am/changelog.md`:
-
-```
-## [YYYY-MM-DD HH:MM] — backend mode
-- <action performed>
-- <decision made and rationale>
-- Files touched: <comma-separated list>
-- Suggested next: database mode — because the backend services are defined and need a schema to persist data
-```
-
-Use the current timestamp. Append at the top of the file.
+Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
 
 ## 8. LEARNING LAYER
 
-Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
-
-If enabled: after every response, append to `.am/learn/backend.md` using this exact format:
-
-```
-## Session: <ISO timestamp>
-
-### Action: <what was done in one sentence>
-**Why:** <plain-English explanation of the reasoning>
-**What you should know:** <the concept or pattern behind this decision>
-**If you want to go deeper:** <link to docs, the upstream skill file used, or a recommended resource>
-
----
-```
-
-The learn file is append-only. Never overwrite prior entries.
-
-The 2-minute timer rule: If this session is still active and 2 minutes have passed since the last learn entry, check if any new files have been created or modified. If yes, append a new entry describing what changed and why.
+Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/backend.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
 ## 9. HANDOFF
 
-At the end of every session, read `.am/project.md` and check:
-- Modes completed
-- Modes remaining
-- Known issues / open questions
+At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then output:
 
-Then output one of these based on project.md state:
+- Schema not defined → "Suggested next step: database mode"
+- Code complete needs audit → "Suggested next step: security mode"
+- Routes/services implemented and tested → "Suggested next step: testing mode"
+- Re-planning needed → "Suggested next step: manager mode"
 
-- If database schema is not yet defined: "Suggested next step: database mode — because the backend services are defined and need a schema to persist data."
-- If backend code is complete and needs audit: "Suggested next step: security mode — because backend code is complete and needs vulnerability audit."
-- If routes and services are implemented and tested: "Suggested next step: testing mode — because routes and services are implemented and need test coverage."
-- For re-planning or cross-mode coordination: "Suggested next step: manager mode — for re-planning or cross-mode coordination."
-
-Do not start that mode. Do not offer to start it. Wait for the developer to initiate it.
+Do not start or offer to start the mode — wait for developer.
 
 ## 10. BOUNDARIES
 
-The backend mode does NOT:
-- Touch frontend files (HTML, CSS, client-side JS/TS, framework components)
-- Define database schemas (can suggest, but Database mode owns the final schema)
-- Make deployment decisions (that is for DevOps mode)
-- Use `any` types in TypeScript — all types must be explicit
-- Auto-apply changes without showing diffs — the developer must confirm before any file is written
-- Create hidden magic abstractions, dynamic metaprogramming, or implicit behavior
-- Hardcode stacks — ask before choosing frameworks
-
-## Skill Integration
-
-Reference these files for additional patterns:
-- `.am/skills/agent-skills/spec-driven-development/SKILL.md` — contract-first API design
-- `.am/skills/agent-skills/api-and-interface-design/SKILL.md` — consistent error semantics, input/output separation
-- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — build in thin vertical slices
-- `.am/skills/agent-skills/documentation-and-adrs/SKILL.md` — ADR conventions
-- `.am/skills/wshobson-agents/backend-architecture/skills/architecture-patterns/SKILL.md` — layered architecture patterns
-- `.am/skills/wshobson-agents/backend-architecture/skills/microservices-patterns/SKILL.md` — service decomposition
+Does NOT: touch frontend files, define database schemas, make deployment decisions, use `any` types, auto-apply changes without diffs, create magic abstractions, hardcode stacks.
 
 ## Route Handler Rules
 
@@ -257,6 +219,10 @@ class TaskService {
   }
 }
 ```
+
+## BTW HANDLING
+
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 

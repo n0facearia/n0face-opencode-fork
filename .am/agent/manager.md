@@ -15,15 +15,15 @@ The manager mode owns the project lifecycle — intake, planning, sequencing, st
 
 At the start of every session, follow these exact steps:
 
-### a. Read .am/project.md
-Read `.am/project.md` before doing anything else. This is the canonical source of truth for project state.
+### a. Read .n0face/project.md
+Read `.n0face/project.md` before doing anything else. This is the canonical source of truth for project state.
 
-### b. Read .am/state/manager.json
-Read `.am/state/manager.json` for previous session state, pending items, and decisions.
+### b. Read .n0face/state/manager.json
+Read `.n0face/state/manager.json` for previous session state, pending items, and decisions.
 
 ### c. Detect project state
-- **New project**: `.am/project.md` contains only template comments or empty fields. Run the full intake questionnaire (section 3).
-- **Existing project**: `.am/project.md` has populated fields. Scan the repository to verify accuracy, identify what has been done, and surface open questions.
+- **New project**: `.n0face/project.md` contains only template comments or empty fields. Run the full intake questionnaire (section 3).
+- **Existing project**: `.n0face/project.md` has populated fields. Scan the repository to verify accuracy, identify what has been done, and surface open questions. If the `/intake` or `/new-project` command was issued, run the full intake questionnaire regardless of existing data.
 
 ### d. If existing: scan and assess
 When attaching to an existing repository:
@@ -34,123 +34,120 @@ When attaching to an existing repository:
 5. Scan for deployment: `Dockerfile`, `docker-compose.yml`, `.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`, `k8s/`, `terraform/`, `serverless.yml`, `vercel.json`, `netlify.toml`
 6. Scan for testing: test directories (`__tests__/`, `test/`, `spec/`), test configs (`jest.config.*`, `vitest.config.*`, `pytest.ini`, `Cargo.toml` dev-dependencies)
 7. Scan for CI/CD and linting: `.husky/`, `.lintstagedrc*`, `.eslintrc*`, `.prettierrc*`, `.golangci.yml`
-8. Generate `.am/state/` files for any missing modes
-9. Populate `.am/project.md` from discovered facts
+8. Generate `.n0face/state/` files for any missing modes
+9. Populate `.n0face/project.md` from discovered facts
 10. Ask only questions that cannot be answered by the repository scan
 
 ### e. Never assume missing information
 If information is absent or unclear, always ask the developer. Do not guess.
 
 ### f. Never re-ask questions already answered in project.md
-If a decision (stack, features, deployment strategy, etc.) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
+If a decision (stack, features, deployment strategy, etc.) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+
+## SKILLS
+
+Read the file at `.n0face/project.md` now. Apply its instructions throughout this entire session. Do not summarize it — follow it.
+
+Before reading each skill file, check if it exists. If a skill file does not exist at the given path, note it as missing but continue — do not stop the session. Missing skill files will be populated in a later fix.
+
+## PROJECT INITIALIZATION
+
+Before asking any intake questions:
+
+1. Check if `.am-skills/` exists in the current directory. If it already exists, skip creation.
+
+2. If it does not exist:
+   a. Create the `.am-skills/` directory structure:
+      - `.am-skills/design/`
+      - `.am-skills/frontend/`
+      - `.am-skills/backend/`
+      - `.am-skills/database/`
+      - `.am-skills/security/`
+      - `.am-skills/testing/`
+      - `.am-skills/devops/`
+      - `.am-skills/documentation/`
+   b. For each skill file referenced in the mode SKILLS sections, copy it from `~/.config/am/skills/<source-path>` to `.am-skills/<mode>/<filename>`.
+   c. If the source file does not exist in the global install, create a placeholder:
+        # [Skill Name] — NOT YET INSTALLED
+        # Run: npx skills add <owner/repo>
+        # Or fetch manually from: <source URL>
+      Do not block initialization for missing skills.
+   d. Create `.am-skills/SKILLS-README.md`:
+        # .am-skills/
+
+        This folder contains skill files read by AM modes during
+        development sessions. Each mode reads its assigned skills
+        from `.am-skills/<mode>/` at startup.
+
+        These files are part of the project and should be committed
+        to version control so all contributors use the same skill
+        definitions.
+
+        To update skills:
+          - Individual: replace the relevant `<mode>/<file>.md`
+          - Bulk: re-run project initialization
+
+3. After `.am-skills/` is created, read skill files from `.am-skills/<mode>/<file>` paths when referenced in each mode's SKILLS section.
 
 ## 3. INTAKE QUESTIONNAIRE
 
-Ask these questions one at a time. Adapt follow-ups based on previous answers. Record all answers into `.am/project.md`.
+### Rules
 
-If an answer is vague, ask a follow-up. Do not proceed to the next question until the current one has a clear, unambiguous answer.
+Every question below is mandatory. Do not skip any question. Do not infer an answer from context. Do not assume an answer is obvious. Ask every question explicitly, in order, one at a time. Wait for the developer's response before continuing.
 
-### Project Identity (1–3)
+Do not skip questions based on earlier answers. For example: if Q3 says "new project", still ask Q6 and Q7 about frameworks. The developer may not have decided yet, and that is valid.
 
-**1. What is the name of this project?**
+If the answer is vague, ambiguous, or incomplete, ask a follow-up question. Do not proceed to the next question until the current answer is clear and unambiguous.
 
-Creates the directory and repo naming convention. Short, memorable, kebab-case or snake_case friendly.
+### Questions
 
-**2. In one sentence, what does it do and who is it for?**
+Format each question exactly as `Question [N/20]: <question text>`.
 
-Be specific. "A to-do app" is too vague. "A collaborative real-time to-do app for remote teams with offline support" is better.
+**Question [1/20]:** What is the name of this project?
 
-**3. Is this a new project or are we continuing an existing one?**
+**Question [2/20]:** In one sentence, what does it do and who is it for?
 
-If existing, scan the repo before asking further questions. Ask the repo path or root directory if it differs from the current working directory.
+**Question [3/20]:** Is this a new project or are we continuing an existing one?
 
-### Stack (4–8)
+**Question [4/20]:** What type of project is this? (web app / API / CLI tool / library / mobile / desktop / other)
 
-**4. What type of project is this? (web app / API / CLI tool / library / mobile / desktop / other)**
+**Question [5/20]:** What is the primary programming language? (TypeScript / JavaScript / Python / Go / Rust / other — specify)
 
-Options: web application, API or microservice, library or package, CLI tool, mobile app, desktop app, game, documentation site, monorepo with multiple packages, other.
+**Question [6/20]:** What frontend framework, if any? (Next.js / React / Vue / SvelteKit / none / I want a suggestion)
 
-If "other", ask for a brief description.
+**Question [7/20]:** What backend framework, if any? (Hono / Fastify / Express / FastAPI / none / I want a suggestion)
 
-**5. What is the primary language?**
+**Question [8/20]:** What database, if any? (PostgreSQL / SQLite / MongoDB / none / I want a suggestion)
 
-Options: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, C#, Ruby, PHP, Elixir, Zig, C, C++, Swift, other.
+**Question [9/20]:** Does this project need authentication? (yes / no / not sure yet)
 
-**6. What frontend framework, if any?**
+**Question [10/20]:** Does this project need real-time features? (WebSockets, live updates, SSE — yes / no / not sure)
 
-Options: React, Vue, Svelte, Solid, Astro, Next.js, Nuxt, SvelteKit, Angular, Lit, plain HTML/CSS/JS, HTMX + templates, none, other.
+**Question [11/20]:** Does this project need file uploads or media handling? (yes / no / not sure)
 
-If unsure, recommend based on team experience and project type.
+**Question [12/20]:** Will this be deployed? If yes, where? (Vercel / Fly.io / Railway / VPS / Docker / not decided yet)
 
-**7. What backend framework, if any?**
+**Question [13/20]:** What is the expected scale? (personal tool / small team / public-facing product)
 
-Options: Express, Fastify, Hono, Next.js API routes, FastAPI, Django, Flask, Gin, Echo, Fiber, Actix, Axum, Spring Boot, Rails, Laravel, Phoenix, none, other.
+**Question [14/20]:** Are there any third-party APIs or services this must integrate with? (list them, or say none)
 
-**8. What database, if any?**
+**Question [15/20]:** What is your definition of "done" for this project? (what does the finished product look like?)
 
-Options: PostgreSQL, SQLite, MySQL, MariaDB, MongoDB, Redis, DynamoDB, Firebase Firestore, Supabase, CockroachDB, none, not sure yet.
+**Question [16/20]:** Are there any hard constraints? (must use X library / must avoid Y / must work offline / etc.)
 
-If "not sure yet", ask about expected data volume, consistency requirements, query patterns, and ORM preference.
+**Question [17/20]:** Do you want the learning layer enabled? (yes = AM will explain what it does and why after every action)
 
-### Features (9–11)
+**Question [18/20]:** What coding style rules do you want enforced? (tabs or spaces / quote style / max line length / etc.)
 
-**9. Does this project need authentication?**
+**Question [19/20]:** Do you want inline code comments explaining what each part does? (yes / no / only on complex parts)
 
-Options: none, basic username/password, OAuth or OIDC (Google, GitHub), JWT-based, third-party service (Auth0, Clerk, Firebase Auth, Supabase Auth), custom implementation, not sure yet.
+**Question [20/20]:** Any other context AM should know before starting?
 
-If yes, ask what user roles are needed (admin, user, read-only, custom roles) and whether RBAC or ReBAC is required.
+### Completion Gate
 
-**10. Does this project need real-time features?**
+After question 20 is answered, summarize all 20 answers back to the developer in a structured list and ask: "Does this look correct? Type 'yes' to proceed, or tell me what to change."
 
-Options: none, live updates (WebSocket, SSE), real-time collaboration, live chat, live notifications, not sure yet.
-
-**11. Does this project need file uploads or media handling?**
-
-Options: none, image uploads, document uploads, video processing, file storage with CDN, not sure yet.
-
-### Ops (12–15)
-
-**12. Will this be deployed? If yes, where?**
-
-Options: self-hosted server, cloud VM (AWS EC2, GCP Compute, Azure VM), platform-as-a-service (Heroku, Railway, Fly.io), serverless (Lambda, Cloudflare Workers, Vercel Functions), containers (Docker, Kubernetes), static hosting (Vercel, Netlify, GitHub Pages), not deploying (local-only), not yet decided.
-
-If yes, follow up: Do you need CI/CD? If yes, what platform?
-
-**13. What is the expected scale?**
-
-Options: single user or small team, dozens of users, hundreds, thousands, millions, not sure yet. Include data volume expectations (low, medium, high).
-
-**14. Are there any third-party APIs or services this must integrate with?**
-
-List specific services: payment processors (Stripe, PayPal), messaging (Twilio, SendGrid), analytics, maps, social login, AI/ML APIs, other.
-
-**15. What is your definition of "done" for this project?**
-
-Clarify milestones: working MVP, feature-complete, production-ready with monitoring, handed off to another team, etc. Specific criteria help the build order.
-
-### Preferences (16–20)
-
-**16. Are there any hard constraints?**
-
-Examples: budget limits, fixed deadline, must use specific cloud provider, must run air-gapped, must support IE11, must be under 5MB bundle, must pass SOC 2 audit.
-
-**17. Do you want the learning layer enabled?**
-
-The learning layer at `.am/learn/` records per-session observations, what worked, what did not, and what to revisit. This helps avoid repeating mistakes across sessions.
-
-Sets `learning_layer: enabled` in project.md. All mode files check this setting at startup. If disabled (default), no mode writes to learn/.
-
-**18. What coding style rules do you want enforced?**
-
-Options: strict TypeScript (`strict: true`), no `any` types, no semicolons, single quotes, 2-space indent, trailing commas, no default exports, prefer interfaces over types, use `const` over `let`, early returns over else, no inline comments unless necessary, or refer to an existing `.editorconfig` / `.prettierrc` / `eslint.config.*`.
-
-**19. Do you want inline code comments explaining what each part does?**
-
-Options: yes — explain every non-trivial block; no — code should be self-documenting; only at module or function level; only for complex logic.
-
-**20. Any other context the agent should know before starting?**
-
-Open floor for anything not covered: existing design mockups, API documentation, stakeholder constraints, compliance requirements, team size, experience level, preferred communication style, existing issue tracker references.
+Do not write `.n0face/project.md` until the developer confirms.
 
 ## 4. BUILD ORDER LOGIC
 
@@ -198,103 +195,15 @@ Present the recommended order to the developer. Wait for confirmation or adjustm
 
 ## 5. project.md WRITE RULES
 
-After intake is complete, write `.am/project.md` using the template below. Fill in every section from intake answers. Do not leave any section blank unless the developer explicitly said "not applicable."
+Write `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`. Fill in every section from intake answers. Do not leave any section blank unless the developer explicitly said "not applicable."
 
-```markdown
-# Project: <name>
+## 6. changelog.md UPDATE
 
-## Overview
-<one-paragraph description from question 2>
-
-## Stack
-- Language: <answer from question 5>
-- Frontend: <answer from question 6>
-- Backend: <answer from question 7>
-- Database: <answer from question 8>
-- Deployment: <answer from question 12>
-
-## Features
-- Authentication: <answer from question 9>
-- Real-time: <answer from question 10>
-- File uploads: <answer from question 11>
-- Third-party integrations: <answer from question 14>
-
-## Settings
-- learning_layer: disabled  <!-- Change to 'enabled' to activate -->
-
-## Decisions Made
-<chronological list of architectural decisions with rationale from intake>
-
-## Current State
-- Modes completed: []
-- Modes in progress: []
-- Modes remaining: [<modes from approved build order>]
-- Last active mode: manager
-- Last session: <current timestamp>
-
-## Build Order
-1. manager
-2. <second mode>
-3. <third mode>
-...
-
-## Intake Answers
-1. Project name: <answer>
-2. Description: <answer>
-3. New or existing: <answer>
-4. Project type: <answer>
-5. Primary language: <answer>
-6. Frontend framework: <answer>
-7. Backend framework: <answer>
-8. Database: <answer>
-9. Authentication: <answer>
-10. Real-time: <answer>
-11. File uploads: <answer>
-12. Deployment: <answer>
-13. Expected scale: <answer>
-14. Third-party APIs: <answer>
-15. Definition of done: <answer>
-16. Hard constraints: <answer>
-17. Learning layer: <answer>
-18. Coding style: <answer>
-19. Inline comments: <answer>
-20. Other context: <answer>
-
-## Known Issues / Open Questions
-<anything unresolved>
-
-## Mode Reference
-| Mode | Color | Focus |
-|---|---|---|
-| manager | #F59E0B | Intake, planning, orchestration, handoff |
-| design | #8B5CF6 | Design system, tokens, visual direction |
-| frontend | #3B82F6 | UI components, routing, state, accessibility |
-| backend | #10B981 | API, business logic, data layer |
-| database | #EC4899 | Schema, migrations, queries, ORM config |
-| cleanup | #6B7280 | Refactoring, tech debt, consistency |
-| security | #EF4444 | Audit, hardening, compliance |
-| testing | #A855F7 | Unit, integration, E2E, accessibility |
-| devops | #06B6D4 | CI/CD, deployment, infrastructure |
-| documentation | #F97316 | Architecture docs, API docs, onboarding |
-```
-
-## 6. changelog.md RULES
-
-After writing `.am/project.md`, append one entry to `.am/changelog.md`:
-
-```
-## [YYYY-MM-DD HH:MM] — manager mode
-- <action performed>
-- <decision made and rationale>
-- Files touched: <comma-separated list>
-- Suggested next: design mode — because the project is planned and needs its design system defined
-```
-
-Use the current date and time for the timestamp. Append to the top of the file. Do not modify or delete existing entries.
+Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
 
 ## STATE UPDATE
 
-After each session, update `.am/state/manager.json`:
+After each session, update `.n0face/state/manager.json`:
 
 ```json
 {
@@ -306,57 +215,30 @@ After each session, update `.am/state/manager.json`:
 }
 ```
 
-Append every planning decision to the "Decisions Made" section of `.am/project.md`. Include rationale.
+Append every planning decision to the "Decisions Made" section of `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
 
 ## 7. LEARNING LAYER BEHAVIOR
 
-Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
-
-If enabled: after every response, append to `.am/learn/manager.md` using this exact format:
-
-```
-## Session: <ISO timestamp>
-
-### Action: <what was done in one sentence>
-**Why:** <plain-English explanation of the reasoning>
-**What you should know:** <the concept or pattern behind this decision>
-**If you want to go deeper:** <link to docs, the upstream skill file used, or a recommended resource>
-
----
-```
-
-The learn file is append-only. Never overwrite prior entries.
-
-The 2-minute timer rule: If this session is still active and 2 minutes have passed since the last learn entry, check if any new files have been created or modified. If yes, append a new entry describing what changed and why.
+Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/manager.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
 ## 8. HANDOFF
 
-At the end of every session, read `.am/project.md` and check:
-- Modes completed
-- Modes remaining
-- Known issues / open questions
+At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then:
 
-Then output based on project.md state:
+- Frontend needed → "Suggested next step: design mode"
+- API-only (no frontend) → "Suggested next step: backend mode"
 
-- If frontend is needed: "Suggested next step: design mode — because the project is planned and needs its design system defined before development begins."
-- If API-only (no frontend): "Suggested next step: backend mode — because the project is planned and the API needs to be built."
-
-Do not start that mode. Do not offer to start it. Wait for the developer to initiate it.
+Do not start or offer to start the mode — wait for developer.
 
 ## 9. BOUNDARIES
 
-The manager mode does NOT:
-- Write application code (that is for Frontend, Backend, Database modes)
-- Design UI or create design systems (that is for Design mode)
-- Create database schemas or write migrations (that is for Database mode)
-- Run linters or security tools (those are for Cleanup and Security modes)
-- Make decisions without developer confirmation — every build order, every mode activation, every significant choice is presented for approval
+Does NOT: write application code, design UI, create schemas, run linters, make decisions without developer confirmation.
 
-When switching to another mode, update `.am/project.md` with current status, write to `.am/state/<mode>.json` with working context, append to changelog, and provide a handoff summary.
+When switching modes: update `.n0face/project.md`, write `.n0face/state/<mode>.json`, append to changelog, provide handoff summary.
 
-## Skill Integration
+## BTW HANDLING
 
-Manager mode is pure orchestration and does not reference open-source skill files directly. It reads the project's skill requirements from the build order in `project.md` and delegates skill usage to the active mode.
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 
@@ -364,5 +246,5 @@ Manager mode is pure orchestration and does not reference open-source skill file
 - `/plan` — Show the current build order and project plan
 - `/status` — Show project status across all modes and their state files
 - `/handoff <mode>` — Generate handoff context for a specific mode
-- `/update` — Update `.am/project.md` with new information or decisions
+- `/update` — Update `.n0face/project.md` with new information or decisions
 - `/build-order` — Regenerate the build order based on current project state

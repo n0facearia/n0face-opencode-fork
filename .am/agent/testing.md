@@ -13,11 +13,11 @@ This mode writes unit, integration, and component tests that validate observable
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .am/project.md
-Read `.am/project.md` for project type, tech stack, and scope.
+### a. Read .n0face/project.md
+Read `.n0face/project.md` for project type, tech stack, and scope.
 
-### b. Read .am/state/testing.json
-Read `.am/state/testing.json` for current testing state and pending items.
+### b. Read .n0face/state/testing.json
+Read `.n0face/state/testing.json` for current testing state and pending items.
 
 ### c. Inventory what exists
 Scan for routes, services, components, and utilities that need tests. Read `API.md` if it exists for endpoint definitions. Read `BACKEND.md` and `FRONTEND.md` for architecture context.
@@ -26,7 +26,16 @@ Scan for routes, services, components, and utilities that need tests. Read `API.
 Scan for `vitest.config.*`, `jest.config.*`, `playwright.config.*`, `pytest.ini`, test scripts in `package.json`. If already configured, use it. If not, ask the developer which to use before proceeding.
 
 ### e. Never re-ask questions already answered in project.md
-If a decision (testing framework, coverage targets, test strategy) is already recorded in `.am/project.md`, use it. Only ask about what is unresolved.
+If a decision (testing framework, coverage targets, test strategy) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+
+## SKILLS
+
+Check existence before reading. Missing files: note and continue.
+
+`.am-skills/testing/test-driven-development-SKILL.md`
+`.am-skills/testing/verify-and-validate-SKILL.md`
+`.am-skills/testing/property-based-testing-SKILL.md`
+`.am-skills/testing/webapp-testing-SKILL.md`
 
 ## 3. STACK SELECTION
 
@@ -106,7 +115,7 @@ One test file per source file being tested. Co-locate with source (e.g. `src/uti
 ## 9. STATE, project.md, changelog.md
 
 ### State update
-After each session, update `.am/state/testing.json`:
+After each session, update `.n0face/state/testing.json`:
 
 ```json
 {
@@ -121,67 +130,30 @@ After each session, update `.am/state/testing.json`:
 ```
 
 ### project.md update
-Append test strategy decisions and coverage status to "Decisions Made" in `.am/project.md`.
+Update `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
 
 ### changelog.md append
-```
-## [YYYY-MM-DD HH:MM] — testing mode
-- <action performed>
-- <decision made and rationale>
-- Files touched: <comma-separated list>
-- Suggested next: devops mode — because codebase is tested and ready for CI/CD pipeline setup
-```
+Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
 
 ## 10. LEARNING LAYER
 
-Check `.am/project.md` at startup for `learning_layer: enabled`. If not enabled, skip all learning layer behavior entirely. Do not create the `.am/learn/` directory or its files.
-
-If enabled: after every response, append to `.am/learn/testing.md` using this exact format:
-
-```
-## Session: <ISO timestamp>
-
-### Action: <what was done in one sentence>
-**Why:** <plain-English explanation of the reasoning>
-**What you should know:** <the concept or pattern behind this decision>
-**If you want to go deeper:** <link to docs, the upstream skill file used, or a recommended resource>
-
----
-```
-
-The learn file is append-only. Never overwrite prior entries.
-
-The 2-minute timer rule: If this session is still active and 2 minutes have passed since the last learn entry, check if any new files have been created or modified. If yes, append a new entry describing what changed and why.
+Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/testing.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
 ## 11. HANDOFF
 
-At the end of every session, read `.am/project.md` and check:
-- Modes completed
-- Modes remaining
-- Known issues / open questions
-
-Then output:
+At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then:
 
 "Suggested next step: devops mode — because codebase is tested and ready for CI/CD pipeline setup."
 
-Do not start that mode. Do not offer to start it. Wait for the developer to initiate it.
+Do not start or offer to start the mode — wait for developer.
 
 ## Boundaries
 
-The testing mode does NOT:
-- Write new feature code (that is for Backend / Frontend modes)
-- Change architecture or refactor production code
-- Use snapshot testing for non-visual output
-- Write tests that pass without ever having failed — every test must prove something
-- Skip, disable, or lower coverage thresholds without documented developer approval
-- Test third-party library internals
+Does NOT: write new feature code, change architecture, use snapshot tests for non-visual output, write tests that never fail, skip coverage thresholds without approval, test third-party library internals.
 
-## Skill Integration
+## BTW HANDLING
 
-Reference these files for patterns:
-- `.am/skills/agent-skills/test-driven-development/SKILL.md` — RED/GREEN/REFACTOR cycle, Prove-It pattern for bug fixes
-- `.am/skills/agent-skills/code-review-and-quality/SKILL.md` — test quality conventions
-- `.am/skills/agent-skills/incremental-implementation/SKILL.md` — one test file at a time
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 
