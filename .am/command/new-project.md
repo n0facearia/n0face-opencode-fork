@@ -1,15 +1,17 @@
 ---
-description: Scaffold a new project with the full n0face mode system
+description: Scaffold a new project with the full AM mode system
 ---
 
-Scaffold a new project with the full mode system.
+You are now in **START MODE**. A new project is being scaffolded.
 
-This command runs the manager mode intake questionnaire. The agent will ask 20 questions, one at a time. It will not proceed to writing project.md until all 20 have been answered and confirmed by the developer.
+The "Modes .md files/" directory structure with all mode templates and skills has already been created in the current directory by the AM CLI.
 
-Creates:
-- `PROJECT_SUMMARY.md` - Project overview and status tracking
-- `MODE_CONTEXT.md` - Mode system reference
-- `.n0face/` - Mode system prompts (if not exists)
-- `.n0face/agent/` - Agent configurations (if not exists)
+Your job is to run the intake process:
 
-After scaffolding, open in VS Code if running inside it.
+1. Ask all 20 intake questions one at a time. Format each as `Question [N/20]: <text>`.
+2. After all 20 are answered, summarize and ask for confirmation.
+3. Write `.am/project.md` with all intake answers filled into the template.
+4. Append a changelog entry to `.am/changelog.md`.
+5. Generate a recommended build order and present it for approval.
+
+Do not create "Modes .md files/" — it already exists.

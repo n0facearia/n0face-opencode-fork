@@ -60,7 +60,7 @@ echo ""
 echo "  ┌─ AM Installer ──────────────────────────────────────────┐"
 echo "  │                                                          │"
 echo "  │  Installs AM CLI + 11-mode agent system:                 │"
-echo "  │  manager, design, frontend, backend, database,           │"
+echo "  │  start, design, frontend, backend, database,              │"
 echo "  │  cleanup, security, testing, devops, documentation, chat │"
 echo "  └──────────────────────────────────────────────────────────┘"
 echo ""
@@ -208,6 +208,14 @@ install_binary() {
   chmod +x "$BIN_DIR/am"
   cp "$BIN_DIR/am" "$HOME/.local/bin/am"
 
+  # ── Install skills from repository ─────────────────────
+  if [ -d "$BUILD_DIR/.am/skills" ]; then
+    local SKILLS_DIR="$CONFIG_DIR/skills"
+    mkdir -p "$SKILLS_DIR"
+    cp -r "$BUILD_DIR/.am/skills/"* "$SKILLS_DIR/"
+    echo -e "  ${GREEN}✓${NC} Installed skills ($(find "$SKILLS_DIR" -type f | wc -l) files)"
+  fi
+
   # Only clean up if we cloned (not if using local repo)
   if [ "$BUILD_DIR" != "$LOCAL_REPO" ]; then
     rm -rf "$BUILD_DIR"
@@ -296,7 +304,7 @@ mkdir -p "$CONFIG_DIR/command"
 mkdir -p "$CONFIG_DIR/state"
 
 # ── Agent mode files (11 modes) ─────────────────────────────────
-install_file ".am/agent/manager.md"       "$CONFIG_DIR/agent/manager.md"
+install_file ".am/agent/start.md"        "$CONFIG_DIR/agent/start.md"
 install_file ".am/agent/design.md"        "$CONFIG_DIR/agent/design.md"
 install_file ".am/agent/frontend.md"      "$CONFIG_DIR/agent/frontend.md"
 install_file ".am/agent/backend.md"       "$CONFIG_DIR/agent/backend.md"
@@ -309,7 +317,7 @@ install_file ".am/agent/documentation.md" "$CONFIG_DIR/agent/documentation.md"
 install_file ".am/agent/chat.md"          "$CONFIG_DIR/agent/chat.md"
 
 # ── State files (one per mode, initialized as empty JSON) ───────
-install_file ".am/state/manager.json"       "$CONFIG_DIR/state/manager.json"
+install_file ".am/state/start.json"        "$CONFIG_DIR/state/start.json"
 install_file ".am/state/design.json"        "$CONFIG_DIR/state/design.json"
 install_file ".am/state/frontend.json"      "$CONFIG_DIR/state/frontend.json"
 install_file ".am/state/backend.json"       "$CONFIG_DIR/state/backend.json"
@@ -365,8 +373,8 @@ echo ""
 echo "  If am is not found, restart your shell or run:"
 echo "    exec \$SHELL"
 echo ""
-echo "  Press Tab to cycle modes: plan → build → design → frontend → backend"
-echo "  More modes: database → cleanup → security → testing → devops → documentation"
+echo "  Press Tab to cycle modes: start → design → frontend → backend → database"
+echo "  More modes: cleanup → security → testing → devops → documentation → chat"
 echo "  Slash commands: /modes  /btw  /chat  /new-project  /continue-project"
 echo ""
 

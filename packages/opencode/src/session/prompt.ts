@@ -29,6 +29,7 @@ import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { CrossSpawnSpawner } from "@am-ai/core/cross-spawn-spawner"
 import * as Stream from "effect/Stream"
 import { Command } from "../command"
+import { Scaffold } from "../command/scaffold"
 import { pathToFileURL, fileURLToPath } from "url"
 import { Config } from "@/config/config"
 import { ConfigMarkdown } from "@/config/markdown"
@@ -1960,6 +1961,15 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           ? Provider.parseModel(input.model)
           : yield* currentModel(input.sessionID)
         : taskModel
+
+      if (input.command === "new-project" || input.command === "continue-project") {
+        const ctx = yield* InstanceState.context
+        if (input.command === "new-project") {
+          yield* Scaffold.runNewProject(ctx.directory)
+        } else {
+          yield* Scaffold.runContinueProject(ctx.directory)
+        }
+      }
 
       yield* plugin.trigger(
         "command.execute.before",

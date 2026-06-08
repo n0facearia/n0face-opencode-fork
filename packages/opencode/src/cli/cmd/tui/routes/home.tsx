@@ -84,6 +84,10 @@ export function Home() {
             />
           </TuiPluginRuntime.Slot>
         </box>
+        <box width="100%" maxWidth={75} alignItems="center" paddingTop={1} flexShrink={0}>
+          <text color="gray" align="center">If you are starting a new project, run /new-project</text>
+          <text color="gray" align="center">If you already have an existing project, run /continue-project</text>
+        </box>
         <TuiPluginRuntime.Slot name="home_bottom" />
         <box flexGrow={1} minHeight={0} />
         <Toast />

@@ -2,7 +2,7 @@
 
 ## Writing project.md
 
-After intake is complete, write `.n0face/project.md` with all sections filled from intake answers. No blank sections unless explicitly "not applicable".
+After intake is complete, write `.am/project.md` with all sections filled from intake answers. No blank sections unless explicitly "not applicable".
 
 Template:
 
@@ -35,11 +35,11 @@ Template:
 - Modes completed: []
 - Modes in progress: []
 - Modes remaining: [<modes from approved build order>]
-- Last active mode: manager
+- Last active mode: start
 - Last session: <current timestamp>
 
 ## Build Order
-1. manager
+1. start
 2. <second mode>
 3. <third mode>
 ...
@@ -50,7 +50,7 @@ Template:
 ## Mode Reference
 | Mode | Color | Focus |
 |---|---|---|
-| manager | #F59E0B | Intake, planning, orchestration, handoff |
+| start | #F59E0B | Intake, planning, orchestration, handoff |
 | design | #8B5CF6 | Design system, tokens, visual direction |
 | frontend | #3B82F6 | UI components, routing, state, accessibility |
 | backend | #10B981 | API, business logic, data layer |
@@ -64,4 +64,4 @@ Template:
 
 ## Updating Decisions Made
 
-After each session, append decisions made (architecture, schema, testing strategy, etc.) to "Decisions Made" in `.n0face/project.md`. Include what was decided, rationale, and alternatives considered.
+After each session, append decisions made (architecture, schema, testing strategy, etc.) to "Decisions Made" in `.am/project.md`. Include what was decided, rationale, and alternatives considered.

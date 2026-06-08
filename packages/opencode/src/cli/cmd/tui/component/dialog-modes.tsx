@@ -4,7 +4,7 @@ import { useDialog } from "@tui/ui/dialog"
 import { createMemo } from "solid-js"
 
 const modeDescriptions: Record<string, string> = {
-  manager: "Project intake and build planning",
+  start: "New project intake and orchestration",
   design: "Visual identity and design system",
   frontend: "UI implementation",
   backend: "API, services, middleware",

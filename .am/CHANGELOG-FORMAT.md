@@ -1,6 +1,6 @@
 # Changelog Entry Format
 
-Append to `.n0face/changelog.md` after each session using this format:
+Append to `.am/changelog.md` after each session using this format:
 
 ```
 ## [YYYY-MM-DD HH:MM] — <mode name> mode
