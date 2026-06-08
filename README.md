@@ -5,7 +5,7 @@
     <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="AM logo" width="480">
   </picture>
 </p>
-<p align="center"><strong>AM — opencode ultimate fork</strong> — compose specialized AI agents like a pipeline.</p>
+<p align="center"><strong>AM — opencode ultimate fork</strong> — compose specialized AI agents like a pipeline. 11 agent modes with interactive TUI slash commands.</p>
 
 ---
 
@@ -15,13 +15,13 @@
 
 ## What it does
 
-Replaces the upstream two-mode loop (plan → build) with a **10-mode composable pipeline**. Each mode is an independent prompt file with a single responsibility — manager, design, frontend, backend, database, security, testing, devops, cleanup, documentation. Modes communicate through shared JSON state and a canonical `project.md` file. Run them in any order, rerun individual modes, or skip modes entirely.
+Replaces the upstream two-mode loop (plan → build) with an **11-mode composable pipeline**. Each mode is an independent prompt file with a single responsibility — manager, design, frontend, backend, database, security, testing, devops, cleanup, documentation. Modes communicate through shared JSON state and a canonical `project.md` file. Run them in any order, rerun individual modes, or skip modes entirely.
 
 Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, and three-column home screen — all while keeping a config directory isolated to `.am/` so it never conflicts with upstream OpenCode.
 
 ## Features
 
-- **10 agent modes** — manager orchestrates, design defines tokens, frontend/backend/database build, security/testing/devops harden, cleanup polishes, documentation synthesizes
+- **11 agent modes** — manager orchestrates, design defines tokens, frontend/backend/database build, security/testing/devops harden, cleanup polishes, documentation synthesizes, chat answers questions
 - **LLM-agnostic** — all mode prompts are plain Markdown with zero model-specific syntax. Works with Claude, GPT-4o, Gemini, and any other LLM OpenCode supports
 - **Shared state** — modes read/write `project.md` and `state/<mode>.json`; questions are never re-asked
 - **Developer approval** — every build order, diff, and destructive action requires confirmation. No auto-apply
@@ -31,6 +31,8 @@ Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, 
 - **Tabbed view** — switch between Result and Thinking panels in the TUI
 - **Config isolation** — `.am/` directory never touches `.opencode/`; both can coexist
 - **Skill system** — 123 imported skill files from 3 upstream repos provide domain-specific patterns
+- **Built-in slash commands** — `/modes` opens an interactive mode selector dialog, `/btw` adds context to any session via dialog or inline `/btw some text`
+- **Chat mode** — read-only Q&A mode for questions and exploration; no files touched, no state updated
 
 ## Tech Stack
 
@@ -57,7 +59,7 @@ Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, 
 curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash
 ```
 
-Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.am/bin` to PATH, and installs all 10 mode configs to `~/.config/am/`.
+Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.am/bin` to PATH, and installs all 11 mode configs to `~/.config/am/`.
 
 ### One-command uninstall
 
@@ -180,7 +182,7 @@ For a full walkthrough of the mode system and available commands, see [TUTORIAL.
 
 ```
 .am/
-├── agent/             # 10 mode prompt files (the system)
+├── agent/             # 11 mode prompt files (the system)
 │   ├── manager.md     # intake, planning, cross-mode orchestration
 │   ├── design.md      # design system, UI audit, tokens
 │   ├── frontend.md    # component implementation
@@ -190,9 +192,10 @@ For a full walkthrough of the mode system and available commands, see [TUTORIAL.
 │   ├── testing.md     # test strategy, coverage
 │   ├── devops.md      # CI/CD, Docker, deployment
 │   ├── cleanup.md     # linting, dead code, performance
-│   └── documentation.md  # README, ARCHITECTURE, CONTRIBUTING (terminal)
+│   ├── documentation.md  # README, ARCHITECTURE, CONTRIBUTING (terminal)
+│   └── chat.md        # Q&A mode — read-only, no state changes
 ├── state/             # Per-mode JSON state (touched_files, decisions, last_session)
-├── command/           # Slash command files (/new-project, /continue-project)
+├── command/           # Slash command files (/new-project, /continue-project, /btw, /chat)
 ├── skills/            # Imported skill definitions from 3 upstream repos
 ├── learn/             # Learning layer notes (created only when enabled)
 ├── project.md         # Canonical project state (modes completed, decisions, known issues)
@@ -215,6 +218,7 @@ Modes share state through `project.md` (modes completed/remaining, decisions, kn
 | **devops** | CI/CD, Docker, deployment, infrastructure | `DEVOPS.md`, workflow specs, runbook | `#06B6D4` |
 | **cleanup** | Lint issue resolution, dead code removal, performance | lint diff, cleanup plan, state JSON | `#6B7280` |
 | **documentation** | Synthesis into polished docs (terminal — no handoff) | `README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md` | `#10B981` |
+| **chat** | Read-only Q&A. No files touched, no state updated | Answers to the user | `#6B7280` |
 
 ### Mode workflow
 
@@ -224,8 +228,23 @@ Modes share state through `project.md` (modes completed/remaining, decisions, kn
 4. **security / testing / devops** after core implementation
 5. **cleanup** before documentation (remove dead code, fix lint)
 6. **documentation** last (terminal — reads all prior outputs, no handoff)
+7. **chat** at any time — read-only Q&A, no state changes, no handoff
 
-Any mode can be skipped. Any mode can be re-run. Handoff reads `project.md` → `Modes remaining` to decide the next mode.
+Any mode can be skipped. Any mode can be re-run. Chat mode can be used mid-pipeline without disrupting the build order. Handoff reads `project.md` → `Modes remaining` to decide the next mode.
+
+## Slash Commands
+
+AM adds several built-in slash commands accessible by typing `/` in the prompt:
+
+| Command | Behavior |
+|---------|----------|
+| `/modes` | Opens an interactive mode selector dialog. Tab/arrow keys to navigate, Enter to switch modes. No inline mode switching. |
+| `/btw` | Opens a text input dialog to add context to the current session. Also works inline: `/btw handle the null case too` sends the text as additional context to the LLM. |
+| `/chat` | Switches to chat mode. Inline: `/chat how does the auth middleware work?` |
+| `/new-project` | Scaffolds a new project with the full 11-mode system |
+| `/continue-project` | Imports the mode system into an existing project |
+
+Built-in slash commands (with interactive dialogs) take priority over markdown command files when selected from autocomplete. Markdown files handle inline usage when typed directly.
 
 ## How It Works
 

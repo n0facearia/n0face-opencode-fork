@@ -335,7 +335,6 @@ install_file ".am/LEARNING-LAYER-FORMAT.md" "$CONFIG_DIR/LEARNING-LAYER-FORMAT.m
 install_file ".am/command/new-project.md" "$CONFIG_DIR/command/new-project.md"
 install_file ".am/command/continue-project.md"   "$CONFIG_DIR/command/continue-project.md"
 install_file ".am/command/chat.md"        "$CONFIG_DIR/command/chat.md"
-install_file ".am/command/modes.md"       "$CONFIG_DIR/command/modes.md"
 install_file ".am/command/btw.md"         "$CONFIG_DIR/command/btw.md"
 
 # ── Reference docs ───────────────────────────────────────────────
@@ -368,7 +367,7 @@ echo "    exec \$SHELL"
 echo ""
 echo "  Press Tab to cycle modes: plan → build → design → frontend → backend"
 echo "  More modes: database → cleanup → security → testing → devops → documentation"
-echo "  Start: /new-project  |  Import existing project: /continue-project"
+echo "  Slash commands: /modes  /btw  /chat  /new-project  /continue-project"
 echo ""
 
 fi
