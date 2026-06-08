@@ -64,6 +64,8 @@ import { DialogConfirm } from "@tui/ui/dialog-confirm"
 import { DialogTimeline } from "./dialog-timeline"
 import { DialogForkFromTimeline } from "./dialog-fork-from-timeline"
 import { DialogSessionRename } from "../../component/dialog-session-rename"
+import { DialogModes } from "../../component/dialog-modes"
+import { DialogPrompt } from "@tui/ui/dialog-prompt"
 import { Sidebar } from "./sidebar"
 import { SubagentFooter } from "./subagent-footer.tsx"
 import { Flag } from "@am-ai/core/flag/flag"
@@ -1047,6 +1049,38 @@ export function Session() {
         moveChild(-1)
         dialog.clear()
       }),
+    },
+    {
+      title: "Switch mode",
+      value: "session.modes",
+      category: "Session",
+      slash: { name: "modes" },
+      run: () => {
+        dialog.replace(() => <DialogModes />)
+      },
+    },
+    {
+      title: "Add context (btw)",
+      value: "session.btw",
+      category: "Session",
+      slash: { name: "btw" },
+      run: async () => {
+        const text = await DialogPrompt.show(dialog, "Add context", {
+          description: () => "Additional context for the current task:",
+          placeholder: "e.g. also handle the edge case where user is null",
+        })
+        if (!text) return
+        const selectedModel = local.model.current()
+        if (!selectedModel) return
+        void sdk.client.session.command({
+          sessionID: route.sessionID,
+          command: "btw",
+          arguments: text,
+          agent: local.agent.current()?.name,
+          model: `${selectedModel.providerID}/${selectedModel.modelID}`,
+        })
+        dialog.clear()
+      },
     },
   ])
 
