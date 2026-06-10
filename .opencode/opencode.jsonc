@@ -3,6 +3,7 @@
   "provider": {},
   "permission": {},
   "mcp": {},
+  "default_agent": "start",
   "tools": {
     "github-triage": false,
     "github-pr-search": false,

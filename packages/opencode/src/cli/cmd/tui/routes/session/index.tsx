@@ -1051,15 +1051,6 @@ export function Session() {
       }),
     },
     {
-      title: "Switch mode",
-      value: "session.modes",
-      category: "Session",
-      slash: { name: "modes" },
-      run: () => {
-        dialog.replace(() => <DialogModes />)
-      },
-    },
-    {
       title: "Add context (btw)",
       value: "session.btw",
       category: "Session",
