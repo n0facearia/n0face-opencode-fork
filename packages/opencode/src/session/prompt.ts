@@ -1977,6 +1977,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         { parts },
       )
 
+      const silent = input.command === "btw"
       const result = yield* prompt({
         sessionID: input.sessionID,
         messageID: input.messageID,
@@ -1984,6 +1985,7 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         agent: userAgent,
         parts,
         variant: input.variant,
+        noReply: silent || undefined,
       })
       yield* bus.publish(Command.Event.Executed, {
         name: input.command,
