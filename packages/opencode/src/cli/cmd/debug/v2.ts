@@ -1,10 +1,10 @@
 import { EOL } from "os"
 import { Effect, Option } from "effect"
-import { Catalog } from "@opencode-ai/core/catalog"
-import { LocationServiceMap } from "@opencode-ai/core/location-layer"
-import { Location } from "@opencode-ai/core/location"
-import { PluginBoot } from "@opencode-ai/core/plugin/boot"
-import { AbsolutePath } from "@opencode-ai/core/schema"
+import { Catalog } from "@am-ai/core/catalog"
+import { LocationServiceMap } from "@am-ai/core/location-layer"
+import { Location } from "@am-ai/core/location"
+import { PluginBoot } from "@am-ai/core/plugin/boot"
+import { AbsolutePath } from "@am-ai/core/schema"
 import { effectCmd } from "../../effect-cmd"
 
 export const V2Command = effectCmd({

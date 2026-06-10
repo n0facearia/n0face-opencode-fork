@@ -1,5 +1,5 @@
-import { getFilename } from "@opencode-ai/core/util/path"
-import type { FileSystemContent } from "@opencode-ai/sdk/v2"
+import { getFilename } from "@am-ai/core/util/path"
+import type { FileSystemContent } from "@am-ai/sdk/v2"
 
 export function serverAttachmentFile(path: string, data: FileSystemContent) {
   const content =

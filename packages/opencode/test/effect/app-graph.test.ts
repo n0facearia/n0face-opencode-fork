@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { Cause, Context, Effect, Exit, Layer } from "effect"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@am-ai/core/effect/layer-node"
 
 const { buildLayer: build, group, replace } = LayerNode
 const node = LayerNode.make
