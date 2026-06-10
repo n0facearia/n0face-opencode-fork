@@ -328,7 +328,7 @@ export const layer = Layer.effect(
             agents,
             values(),
             sortBy(
-              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "build"), "desc"],
+              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "start"), "desc"],
               [(x) => x.name, "asc"],
             ),
           )
