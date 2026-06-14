@@ -44,6 +44,7 @@ Check existence before reading. Missing files: note and continue.
 `.am-skills/frontend/react-best-practices-SKILL.md`
 `.am-skills/frontend/next-best-practices-SKILL.md`
 `.am-skills/frontend/shadcn-ui-SKILL.md`
+`.am-skills/frontend/ui-engineering-SKILL.md`
 
 ## 3. PRE-WORK QUESTIONS
 
