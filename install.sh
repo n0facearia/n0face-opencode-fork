@@ -356,6 +356,24 @@ install_file ".am/design.mode.md"   "$CONFIG_DIR/design.mode.md"
 install_file ".am/cleanup.mode.md"  "$CONFIG_DIR/cleanup.mode.md"
 install_file ".am/security.mode.md" "$CONFIG_DIR/security.mode.md"
 
+# ── Skills ───────────────────────────────────────────────────────
+mkdir -p "$CONFIG_DIR/skills/design-taste-frontend"
+install_file ".agents/skills/design-taste-frontend/SKILL.md" "$CONFIG_DIR/skills/design-taste-frontend/SKILL.md"
+
+# ── MCP servers (merge into am.jsonc) ────────────────────────────
+MCP_RAW=$(curl -fsSL --connect-timeout 10 --max-time 30 "$BASE/.mcp.json" 2>/dev/null || echo "")
+if [ -n "$MCP_RAW" ]; then
+  MCP_MERGE=$(echo "$MCP_RAW" | jq '.mcpServers | to_entries | map({key, value: {type: "local", command: [.value.command] + .value.args}}) | from_entries' 2>/dev/null || echo "")
+  if [ -n "$MCP_MERGE" ]; then
+    if [ -f "$CONFIG_DIR/am.jsonc" ]; then
+      jq --argjson mcp "$MCP_MERGE" '.mcp = ((.mcp // {}) + $mcp)' "$CONFIG_DIR/am.jsonc" > "$CONFIG_DIR/am.jsonc.tmp" && mv "$CONFIG_DIR/am.jsonc.tmp" "$CONFIG_DIR/am.jsonc"
+    else
+      jq -n --argjson mcp "$MCP_MERGE" '{"$schema": "https://opencode.ai/config.json", mcp: $mcp}' > "$CONFIG_DIR/am.jsonc"
+    fi
+    echo "  ✓ MCP servers added to am.jsonc"
+  fi
+fi
+
 # ─── Summary ──────────────────────────────────────────────────────
 
 echo ""
