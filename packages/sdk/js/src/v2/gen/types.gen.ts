@@ -2013,6 +2013,7 @@ export type SyncEventSessionNextAgentSwitched = {
     timestamp: number
     sessionID: string
     agent: string
+    source?: string
   }
 }
 
@@ -2769,6 +2770,7 @@ export type EventSessionNextAgentSwitched = {
     timestamp: number
     sessionID: string
     agent: string
+    source?: string
   }
 }
 

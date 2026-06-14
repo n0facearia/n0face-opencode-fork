@@ -274,6 +274,16 @@ export const { use: useSyncV2, provider: SyncProviderV2 } = createSimpleContext(
             if (match) match.summary += event.properties.text
           })
           break
+        case "session.next.agent.switched":
+          update(event.properties.sessionID, (draft) => {
+            draft.unshift({
+              id: event.id,
+              type: "agent-switched",
+              agent: event.properties.agent,
+              time: { created: event.properties.timestamp },
+            })
+          })
+          break
         case "session.next.compaction.ended":
           update(event.properties.sessionID, (draft) => {
             const match = activeCompaction(draft)

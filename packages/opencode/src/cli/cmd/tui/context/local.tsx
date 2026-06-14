@@ -15,6 +15,7 @@ import { useArgs } from "./args"
 import { useSDK } from "./sdk"
 import { RGBA } from "@opentui/core"
 import { Filesystem } from "@/util/filesystem"
+import { MessageID, PartID } from "@/session/schema"
 
 export function parseModel(model: string) {
   const [providerID, ...rest] = model.split("/")
@@ -469,6 +470,24 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
 
       event.on("session.deleted", (evt) => {
         prune(evt.properties.info.id)
+      })
+
+      event.on("session.next.agent.switched", (evt) => {
+        agent.set(evt.properties.agent)
+        if (evt.properties.source === "pipeline") {
+          setTimeout(() => {
+            const currentAgent = agent.current()
+            const currentModel = model.current()
+            if (!currentAgent || !currentModel) return
+            sdk.client.session.prompt({
+              sessionID: evt.properties.sessionID,
+              messageID: MessageID.ascending(),
+              agent: currentAgent.name,
+              model: { providerID: currentModel.providerID, modelID: currentModel.modelID },
+              parts: [{ id: PartID.ascending(), type: "text", text: "continue" }],
+            }).catch(() => {})
+          }, 150)
+        }
       })
 
       if (Flag.AM_EXPERIMENTAL_SESSION_SWITCHING) {

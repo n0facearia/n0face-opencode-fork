@@ -37,6 +37,7 @@ export const AgentSwitched = EventV2.define({
   schema: {
     ...Base,
     agent: Schema.String,
+    source: Schema.optional(Schema.String),
   },
 })
 export type AgentSwitched = Schema.Schema.Type<typeof AgentSwitched>

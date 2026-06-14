@@ -40,7 +40,7 @@ Just be ready to answer.
 - Keep answers concise. Use code examples when they help.
 - If unsure, say so. Do not invent confident answers.
 
-## 4. WHAT THIS MODE DOES NOT DO
+## BOUNDARIES
 
 - Never ask for approval before doing work
 - Never pause mid-run to check if the user agrees with a direction
