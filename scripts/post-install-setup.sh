@@ -1,45 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-CONFIG_DIR="${HOME}/.config/am"
+REPO="n0facearia/n0face-opencode-fork"
+BRANCH="main"
+RAW="https://raw.githubusercontent.com/$REPO/$BRANCH"
+CONFIG="${HOME}/.config/am"
 
 echo "=== Post-install setup ==="
+mkdir -p "$CONFIG/agent" "$CONFIG/skills/design-taste-frontend"
 
-# 1. Global mode files
-echo "-> Copying mode files to ${CONFIG_DIR}/agent/"
-mkdir -p "${CONFIG_DIR}/agent/"
-cp "${REPO_DIR}/.am/agent/"*.md "${CONFIG_DIR}/agent/"
+echo "-> Downloading mode files"
+for f in backend chat cleanup database design devops documentation frontend security start testing; do
+  curl -sSf "$RAW/.am/agent/$f.md" -o "$CONFIG/agent/$f.md"
+done
 
-# 2. Global skill
-echo "-> Copying design-taste-frontend skill to ${CONFIG_DIR}/skills/"
-mkdir -p "${CONFIG_DIR}/skills/"
-cp -r "${REPO_DIR}/.agents/skills/design-taste-frontend" "${CONFIG_DIR}/skills/"
+echo "-> Downloading design-taste-frontend skill"
+curl -sSf "$RAW/.agents/skills/design-taste-frontend/SKILL.md" -o "$CONFIG/skills/design-taste-frontend/SKILL.md"
 
-# 3. Merge MCP servers into am.jsonc
-echo "-> Adding MCP servers to ${CONFIG_DIR}/am.jsonc"
-if command -v jq &>/dev/null; then
-  TMP=$(mktemp)
-  jq -s '
-    .[0] as $existing |
-    .[1].mcpServers |
-    to_entries |
-    map({key: .key, value: {type: "local", command: [.value.command] + .value.args}}) |
-    from_entries as $new_mcp |
-    $existing | .mcp = (($existing.mcp // {}) + $new_mcp)
-  ' "${CONFIG_DIR}/am.jsonc" "${REPO_DIR}/.mcp.json" > "$TMP"
-  mv "$TMP" "${CONFIG_DIR}/am.jsonc"
-  echo "   Merged using jq"
+echo "-> Adding MCP servers to am.jsonc"
+MCP=$(curl -sSf "$RAW/.mcp.json" | jq '.mcpServers | to_entries | map({key, value: {type: "local", command: [.value.command] + .value.args}}) | from_entries')
+if [ -f "$CONFIG/am.jsonc" ]; then
+  jq --argjson mcp "$MCP" '.mcp = ((.mcp // {}) + $mcp)' "$CONFIG/am.jsonc" > "$CONFIG/am.jsonc.tmp" && mv "$CONFIG/am.jsonc.tmp" "$CONFIG/am.jsonc"
 else
-  echo "   WARNING: jq not found. Add MCP servers manually to ${CONFIG_DIR}/am.jsonc"
-  echo "   Reference servers in ${REPO_DIR}/.mcp.json"
-fi
-
-# 4. Reminder about emil-design-eng
-if [ ! -d "${HOME}/.claude/skills/emil-design-eng" ]; then
-  echo ""
-  echo "NOTE: emil-design-eng skill is not in the repo."
-  echo "Reinstall it with: npx skills install emil-design-eng --location ~/.claude/skills"
+  jq -n --argjson mcp "$MCP" '{"$schema": "https://opencode.ai/config.json", mcp: $mcp}' > "$CONFIG/am.jsonc"
 fi
 
 echo "=== Done ==="
