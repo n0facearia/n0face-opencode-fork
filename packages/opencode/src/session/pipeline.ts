@@ -5,6 +5,7 @@ import { SessionID } from "./schema"
 import { Question } from "../question"
 import { SessionEvent } from "@/v2/session-event"
 import { SyncEvent } from "@/sync"
+import { BUILD_FROM_SOURCE } from "@/version"
 import * as Log from "@am-ai/core/util/log"
 
 const log = Log.create({ service: "pipeline" })
@@ -24,6 +25,9 @@ export function askSessionPermission(
   deps: { ask: Question.Interface["ask"] },
 ): Effect.Effect<void> {
   return Effect.gen(function* () {
+    if (!BUILD_FROM_SOURCE) {
+      log.warn("Warning: AM is running a prebuilt binary. Run 'am rebuild' to update to your latest local changes.")
+    }
     if (sessionPermission !== null) return
 
     const answers = yield* deps.ask({

@@ -1,13 +1,14 @@
 import * as prompts from "@clack/prompts"
 import { UI } from "../ui"
 import { execSync } from "node:child_process"
-import { existsSync, readdirSync } from "node:fs"
+import { existsSync, readdirSync, cpSync } from "node:fs"
 import path from "node:path"
 
 
 const REPO = "n0facearia/n0face-opencode-fork"
 const BUILD_DIR = process.env.AM_BUILD_DIR || `${process.env.HOME}/.am/build`
 const BIN_DIR = `${process.env.HOME}/.am/bin`
+const CONFIG_DIR = `${process.env.HOME}/.config/am`
 
 function run(cmd: string, cwd?: string) {
   execSync(cmd, { cwd, stdio: "inherit", encoding: "utf-8" })
@@ -87,6 +88,18 @@ export const RebuildCommand = {
       run(`cp -f "${srcBin}" "${BIN_DIR}/am"`)
       run(`chmod +x "${BIN_DIR}/am"`)
       run(`cp "${BIN_DIR}/am" "${process.env.HOME}/.local/bin/am"`)
+
+      spinner.message("Copying agent files...")
+      if (existsSync(path.join(sourceDir, ".am/agent"))) {
+        run(`mkdir -p "${CONFIG_DIR}/agent"`)
+        run(`cp "${sourceDir}/.am/agent/"*.md "${CONFIG_DIR}/agent/"`)
+      }
+
+      spinner.message("Copying skills...")
+      if (existsSync(path.join(sourceDir, ".agents/skills"))) {
+        run(`mkdir -p "${CONFIG_DIR}/skills"`)
+        run(`cp -r "${sourceDir}/.agents/skills/"* "${CONFIG_DIR}/skills/"`)
+      }
 
       spinner.stop("Rebuild complete")
       prompts.log.success("AM rebuilt from source")
