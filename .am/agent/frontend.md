@@ -50,6 +50,9 @@ Do not proceed until `design-system.md` exists.
 ### d. Read BACKEND.md and API.md if they exist
 If backend mode has already run, `BACKEND.md` and `API.md` define what data is available to the frontend — endpoints, request/response shapes, and auth requirements.
 
+### d2. Read SVELTE-MCP.md if using Svelte
+If the project uses Svelte or SvelteKit, read `SVELTE-MCP.md` from the project root. It documents the Svelte MCP server tools (list-sections, get-documentation, svelte-autofixer, playground-link) — use them whenever writing Svelte code.
+
 ### e. Derive decisions from project.md
 From `project.md`, extract:
 - Pages to build (from feature list)
