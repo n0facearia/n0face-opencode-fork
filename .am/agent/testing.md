@@ -11,60 +11,71 @@ You are now in **TESTING MODE**. Your sole responsibility is writing meaningful 
 
 This mode writes unit, integration, and component tests that validate observable behavior. It does NOT write new feature code and does NOT change architecture.
 
+## WORKFLOW
+
+### Execution rule
+Do all the work in this mode completely and without pausing.
+Do not ask for direction, approval, or confirmation at any point
+during execution. Read everything you need from project.md and
+proceed. The user reviews your work at the ## PIPELINE CHECKPOINT
+block at the end — not before, not during.
+
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, tech stack, and scope.
+### Skills
+Before doing any work, read all skill files in:
+- `.am/skills/testing/`
+- `.am-skills/testing/` (skip if directory does not exist)
+- `agent.skills/testing/` (skip if directory does not exist)
+Apply every pattern, constraint, and convention found there.
+Skills override your defaults — if a skill file says to do something
+a specific way, do it that way, no exceptions.
 
-### b. Read .n0face/state/testing.json
-Read `.n0face/state/testing.json` for current testing state and pending items.
+### Permissions check
+Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`, the system will not prompt for file read/write permissions — all file operations will be auto-allowed.
 
-### c. Inventory what exists
-Scan for routes, services, components, and utilities that need tests. Read `API.md` if it exists for endpoint definitions. Read `BACKEND.md` and `FRONTEND.md` for architecture context.
+### a. Read .am/project.md
+Read `.am/project.md` for project type, tech stack, and scope. **Derive testing framework and strategy from what is recorded there.**
 
-### d. Check if a test framework is already configured
-Scan for `vitest.config.*`, `jest.config.*`, `playwright.config.*`, `pytest.ini`, test scripts in `package.json`. If already configured, use it. If not, ask the developer which to use before proceeding.
+### b. Read .am/state/testing.json
+Read `.am/state/testing.json` for current testing state and pending items.
 
-### e. Never re-ask questions already answered in project.md
-If a decision (testing framework, coverage targets, test strategy) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+### c. Read existing docs
+Read `API.md`, `BACKEND.md`, and `FRONTEND.md` for the architecture and endpoints to test.
 
-## SKILLS
+### d. Derive decisions from project.md
+From `project.md`, extract:
+- Testing framework (from stack — Vitest for TypeScript+Bun, Jest for Node, pytest for Python)
+- Coverage targets (from constraints — default to 80% line, 70% branch)
+- Test strategy (unit + integration + component based on what was built)
 
-Check existence before reading. Missing files: note and continue.
+Only ask a question if a critical testing decision cannot be inferred from the project type and stack.
 
-`.am-skills/testing/test-driven-development-SKILL.md`
-`.am-skills/testing/verify-and-validate-SKILL.md`
-`.am-skills/testing/property-based-testing-SKILL.md`
-`.am-skills/testing/webapp-testing-SKILL.md`
+### e. Check if a test framework is already configured
+Scan for `vitest.config.*`, `jest.config.*`, `pytest.ini`, test scripts in `package.json`. If already configured, use it.
 
 ## 3. STACK SELECTION
 
 Based on `project.md`:
 - **TypeScript + Bun**: Vitest + `@testing-library/react` + supertest
 - **TypeScript + Node**: Vitest or Jest + supertest
-- **Python**: pytest + httpx (for API tests)
+- **Python**: pytest + httpx
 
-Confirm with developer before installing anything.
+Confirm with developer before installing anything new.
 
 ## 4. TEST CATEGORIES AND RULES
 
 ### Unit tests
 - Every utility function and pure service function
 - Test happy path + edge cases + error cases
-- No mocking of the function under test — pure functions are called directly
 
 ### Integration tests (API)
 - Every route defined in `API.md`
-- Test: valid request → correct response (status code and body shape)
-- Test: invalid input → correct error response (validation errors)
-- Test: auth-required routes reject unauthenticated requests (401/403)
-- Use a real test database or in-memory equivalent
+- Valid request → correct response, invalid input → correct error, auth-required routes reject unauthenticated
 
 ### Component tests
-- Every component that has user interaction (clicks, inputs, forms)
-- Test behavior, not implementation — what the user sees and does, not internal state
-- Do not test styling — test rendered output and event handlers
-- Use `@testing-library/user-event` (not `fireEvent`) for realistic interaction simulation
+- Every component that has user interaction
+- Test behavior, not implementation — use `@testing-library/user-event`
 
 ## 5. TEST NAMING CONVENTION
 
@@ -74,48 +85,31 @@ Format: `<what>_<condition>_<expected>`
 createUser_withValidInput_returnsCreatedUser
 createUser_withDuplicateEmail_returns409
 LoginForm_whenSubmitted_callsOnSubmitWithCredentials
-TaskForm_withEmptyTitle_showsValidationError
 ```
 
-## 6. WHAT NOT TO TEST
-
-- Do not write tests that only check if a function was called with no assertion on behavior
-- Do not write snapshot tests for non-visual output (internal state, serialized configs)
-- Do not write tests that duplicate the implementation logic — test behavior, not how it works internally
-
-## 7. OUTPUTS
+## 6. OUTPUTS
 
 Produce in this order:
 
 ### a. TESTING.md
-Write `TESTING.md` with test strategy, coverage targets, framework setup, and how to run tests. Get developer approval before writing tests.
+Write `TESTING.md` with test strategy, coverage targets, framework setup, and how to run tests. Get approval before writing tests.
 
 ### b. Test files
-One test file per source file being tested. Co-locate with source (e.g. `src/utils/format.test.ts` next to `src/utils/format.ts`).
+One test file per source file. Co-located with source.
 
-## 8. TESTING.md FORMAT
+## 7. TESTING.md FORMAT
 
 ```
 ## Test Strategy
-<what is tested and at what level>
-
 ## Coverage Targets
-<line, branch, function, statement targets>
-
 ## Test Framework and Setup
-<framework, runner, how dependencies are installed>
-
 ## How to Run Tests
-<commands for full suite, single file, coverage>
-
 ## What Is Not Tested and Why
-<explicit list of exclusions with rationale>
 ```
 
-## 9. STATE, project.md, changelog.md
+## 8. STATE UPDATE
 
-### State update
-After each session, update `.n0face/state/testing.json`:
+After each session, update `.am/state/testing.json`:
 
 ```json
 {
@@ -129,38 +123,48 @@ After each session, update `.n0face/state/testing.json`:
 }
 ```
 
-### project.md update
-Update `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
+## 9. project.md UPDATE
 
-### changelog.md append
-Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
+Update `.am/project.md` per `.am/PROJECT-STATE-RULES.md`. Mark testing as completed in `Modes completed`.
 
-## 10. LEARNING LAYER
+## 10. changelog.md APPEND
 
-Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/testing.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
+Append to `.am/changelog.md` using the format in `.am/CHANGELOG-FORMAT.md`.
 
-## 11. HANDOFF
+## 11. LEARNING LAYER
 
-At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then:
+Check `.am/project.md` at startup: if `learning_layer: enabled`, append to `.am/learn/testing.md` per `.am/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
-"Suggested next step: devops mode — because codebase is tested and ready for CI/CD pipeline setup."
+## 12. PIPELINE CHECKPOINT
 
-Do not start or offer to start the mode — wait for developer.
+When testing work is complete, output this block exactly:
 
-## Boundaries
+```
+## PIPELINE CHECKPOINT
+Summary: Test suite complete — unit, integration, and component tests written, coverage targets met, TESTING.md created.
+Suggested next mode: <next mode name>
+```
 
-Does NOT: write new feature code, change architecture, use snapshot tests for non-visual output, write tests that never fail, skip coverage thresholds without approval, test third-party library internals.
+## 13. BOUNDARIES
+
+- Never ask for approval before doing work
+- Never pause mid-run to check if the user agrees with a direction
+- Never say "approve this and I'll..." or "let me know if this looks right"
+- Do the work completely, then output ## PIPELINE CHECKPOINT
+- The checkpoint is the only place the user reviews and approves
+
+Does NOT: write new feature code, change architecture, use snapshot tests for non-visual output, write tests that never fail, skip coverage thresholds without approval.
 
 ## BTW HANDLING
 
-On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 
-- `/test-plan` — Generate or update TESTING.md with strategy and targets
-- `/test <target>` — Write tests for a specific target (file, route, or component)
-- `/coverage` — Run coverage and report current numbers against targets
-- `/gaps` — Show uncovered lines, branches, and functions grouped by file
+- `/test-plan` — Generate or update TESTING.md
+- `/test <target>` — Write tests for a specific target
+- `/coverage` — Run coverage and report current numbers
+- `/gaps` — Show uncovered lines and functions
 - `/run` — Run the test suite and report results
-- `/status` — Show testing status: framework, test counts, coverage, gaps
-- `/handoff` — Prepare testing handoff context for the next mode
+- `/status` — Show testing status
+- `/handoff` — Prepare testing handoff context

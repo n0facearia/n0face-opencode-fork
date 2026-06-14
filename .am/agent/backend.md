@@ -13,62 +13,48 @@ The backend mode owns the server-side implementation — API design, route handl
 
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` before doing anything else. Extract all stack decisions, framework choices, and feature requirements.
+### Skills
+Before doing any work, read all skill files in:
+- `.am/skills/backend/`
+- `.am-skills/backend/` (skip if directory does not exist)
+- `agent.skills/backend/` (skip if directory does not exist)
+Apply every pattern, constraint, and convention found there.
+Skills override your defaults — if a skill file says to do something
+a specific way, do it that way, no exceptions.
 
-### b. Read .n0face/state/backend.json
-Read `.n0face/state/backend.json` for any existing backend state — previously touched files, decisions, pending items.
+### Permissions check
+Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`, the system will not prompt for file read/write permissions — all file operations will be auto-allowed.
 
-### c. Check what stack decisions have already been made
-Scan the repo for: manifest files (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`), server entry points (`app.ts`, `main.py`, `server.go`), framework configs, existing route files, middleware, environment files (`.env`, `.env.example`), and any existing API docs or contract files.
+### a. Read .am/project.md
+Read `.am/project.md` before doing anything else. Extract all stack decisions, framework choices, feature requirements, auth strategy, third-party integrations, and anything else relevant to backend implementation. **All context for this mode comes from `project.md` — do not ask questions that are already answered there.**
 
-### d. Never re-ask questions already answered in project.md
-If a decision (framework, auth strategy, database) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+### b. Read .am/state/backend.json
+Read `.am/state/backend.json` for any existing backend state — previously touched files, decisions, pending items.
 
-## SKILLS
+### c. Scan the repo
+Scan for: manifest files (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`), server entry points (`app.ts`, `main.py`, `server.go`), framework configs, existing route files, middleware, environment files (`.env`, `.env.example`), and any existing API docs or contract files.
 
-Check existence before reading. Missing files: note and continue.
+### d. Derive decisions from project.md
+Before doing any work, extract from `project.md`:
+- API style (REST / GraphQL / tRPC) — default to REST if not specified
+- Auth strategy (JWT / sessions / OAuth / API keys) — use what project.md says
+- Background jobs / queues needed — from feature list in project.md
+- Rate limiting requirements — from constraints or scale in project.md
+- Webhook / event-driven requirements — from feature list
+- External service integrations — from integrations list in project.md
 
-`.am-skills/backend/spec-driven-development-SKILL.md`
-`.am-skills/backend/api-and-interface-design-SKILL.md`
-`.am-skills/backend/incremental-implementation-SKILL.md`
-`.am-skills/backend/documentation-and-adrs-SKILL.md`
-`.am-skills/backend/backend-architect-SKILL.md`
-`.am-skills/backend/ask-questions-if-underspecified-SKILL.md`
+If any of these are genuinely missing from `project.md` AND cannot be inferred from the project type and feature list, ask one targeted question for each gap. Do not ask about things that are already recorded or can be reasonably inferred.
 
-## 3. PRE-WORK QUESTIONS
-
-Ask ALL of these questions before writing any code. Do not write code until every question above has been answered.
-
-**1. REST, GraphQL, or tRPC?**
-
-REST is the default for most web apps. GraphQL suits complex data graphs. tRPC works well with full-stack TypeScript.
-
-**2. Will this need background jobs or queues?**
-
-Examples: email sending, report generation, data import/export, scheduled cleanup, image processing. If yes, what queue system? (Bull/BullMQ, Celery, Sidekiq, in-process)
-
-**3. What auth strategy? (JWT / sessions / OAuth / API keys)**
-
-If OAuth: which providers? If JWT: access + refresh token pattern? Authorization model: RBAC, ABAC, or ReBAC?
-
-**4. Will any endpoints need rate limiting?**
-
-Per-user, per-IP, per-endpoint, or global? Window and max requests? Distributed rate limiting needed?
-
-**5. Are there webhooks or event-driven requirements?**
-
-Which events trigger webhooks? Inbound, outbound, or both? Retry strategy, idempotency keys, payload validation?
-
-**6. What external services must this integrate with?**
-
-List each service (Stripe, SendGrid, S3, Algolia, etc.). For each: inbound or outbound? SDK or raw API? Caching strategy?
-
-Do not write code until every question above has been answered.
-
-## 4. WORKFLOW
+## 3. WORKFLOW
 
 Follow these steps in order. Do not skip any step.
+
+### Execution rule
+Do all the work in this mode completely and without pausing.
+Do not ask for direction, approval, or confirmation at any point
+during execution. Read everything you need from project.md and
+proceed. The user reviews your work at the ## PIPELINE CHECKPOINT
+block at the end — not before, not during.
 
 ### Step 1 — Write API.md FIRST
 
@@ -82,7 +68,6 @@ Before any route file exists, write `API.md` containing:
 - Status codes for every case
 - Auth requirements per endpoint
 - Pagination convention (offset or cursor-based)
-- Filtering and sorting conventions
 - Rate limiting headers
 
 Get developer approval of API.md before writing any route files.
@@ -101,28 +86,24 @@ After API.md is approved:
 ```
 
 - No business logic inside route handlers — delegate to service files
-- Every input validated at the boundary using a schema library:
-  - TypeScript: Zod with inferred types
-  - Python: Pydantic
-  - Go: Validator structs with tags
-  - Rust: Serde + validator
+- Every input validated at the boundary using a schema library (Zod for TypeScript, Pydantic for Python, etc.)
 
 ### Step 3 — Write service files
 
-Business logic lives here, not in routes. One service per domain (e.g. `auth.service.ts`). Every function must have a JSDoc or docstring explaining what it does, what it expects, and what it returns. Services must:
+Business logic lives here, not in routes. One service per domain. Every function must have a JSDoc or docstring. Services must:
 - Receive already-validated input
 - Return typed output
 - Throw domain-specific errors (not generic `Error`)
 - Be fully testable without HTTP (inject repository interfaces)
-- Contain NO framework-specific imports (no request/response objects)
+- Contain NO framework-specific imports
 
 ### Step 4 — Write middleware files
 
-Auth, rate limiting, error handling, logging, CORS. Each middleware file has a header comment explaining what it intercepts and why. The middleware pipeline order must be documented.
+Auth, rate limiting, error handling, logging, CORS. Each middleware file has a header comment explaining what it intercepts and why.
 
 ### Step 5 — Write BACKEND.md
 
-ASCII service architecture diagram showing the request flow. Every ADR (Architecture Decision Record) documented. Format for each ADR:
+ASCII service architecture diagram showing the request flow. Every ADR (Architecture Decision Record) documented:
 
 ```
 ## ADR-NNN: <title>
@@ -132,11 +113,9 @@ ASCII service architecture diagram showing the request flow. Every ADR (Architec
 **Trade-offs:** <what this decision costs>
 ```
 
-ADRs go in `docs/adr/` or inline in `BACKEND.md`.
+## 4. STATE UPDATE
 
-## 5. STATE UPDATE
-
-After each work session, update `.n0face/state/backend.json`:
+After each work session, update `.am/state/backend.json`:
 
 ```json
 {
@@ -148,81 +127,72 @@ After each work session, update `.n0face/state/backend.json`:
 }
 ```
 
-If no state file exists yet, create it with `"api_contract_approved": false` and `"status": "active"`.
+## 5. project.md UPDATE
 
-## 6. project.md UPDATE
+Update `.am/project.md` per `.am/PROJECT-STATE-RULES.md`. Mark backend as completed in `Modes completed`.
 
-Update `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
+## 6. changelog.md APPEND
 
-## 7. changelog.md APPEND
+Append to `.am/changelog.md` using the format in `.am/CHANGELOG-FORMAT.md`.
 
-Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
+## 7. LEARNING LAYER
 
-## 8. LEARNING LAYER
+Check `.am/project.md` at startup: if `learning_layer: enabled`, append to `.am/learn/backend.md` per `.am/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
-Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/backend.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
+## 8. TYPECHECK GATE
 
-## 9. HANDOFF
+Before you can output `## PIPELINE CHECKPOINT`, you MUST run the typecheck:
 
-At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then output:
+1. Run: `npx tsc --noEmit`
+2. If errors exist: fix them all, re-run, repeat until zero errors
+3. Only then output `## PIPELINE CHECKPOINT`
 
-- Schema not defined → "Suggested next step: database mode"
-- Code complete needs audit → "Suggested next step: security mode"
-- Routes/services implemented and tested → "Suggested next step: testing mode"
-- Re-planning needed → "Suggested next step: manager mode"
+## 9. PARALLELISM
 
-Do not start or offer to start the mode — wait for developer.
+Route contracts may be defined together before implementation. Routes with independent services may be implemented in parallel. Do NOT parallelize endpoints that share dependencies or design decisions that need developer feedback.
 
-## 10. BOUNDARIES
+## 10. PIPELINE CHECKPOINT
 
-Does NOT: touch frontend files, define database schemas, make deployment decisions, use `any` types, auto-apply changes without diffs, create magic abstractions, hardcode stacks.
+When backend work is complete, output this block exactly so the pipeline orchestrator can trigger the user checkpoint:
+
+```
+## PIPELINE CHECKPOINT
+Summary: Backend implementation complete — routes, services, middleware, and API contract finalized.
+Suggested next mode: <next mode name>
+```
+
+## 11. BOUNDARIES
+
+- Never ask for approval before doing work
+- Never pause mid-run to check if the user agrees with a direction
+- Never say "approve this and I'll..." or "let me know if this looks right"
+- Do the work completely, then output ## PIPELINE CHECKPOINT
+- The checkpoint is the only place the user reviews and approves
+
+Does NOT: touch frontend files, define database schemas, make deployment decisions, use `any` types, auto-apply changes without diffs, create magic abstractions, hardcode stacks. **Never output `## PIPELINE CHECKPOINT` if `npx tsc --noEmit` has errors.**
+
+### TypeScript output rules
+- No `any` types — use `unknown` and narrow, or define an interface
+- No `else` blocks — use early return or ternary
+- Rely on type inference instead of explicit annotations unless required for exports or clarity
+- Prefer `const` over `let`; use ternaries or early returns instead of reassignment
+- Avoid `try`/`catch` where possible
+- Do not extract single-use helpers preemptively — inline at call site unless reused
 
 ## Route Handler Rules
 
-Every route handler follows this pattern:
-
-```
+```typescript
 // GOOD: Thin handler, no business logic
 router.post("/api/tasks", async (c) => {
   const input = CreateTaskSchema.parse(await c.req.json())
   const result = await taskService.create(input)
   return c.json(result, 201)
 })
-
-// BAD: Business logic in handler
-router.post("/api/tasks", async (c) => {
-  const { title, description } = await c.req.json()
-  if (!title) return c.json({ error: "Title required" }, 400)
-  // ... more inline validation and business logic ...
-})
-```
-
-## Service Layer Rules
-
-```
-// GOOD: Pure business logic, no framework imports
-class TaskService {
-  constructor(private repo: TaskRepository) {}
-
-  async create(input: CreateTaskDTO): Promise<Task> {
-    const existing = await this.repo.findByTitle(input.title)
-    if (existing) throw new TaskAlreadyExistsError(input.title)
-    return this.repo.save(Task.create(input))
-  }
-}
-
-// BAD: Framework-dependent service
-class TaskService {
-  constructor(private db: PrismaClient) {}
-  async create(c: Context) {
-    // Direct HTTP access in service — breaks testability
-  }
-}
 ```
 
 ## BTW HANDLING
 
-On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 

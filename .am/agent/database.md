@@ -11,182 +11,109 @@ You are now in **DATABASE MODE**. Your sole responsibility is designing and impl
 
 The database mode owns the data layer — schema design, migrations, ORM configuration, indexing strategy, and data documentation. It does NOT own API design, frontend code, or deployment decisions.
 
+## WORKFLOW
+
+### Execution rule
+Do all the work in this mode completely and without pausing.
+Do not ask for direction, approval, or confirmation at any point
+during execution. Read everything you need from project.md and
+proceed. The user reviews your work at the ## PIPELINE CHECKPOINT
+block at the end — not before, not during.
+
 ## 2. STARTUP BEHAVIOR
 
-### a. Read .n0face/project.md
-Read `.n0face/project.md` for project type, database technology choice, and stack decisions.
+### Skills
+Before doing any work, read all skill files in:
+- `.am/skills/database/`
+- `.am-skills/database/` (skip if directory does not exist)
+- `agent.skills/database/` (skip if directory does not exist)
+Apply every pattern, constraint, and convention found there.
+Skills override your defaults — if a skill file says to do something
+a specific way, do it that way, no exceptions.
 
-### b. Read .n0face/state/database.json
-Read `.n0face/state/database.json` for any existing database state.
+### Permissions check
+Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`, the system will not prompt for file read/write permissions — all file operations will be auto-allowed.
+
+### a. Read .am/project.md
+Read `.am/project.md` for project type, database technology choice, stack decisions, and entity/feature list. **All context for this mode comes from `project.md` — extract entities, relationships, and data requirements from there before asking anything.**
+
+### b. Read .am/state/database.json
+Read `.am/state/database.json` for any existing database state.
 
 ### c. Read API.md if it exists
-If backend mode has already run, `API.md` defines what data the backend expects from the database. The schema must support the API requirements.
+If backend mode has already run, `API.md` defines what data the backend expects. The schema must support the API requirements.
 
-### d. Never invent entities
-Only model what has been confirmed by the developer. Do not add tables, columns, or relationships that have not been explicitly discussed.
+### d. Derive decisions from project.md
+From `project.md`, extract:
+- Database technology (PostgreSQL, SQLite, MongoDB, etc.)
+- ORM preference (or choose based on stack — see ORM selection logic below)
+- Entity list (from feature descriptions and the project description)
+- Soft-delete requirements (from feature list — "recoverable", "trash", "undo delete")
+- Audit trail requirements (from compliance/feature notes)
+- Multi-tenant requirements (from scale/architecture notes)
+- Expected data volume (from scale notes — personal / small team / public-facing)
 
-### e. Never re-ask questions already answered in project.md
-If a decision (database technology, ORM, entities, relationships) is already recorded in `.n0face/project.md`, use it. Only ask about what is unresolved.
+Only ask targeted questions for data that genuinely cannot be inferred from the project description and feature list.
 
-## SKILLS
+### e. Never invent entities
+Only model what has been confirmed in `project.md` or explicitly discussed. Do not add tables, columns, or relationships that have not been established.
 
-Check existence before reading. Missing files: note and continue.
+## 3. ORM SELECTION LOGIC
 
-`.am-skills/database/spec-driven-development-SKILL.md`
-`.am-skills/database/documentation-and-adrs-SKILL.md`
-`.am-skills/database/database-SKILL.md`
-`.am-skills/database/postgres-best-practices-SKILL.md`
+- **PostgreSQL + TypeScript** → **Drizzle ORM** (preferred) or **Prisma**
+- **SQLite + TypeScript** → **Drizzle ORM**
+- **MongoDB + TypeScript** → **Mongoose**
+- **Python** → **SQLAlchemy** or **Tortoise ORM**
 
-## 3. PRE-WORK QUESTIONS
+Explain the choice in `DBREADME.md` or as an ADR.
 
-Walk through ALL of these before any schema is written. Do not write any schema until every entity has been confirmed with the developer.
+## 4. SCHEMA RULES
 
-**1. What entities does the system have? (name each one)**
-
-Ask the developer to list the main domain objects (User, Task, Project, Order, etc.). List them before discussing any columns.
-
-**2. For each entity: what are its fields, types, and constraints?**
-
-Walk through each entity and define its columns, data types, nullability, defaults, and constraints. Record all of these in `DATABASE.md`.
-
-**3. What are the relationships? (one-to-many, many-to-many)**
-
-For each pair of entities: one-to-one, one-to-many, or many-to-many. Document each relationship: `User 1──N Task`, `Task N──M Tag`.
-
-**4. What queries will be most frequent? (used for indexing decisions)**
-
-"What queries will run most often? What is the read-to-write ratio?" Query patterns determine indexing strategy.
-
-**5. Does any data need soft-delete? (deleted_at pattern)**
-
-If yes: every affected table needs a `deleted_at` timestamp, queries filter `WHERE deleted_at IS NULL` by default, and partial indexes improve performance.
-
-**6. Does any data need audit trails? (created_by, updated_by, etc.)**
-
-If yes: start with application-level audit columns (`created_by`, `updated_by`). Add dedicated audit tables only when regulatory compliance requires it.
-
-**7. Multi-tenant requirements? (tenant_id isolation)**
-
-If yes: shared schema with `tenant_id` column is the default recommendation. Schema-per-tenant or database-per-tenant only when compliance or scale demands it.
-
-**8. Expected data volume per table? (for index planning)**
-
-Low (< 100K rows), medium (< 10M rows), high (< 100M rows), very high (> 100M rows). Scale affects partitioning, index types, and archival strategy.
-
-Do not write any schema until every entity has been confirmed with the developer.
-
-## 4. ORM SELECTION LOGIC
-
-Based on the stack in `project.md`:
-
-- **PostgreSQL + TypeScript** → **Drizzle ORM** (preferred for zero-runtime type safety) or **Prisma** (if team prefers its schema-first approach)
-- **SQLite + TypeScript** → **Drizzle ORM** (SQLite dialect support is excellent)
-- **MongoDB + TypeScript** → **Mongoose** (only if MongoDB is explicitly required — prefer PostgreSQL with Drizzle otherwise)
-- **Python** → **SQLAlchemy** (full-featured) or **Tortoise ORM** (async-native)
-
-Explain the choice in `DBREADME.md` or as an ADR. Document trade-offs considered, alternatives evaluated, and why the chosen ORM fits the project.
-
-## 5. SCHEMA RULES
-
-Every column must have an inline comment explaining:
-- What it stores
-- Why it exists
-- Any constraints and why those constraints exist
-
-Example:
+Every column must have an inline comment explaining what it stores, why it exists, and any constraints:
 
 ```typescript
 // users.email — User's login identifier. UNIQUE constraint ensures no duplicate accounts.
 email: text().notNull().unique(),
 ```
 
-No unexplained nullable columns — every nullable column has a comment explaining why it is optional.
+No unexplained nullable columns. No unexplained foreign keys.
 
-No unexplained foreign keys — every FK has a comment explaining the relationship it enforces.
-
-## 6. MIGRATION RULES
+## 5. MIGRATION RULES
 
 Every migration file must:
-- Be named: `<sequence>_<description>.sql` (e.g. `0001_create_users_table.sql`, `0002_add_task_search_index.sql`)
-- Include a comment at the top explaining what this migration does and why
-- Be reversible where possible — include a down migration in a `rollback/` directory or inline
-
-Example:
-
-```sql
--- Migration 0001: Create users and tasks tables
--- Why: Core domain entities for the task management system.
--- Down migration: drop users, tasks, tags, task_tags tables (in reverse order of dependencies)
-
-BEGIN;
-CREATE TABLE users ( ... );
-CREATE TABLE tasks ( ... );
-COMMIT;
-```
+- Be named: `<sequence>_<description>.sql`
+- Include a comment at the top explaining what it does and why
+- Be reversible where possible
+- Run in a transaction (`BEGIN; ... COMMIT;`)
 
 Safety rules:
-- Never modify an existing migration after it has been applied. Create a new migration.
-- Every migration runs in a transaction (`BEGIN; ... COMMIT;`) unless using concurrent index creation.
-- Concurrent index creation uses `CREATE INDEX CONCURRENTLY` — cannot run in a transaction but does not block writes.
-- Destructive operations (DROP COLUMN, DROP TABLE) are separate migrations with explicit developer approval.
-- Seed data is version-controlled in separate files, not in migrations.
+- Never modify an existing migration after it has been applied
+- Destructive operations require explicit developer approval
+- Seed data is version-controlled in separate files
 
-## 7. INDEXING RULES
+## 6. INDEXING RULES
 
-Every index must be documented in `DATABASE.md` with:
-- Which column(s) are indexed
-- Why (which query pattern it serves)
-- Type of index (btree, gin, gist, brin, partial, covering) and why that type was chosen
+Every index must be documented in `DATABASE.md` with: which columns, why, and what query pattern it serves.
 
-Example:
-
-```
-### idx_tasks_user_status
-- Type: Composite B-tree
-- Columns: (user_id, status)
-- Purpose: Dashboard queries loading a user's tasks filtered by status
-- Why composite: All queries in this access pattern filter by both user_id AND status.
-  A single composite index covers both conditions without filtering on one and scanning on the other.
-```
-
-## 8. OUTPUTS
+## 7. OUTPUTS
 
 Produce in this order:
 
-### a. DATABASE.md
-
+### a. DATABASE.md first
 Write `DATABASE.md` containing:
 - Entity list with descriptions
 - ASCII ERD with cardinality labels
-- Indexing strategy with per-index documentation (section 7 format)
+- Indexing strategy with per-index documentation
 - Migration plan with sequence and descriptions
 - ORM justification
 
 Get developer approval before writing schema files.
 
-### b. Schema file(s)
-With per-column comments (section 5 format).
-
-### c. Migration files
-With headers (section 6 format).
-
+### b. Schema file(s) with per-column comments
+### c. Migration files with headers
 ### d. ORM configuration file
-Connection config, schema/type definitions, and repository patterns.
 
-## 9. ASCII ERD FORMAT
-
-Use this format for the ERD:
-
-```
-users ─────── posts
-  │              │
-  1              N
-  │              │
-  └─── comments ──┘
-         N
-```
-
-Include cardinality labels (1, N, M) on every relationship line. Each table box shows column names and types.
+## 8. ASCII ERD FORMAT
 
 ```
 ┌─────────────────────┐
@@ -198,7 +125,6 @@ Include cardinality labels (1, N, M) on every relationship line. Each table box 
 │ created_at          │
 └──────────┬──────────┘
            │ 1
-           │
            │ N
 ┌──────────▼──────────┐
 │       tasks          │
@@ -210,10 +136,9 @@ Include cardinality labels (1, N, M) on every relationship line. Each table box 
 └──────────────────────┘
 ```
 
-## 10. STATE, project.md, changelog.md
+## 9. STATE UPDATE
 
-### State update
-After each session, update `.n0face/state/database.json`:
+After each session, update `.am/state/database.json`:
 
 ```json
 {
@@ -225,32 +150,61 @@ After each session, update `.n0face/state/database.json`:
 }
 ```
 
-### project.md update
-Update `.n0face/project.md` per `.n0face/PROJECT-STATE-RULES.md`.
+## 10. project.md UPDATE
 
-### changelog.md append
-Append to `.n0face/changelog.md` using the format in `.n0face/CHANGELOG-FORMAT.md`.
+Update `.am/project.md` per `.am/PROJECT-STATE-RULES.md`. Mark database as completed in `Modes completed`.
 
-## 11. LEARNING LAYER
+## 11. changelog.md APPEND
 
-Check `.n0face/project.md` at startup: if `learning_layer: enabled`, append to `.n0face/learn/database.md` per `.n0face/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
+Append to `.am/changelog.md` using the format in `.am/CHANGELOG-FORMAT.md`.
 
-## 12. HANDOFF
+## 12. LEARNING LAYER
 
-At session end, read `.n0face/project.md` for modes completed/remaining and known issues. Then:
+Check `.am/project.md` at startup: if `learning_layer: enabled`, append to `.am/learn/database.md` per `.am/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
 
-- Backend not done → "Suggested next step: backend mode"
-- Backend done → "Suggested next step: testing mode"
+## 13. TYPECHECK GATE
 
-Do not start or offer to start the mode — wait for developer.
+Before you can output `## PIPELINE CHECKPOINT`, you MUST run the typecheck:
 
-## 13. BOUNDARIES
+1. Run: `npx tsc --noEmit`
+2. If errors exist: fix them all, re-run, repeat until zero errors
+3. Only then output `## PIPELINE CHECKPOINT`
 
-Does NOT: write API handlers or frontend code, make deployment decisions, apply migrations without confirmation, invent undocumented relationships, use non-relational stores without approval, add unnecessary abstractions.
+## 14. PARALLELISM
+
+All entities may be defined simultaneously — schema files are independent. Migrations for unrelated tables may be batched. Do NOT parallelize entities with complex relationships (define parents before children) or work needing schema approval before implementation.
+
+## 15. PIPELINE CHECKPOINT
+
+When database work is complete, output this block exactly:
+
+```
+## PIPELINE CHECKPOINT
+Summary: Database schema designed, migrations created, ORM configured, and data layer documented.
+Suggested next mode: <next mode name>
+```
+
+## 16. BOUNDARIES
+
+- Never ask for approval before doing work
+- Never pause mid-run to check if the user agrees with a direction
+- Never say "approve this and I'll..." or "let me know if this looks right"
+- Do the work completely, then output ## PIPELINE CHECKPOINT
+- The checkpoint is the only place the user reviews and approves
+
+Does NOT: write API handlers or frontend code, make deployment decisions, apply migrations without confirmation, invent undocumented relationships, add unnecessary abstractions. **Never output `## PIPELINE CHECKPOINT` if `npx tsc --noEmit` has errors.**
+
+### TypeScript output rules
+- No `any` types — use `unknown` and narrow, or define an interface
+- No `else` blocks — use early return or ternary
+- Rely on type inference instead of explicit annotations unless required for exports or clarity
+- Prefer `const` over `let`; use ternaries or early returns instead of reassignment
+- Avoid `try`/`catch` where possible
+- Do not extract single-use helpers preemptively — inline at call site unless reused
 
 ## BTW HANDLING
 
-On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." If current response already done, apply to next action. If committed decision changes, flag and update before continuing. Multiple /btw messages are cumulative until session end or explicit cancel.
+On `/btw <message>`: treat as addendum to current task — do not restart. Acknowledge with "Got it — <summary>." Multiple /btw messages are cumulative until session end or explicit cancel.
 
 ## Commands
 
@@ -262,4 +216,4 @@ On `/btw <message>`: treat as addendum to current task — do not restart. Ackno
 - `/orm` — Generate or update ORM schema/models from DATABASE.md
 - `/adr` — Create a new ADR for a database architectural decision
 - `/status` — Show database implementation status and migration state
-- `/handoff` — Prepare database handoff context for Backend mode
+- `/handoff` — Prepare database handoff context for the next mode
