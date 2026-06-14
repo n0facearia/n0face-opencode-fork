@@ -7,7 +7,7 @@ BIN_DIR="$HOME/.am/bin"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/am"
 
 # Check if we're already inside the repository
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd 2>/dev/null || true)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd 2>/dev/null || true)"
 if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/package.json" ] && grep -q '"name": "am"' "$SCRIPT_DIR/package.json" 2>/dev/null; then
   LOCAL_REPO="$SCRIPT_DIR"
 elif [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/../package.json" ] && grep -q '"name": "am"' "$SCRIPT_DIR/../package.json" 2>/dev/null; then
@@ -82,7 +82,6 @@ echo -e "${MUTED}Building AM from source...${NC}"
 echo -e "  git: $git_version"
 echo -e "  bun: $bun_version"
 
-local BUILD_DIR
 BUILD_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t am-build)
 
 # Use local repo if we're inside it
@@ -93,7 +92,7 @@ if [ -n "$LOCAL_REPO" ] && [ -d "$LOCAL_REPO/packages/opencode" ]; then
 else
   # Clone with retry logic
   echo -e "${MUTED}Cloning repository...${NC}"
-  local clone_success=0
+  clone_success=0
   for attempt in 1 2 3; do
     if [ "$attempt" -gt 1 ]; then
       echo -e "${MUTED}  Retry attempt $attempt/3...${NC}"
@@ -101,7 +100,7 @@ else
     fi
 
     if [ -n "${GITHUB_TOKEN:-}" ] || [ -n "${GH_TOKEN:-}" ]; then
-      local token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+      token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
       if GIT_TERMINAL_PROMPT=0 git clone --depth=1 "https://x-access-token:${token}@github.com/$REPO.git" "$BUILD_DIR"; then
         clone_success=1
         break
@@ -144,7 +143,6 @@ if ! bun run --cwd "$BUILD_DIR/packages/opencode" build --single --skip-install 
   rm -rf "$BUILD_DIR"; exit 1
 fi
 
-local BUILT
 BUILT=$(find "$BUILD_DIR/packages/opencode/dist" -name "am" -type f 2>/dev/null | head -1)
 if [ -z "$BUILT" ] || [ ! -f "$BUILT" ]; then
   echo -e "${RED}Built binary not found in $BUILD_DIR/packages/opencode/dist${NC}"
@@ -229,7 +227,6 @@ fi
 # ─── Verify ───────────────────────────────────────────────────────
 
 if "$BIN_DIR/am" --version >/dev/null 2>&1; then
-  local am_version
   am_version=$("$BIN_DIR/am" --version 2>/dev/null)
   echo -e "  ${GREEN}✓${NC} Verified: ${am_version}"
 else
