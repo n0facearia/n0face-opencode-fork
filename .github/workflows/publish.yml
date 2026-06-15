@@ -35,13 +35,15 @@ jobs:
 
       - name: Debug npm auth
         run: |
-          npm whoami
           npm config list
-        working-directory: packages/opencode
+          npm whoami
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish to npm
-        run: npm publish --prefix packages/opencode --access public
+        run: |
+          cp -r packages/opencode /tmp/opencode-publish
+          cd /tmp/opencode-publish
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
