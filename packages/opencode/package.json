@@ -21,7 +21,7 @@
     "am": "bin/am"
   },
   "files": [
-    "dist"
+    "bin/am"
   ],
   "exports": {
     "./*": "./src/*.ts"
