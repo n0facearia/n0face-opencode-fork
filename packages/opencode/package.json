@@ -1,8 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "version": "1.14.48",
-  "name": "am",
+  "name": "amcli",
   "type": "module",
+  "description": "AM — 11-mode auto-pipeline AI coding assistant",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -19,6 +20,7 @@
   "bin": {
     "am": "./bin/am"
   },
+  "files": ["dist"],
   "exports": {
     "./*": "./src/*.ts"
   },

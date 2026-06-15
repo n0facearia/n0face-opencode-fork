@@ -1,0 +1,8 @@
+src/
+*.test.ts
+*.spec.ts
+tsconfig*.json
+turbo.json
+bun.lockb
+.env*
+__tests__/
