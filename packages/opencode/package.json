@@ -5,7 +5,7 @@
   "type": "module",
   "description": "AM — 11-mode auto-pipeline AI coding assistant",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "typecheck": "tsgo --noEmit",
     "test": "bun test --timeout 30000",
