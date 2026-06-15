@@ -24,34 +24,36 @@ const writeSnapshot = (data: string) =>
     ),
   ])
 
-// Check if a fresh cached snapshot already exists
-const snapshotFile = Bun.file(snapshotPath)
-const snapshotExists = await snapshotFile.exists()
-if (snapshotExists) {
-  const stat = await snapshotFile.stat()
-  const age = Date.now() - stat.mtime.getTime()
-  if (age < CACHE_TTL_MS) {
-    console.log("Models snapshot is fresh (< 24h old), skipping fetch")
-    process.exit(0)
-  }
-}
-
-// Fetch and generate models.dev snapshot
-let modelsData: string | undefined
-if (process.env.MODELS_DEV_API_JSON) {
-  modelsData = await Bun.file(process.env.MODELS_DEV_API_JSON).text()
-  await writeSnapshot(modelsData)
-} else {
-  try {
-    modelsData = await fetch(`${modelsUrl}/api.json`).then((x) => x.text())
-    await writeSnapshot(modelsData)
-  } catch {
-    if (snapshotExists) {
-      console.log("Failed to fetch models.dev, keeping existing cached snapshot")
-      process.exit(0)
+export async function generateSnapshot() {
+  const snapshotFile = Bun.file(snapshotPath)
+  const snapshotExists = await snapshotFile.exists()
+  if (snapshotExists) {
+    const stat = await snapshotFile.stat()
+    const age = Date.now() - stat.mtime.getTime()
+    if (age < CACHE_TTL_MS) {
+      console.log("Models snapshot is fresh (< 24h old), skipping fetch")
+      return
     }
-    throw error
   }
+
+  let modelsData: string | undefined
+  if (process.env.MODELS_DEV_API_JSON) {
+    modelsData = await Bun.file(process.env.MODELS_DEV_API_JSON).text()
+    await writeSnapshot(modelsData)
+  } else {
+    try {
+      modelsData = await fetch(`${modelsUrl}/api.json`).then((x) => x.text())
+      await writeSnapshot(modelsData)
+    } catch (error) {
+      if (snapshotExists) {
+        console.log("Failed to fetch models.dev, keeping existing cached snapshot")
+        return
+      }
+      throw error
+    }
+  }
+
+  console.log("Generated models-snapshot.js")
 }
 
-console.log("Generated models-snapshot.js")
+await generateSnapshot()
