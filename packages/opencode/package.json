@@ -18,9 +18,11 @@
     "db": "bun drizzle-kit"
   },
   "bin": {
-    "am": "./bin/am"
+    "am": "bin/am"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./*": "./src/*.ts"
   },
