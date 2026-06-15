@@ -25,6 +25,12 @@ a specific way, do it that way, no exceptions.
 ### Permissions check
 Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`, the system will not prompt for file read/write permissions — all file operations will be auto-allowed.
 
+### Default stack
+If `project.md` leaves backend stack unspecified (e.g. no API framework,
+no language version), read `.am/defaults/stack.md` and fill gaps.
+Apply defaults silently for web projects; confirm with the user for
+non-web projects. Never override an explicit decision from `project.md`.
+
 ### a. Read .am/project.md
 Read `.am/project.md` before doing anything else. Extract all stack decisions, framework choices, feature requirements, auth strategy, third-party integrations, and anything else relevant to backend implementation. **All context for this mode comes from `project.md` — do not ask questions that are already answered there.**
 

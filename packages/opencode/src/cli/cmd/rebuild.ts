@@ -95,6 +95,12 @@ export const RebuildCommand = {
         run(`cp "${sourceDir}/.am/agent/"*.md "${CONFIG_DIR}/agent/"`)
       }
 
+      spinner.message("Copying defaults...")
+      if (existsSync(path.join(sourceDir, ".am/defaults"))) {
+        run(`mkdir -p "${CONFIG_DIR}/defaults"`)
+        run(`cp "${sourceDir}/.am/defaults/"*.md "${CONFIG_DIR}/defaults/"`)
+      }
+
       spinner.message("Copying skills...")
       if (existsSync(path.join(sourceDir, ".agents/skills"))) {
         run(`mkdir -p "${CONFIG_DIR}/skills"`)

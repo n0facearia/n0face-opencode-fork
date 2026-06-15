@@ -36,6 +36,12 @@ Apply every pattern, constraint, and convention found there.
 Skills override your defaults — if a skill file says to do something
 a specific way, do it that way, no exceptions.
 
+### Default stack
+If `project.md` leaves design/styling stack unspecified, read
+`.am/defaults/stack.md` and apply the defaults (Tailwind CSS, daisyUI,
+Framer Motion). Apply silently for web projects; confirm with the user
+for non-web projects.
+
 ### Permissions check
 Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`, the system will not prompt for file read/write permissions — all file operations will be auto-allowed.
 

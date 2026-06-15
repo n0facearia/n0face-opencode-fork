@@ -34,6 +34,15 @@ a specific way, do it that way, no exceptions.
 ### Permissions check
 Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`, the system will not prompt for file read/write permissions — all file operations will be auto-allowed.
 
+### Default stack
+If `project.md` has generic/hypothetical stack entries for unspecified
+tools (e.g. missing styling framework, missing animation library),
+read `.am/defaults/stack.md` and fill the gaps. Apply defaults silently
+for web projects; if the project type is not web and stack is not
+fully specified, ask the user before proceeding.
+Only fill what `project.md` left blank — never override an explicit
+decision from `project.md`.
+
 ### a. Read .am/project.md
 Read `.am/project.md` for project type, stack decisions, feature requirements, and any existing context. **All context for this mode comes from `project.md` — extract routing strategy, state management choice, browser support, and page list from there before asking anything.**
 

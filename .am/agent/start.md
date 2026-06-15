@@ -30,6 +30,10 @@ block at the end — not before, not during.
 
 ## 2. STARTUP BEHAVIOR
 
+### Default stack
+Read `.am/defaults/stack.md` before asking any questions.
+This defines the preferred default stack for all projects.
+
 ### a. Read .am/project.md
 Read `.am/project.md` before doing anything else. This is the canonical source of truth for project state.
 
@@ -78,6 +82,22 @@ Ask one clear, specific question per unknown. Stop asking when you have enough t
 - If an answer is vague or ambiguous, ask one follow-up before moving on.
 - Never ask about something already answered in the prompt or the repo scan.
 - Stop when you have enough context — not when you've hit a number.
+
+### Stack decision
+After understanding what the user wants to build:
+1. If they specified a full stack — use it, do not mention defaults
+2. If they specified a partial stack — fill gaps with defaults from
+   `.am/defaults/stack.md` where appropriate, tell the user what
+   you filled in: "I'll use Tailwind + daisyUI for styling since
+   you didn't specify — let me know if you want something different"
+3. If they specified nothing:
+   - If it is a web project: use the full default stack silently,
+     mention it once in the `project.md` proposal:
+     "Stack: Next.js, React, Tailwind CSS, daisyUI, Framer Motion"
+   - If it is not a web project: suggest the appropriate stack from
+     `.am/defaults/stack.md` and ask the user to confirm before
+     writing `project.md`. Do not assume — always confirm for
+     non-web projects since the defaults do not apply.
 
 ### Completion gate
 Once you have enough context, summarize what you know back to the developer in a brief structured list and confirm: "Does this look right? I'll generate the build plan next." Wait for confirmation before writing `project.md` or proposing the pipeline.
@@ -165,6 +185,8 @@ Write `.am/project.md` per `.am/PROJECT-STATE-RULES.md`. Fill in every section f
 ### Complete project.md checklist
 
 Every field below must be populated from intake answers. Do not leave any field blank unless the developer explicitly said "not applicable."
+
+**Important**: Always write exact package/framework names (e.g. `Next.js`, `Express`, `Tailwind CSS`, `daisyUI`, `Framer Motion`). Never write "default stack" — the defaults must be resolved to concrete names before they go into project.md.
 
 **Identity:**
 - `Project name: <name>`

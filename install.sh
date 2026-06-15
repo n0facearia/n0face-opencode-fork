@@ -163,6 +163,13 @@ if [ -d "$BUILD_DIR/.am/agent" ]; then
   echo -e "  ${GREEN}✓${NC} Installed agent mode files"
 fi
 
+# ── Install defaults from repository ──────────────────────
+if [ -d "$BUILD_DIR/.am/defaults" ]; then
+  mkdir -p "$CONFIG_DIR/defaults"
+  cp "$BUILD_DIR/.am/defaults/"*.md "$CONFIG_DIR/defaults/"
+  echo -e "  ${GREEN}✓${NC} Installed default stack"
+fi
+
 # ── Install skills from repository ─────────────────────────
 if [ -d "$BUILD_DIR/.agents/skills" ]; then
   mkdir -p "$CONFIG_DIR/skills"
