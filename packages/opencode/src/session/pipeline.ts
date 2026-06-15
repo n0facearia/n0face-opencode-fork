@@ -8,6 +8,7 @@ import { SyncEvent } from "@/sync"
 import { BUILD_FROM_SOURCE } from "@/version"
 import * as Log from "@am-ai/core/util/log"
 
+console.error("PIPELINE MODULE LOADED")
 const log = Log.create({ service: "pipeline" })
 
 let sessionPermission: "granted" | "per-request" | null = null
@@ -24,6 +25,7 @@ export function askSessionPermission(
   input: { sessionID: SessionID },
   deps: { ask: Question.Interface["ask"] },
 ): Effect.Effect<void> {
+  console.error("PERMISSION QUESTION CALLED")
   return Effect.gen(function* () {
     if (!BUILD_FROM_SOURCE) {
       log.warn("Warning: AM is running a prebuilt binary. Run 'am rebuild' to update to your latest local changes.")
@@ -156,6 +158,7 @@ export function checkAndHandlePipelineCheckpoint(
 ): Effect.Effect<
   { action: "continue" } | { action: "feedback"; text: string } | { action: "retry" } | { action: "none" }
 > {
+  console.error("CHECKPOINT HANDLER CALLED")
   const parsed = parsePipelineCheckpoint(input.assistantText)
 
   if (!parsed) {

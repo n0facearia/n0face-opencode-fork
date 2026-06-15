@@ -4,7 +4,7 @@ import { tmpdir } from "node:os"
 import path from "node:path"
 import { pack } from "./pack.js"
 
-const run = async (command: ReadonlyArray<string>, cwd: string) => {
+const run = async (command: string[], cwd: string) => {
   const process = Bun.spawn(command, { cwd, env: globalThis.process.env, stdout: "inherit", stderr: "inherit" })
   const exitCode = await process.exited
   if (exitCode !== 0) throw new Error(`${command.join(" ")} exited with code ${exitCode}`)

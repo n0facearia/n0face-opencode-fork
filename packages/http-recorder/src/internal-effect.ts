@@ -125,30 +125,23 @@ export const recordingLayer = (
           Effect.gen(function* () {
             const completed = yield* Deferred.make<void>()
             const previous = yield* Ref.modify(tail, (current) => [current, completed])
-            return yield* Effect.gen(function* () {
-              const incoming = yield* snapshotRequest(request)
-              const response = yield* upstream.execute(request)
-              const captured = yield* captureResponseBody(response, response.headers["content-type"])
-              const responseSnapshot: ResponseSnapshot = {
-                status: response.status,
-                headers: response.headers as Record<string, string>,
-                ...captured,
-              }
-              const interaction: HttpInteraction = {
-                transport: "http",
-                request: incoming,
-                response: redactor.response(responseSnapshot),
-              }
-              yield* Deferred.await(previous)
-              yield* cassetteService
-                .append(name, interaction, options.metadata)
-                .pipe(
-                  Effect.catchTag("UnsafeCassetteError", (error) =>
-                    Effect.fail(transportError(request, error.message)),
-                  ),
-                )
-              return responseFromSnapshot(request, responseSnapshot)
-            }).pipe(Effect.ensuring(Deferred.succeed(completed, undefined)))
+            const incoming = yield* snapshotRequest(request)
+            const response = yield* upstream.execute(request)
+            const captured = yield* captureResponseBody(response, response.headers["content-type"])
+            const responseSnapshot: ResponseSnapshot = {
+              status: response.status,
+              headers: response.headers as Record<string, string>,
+              ...captured,
+            }
+            const interaction: HttpInteraction = {
+              transport: "http",
+              request: incoming,
+              response: redactor.response(responseSnapshot),
+            }
+            yield* Deferred.await(previous)
+            yield* cassetteService.append(name, interaction, options.metadata)
+            yield* Deferred.succeed(completed, undefined)
+            return responseFromSnapshot(request, responseSnapshot)
           }),
         )
       }

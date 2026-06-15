@@ -181,8 +181,10 @@ describe("http-recorder", () => {
                 {
                   transport: "websocket",
                   open: { url: "wss://example.test/realtime", headers: { "content-type": "application/json" } },
-                  client: [{ kind: "text", body: JSON.stringify({ type: "response.create" }) }],
-                  server: [{ kind: "text", body: JSON.stringify({ type: "response.completed" }) }],
+                  events: [
+                    { direction: "client", kind: "text", body: JSON.stringify({ type: "response.create" }) },
+                    { direction: "server", kind: "text", body: JSON.stringify({ type: "response.completed" }) },
+                  ],
                 },
               ],
             }),

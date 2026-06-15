@@ -32,14 +32,26 @@ export const WebSocketFrameSchema = Schema.Union([
 ])
 export type WebSocketFrame = Schema.Schema.Type<typeof WebSocketFrameSchema>
 
+const directionSchema = Schema.Union([Schema.Literal("client"), Schema.Literal("server")])
+
+export const WebSocketFrameWithDirectionSchema = Schema.Union([
+  Schema.Struct({ direction: directionSchema, kind: Schema.tag("text"), body: Schema.String }),
+  Schema.Struct({
+    direction: directionSchema,
+    kind: Schema.tag("binary"),
+    body: Schema.String,
+    bodyEncoding: Schema.Literal("base64"),
+  }),
+])
+export type WebSocketFrameWithDirection = Schema.Schema.Type<typeof WebSocketFrameWithDirectionSchema>
+
 export const WebSocketInteractionSchema = Schema.Struct({
   transport: Schema.tag("websocket"),
   open: Schema.Struct({
     url: Schema.String,
     headers: Schema.Record(Schema.String, Schema.String),
   }),
-  client: Schema.Array(WebSocketFrameSchema),
-  server: Schema.Array(WebSocketFrameSchema),
+  events: Schema.Array(WebSocketFrameWithDirectionSchema),
 })
 export type WebSocketInteraction = Schema.Schema.Type<typeof WebSocketInteractionSchema>
 

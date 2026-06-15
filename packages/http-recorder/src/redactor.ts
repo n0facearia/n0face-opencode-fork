@@ -13,6 +13,11 @@ export interface Redactor {
   readonly response: (snapshot: ResponseSnapshot) => ResponseSnapshot
 }
 
+export const make = (): Redactor => ({
+  request: (snapshot) => snapshot,
+  response: (snapshot) => snapshot,
+})
+
 export const compose = (...redactors: ReadonlyArray<Partial<Redactor>>): Redactor => {
   const requests = redactors.map((r) => r.request).filter((fn): fn is Redactor["request"] => fn !== undefined)
   const responses = redactors.map((r) => r.response).filter((fn): fn is Redactor["response"] => fn !== undefined)

@@ -46,6 +46,9 @@ export interface ReplayState<T> {
   readonly load: Effect.Effect<ReadonlyArray<T>, CassetteNotFoundError>
   readonly cursor: Effect.Effect<number>
   readonly advance: Effect.Effect<void>
+  readonly claim: <E, R>(
+    f: (interaction: T | undefined, index: number, interactions: ReadonlyArray<T>) => Effect.Effect<void, E, R>,
+  ) => Effect.Effect<{ readonly interaction: T }, E | CassetteNotFoundError, R>
 }
 
 export const makeReplayState = <T>(
@@ -69,5 +72,32 @@ export const makeReplayState = <T>(
       }),
     )
 
-    return { load, cursor: Ref.get(position), advance: Ref.update(position, (n) => n + 1) }
+    return {
+      load,
+      cursor: Ref.get(position),
+      advance: Ref.update(position, (n) => n + 1),
+      claim: <E, R>(
+        f: (
+          interaction: T | undefined,
+          index: number,
+          interactions: ReadonlyArray<T>,
+        ) => Effect.Effect<void, E, R>,
+      ) =>
+        load.pipe(
+          Effect.flatMap((interactions) =>
+            Ref.get(position).pipe(
+              Effect.flatMap((index) => {
+                const interaction = interactions[index]
+                return f(interaction, index, interactions).pipe(
+                  Effect.flatMap(() =>
+                    Ref.update(position, (n) => n + 1).pipe(
+                      Effect.as({ interaction: interaction! }),
+                    ),
+                  ),
+                )
+              }),
+            ),
+          ),
+        ),
+    }
   })

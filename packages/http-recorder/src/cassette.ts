@@ -1,4 +1,5 @@
 import { Context, Effect, FileSystem, Layer, Schema } from "effect"
+export { UnsafeCassetteError } from "./recorder.js"
 import * as fs from "node:fs"
 import * as path from "node:path"
 import { secretFindings, type SecretFinding } from "./redaction"

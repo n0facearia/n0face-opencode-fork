@@ -4,7 +4,7 @@ import { Socket } from "effect/unstable/socket"
 import * as CassetteService from "./cassette.js"
 import { canonicalizeJson, decodeJson, safeText } from "./matching.js"
 import { makeReplayState, resolveAutoMode } from "./recorder.js"
-import { make, type Redactor } from "./redactor.js"
+import { defaults, type DefaultRedactorOverrides, type Redactor } from "./redactor.js"
 import { webSocketInteractions } from "./schema.js"
 import type {
   RecorderOptions,
@@ -291,7 +291,21 @@ const recordingLayer = (
     Effect.gen(function* () {
       const upstream = yield* Socket.Socket
       const cassette = yield* CassetteService.Service
-      const redactor = make(options.redact)
+      const overrides: DefaultRedactorOverrides | undefined = options.redact && {
+  requestHeaders: {
+    allow: options.redact.allowRequestHeaders,
+    redact: options.redact.headers,
+  },
+  responseHeaders: {
+    allow: options.redact.allowResponseHeaders,
+    redact: options.redact.headers,
+  },
+  url: {
+    query: options.redact.queryParameters,
+    transform: options.redact.url,
+  },
+}
+const redactor = defaults(overrides)
       if ((forcedMode ?? (yield* resolveAutoMode(cassette, name))) === "record")
         return yield* makeRecordingSocket(upstream, cassette, name, request, options, redactor)
       return yield* makeReplaySocket(cassette, name, request, options, redactor)

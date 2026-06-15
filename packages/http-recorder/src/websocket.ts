@@ -91,8 +91,7 @@ export const makeWebSocketExecutor = <E>(
       return {
         open: (request) =>
           Effect.gen(function* () {
-            const client: WebSocketFrame[] = []
-            const server: WebSocketFrame[] = []
+            const frames: Array<{ direction: "client" | "server"; frame: WebSocketFrame }> = []
             const connection = yield* options.live.open(request)
             const closed = yield* Ref.make(false)
             const closeOnce = Effect.gen(function* () {
@@ -101,7 +100,11 @@ export const makeWebSocketExecutor = <E>(
               yield* appendOrFail(
                 options.cassette,
                 options.name,
-                { transport: "websocket", open: openSnapshot(request), client, server },
+                {
+                  transport: "websocket",
+                  open: openSnapshot(request),
+                  events: frames.map((f) => ({ direction: f.direction, ...f.frame })),
+                },
                 options.metadata,
               ).pipe(Effect.orDie)
             })
@@ -109,10 +112,10 @@ export const makeWebSocketExecutor = <E>(
               sendText: (message) =>
                 connection
                   .sendText(message)
-                  .pipe(Effect.tap(() => Effect.sync(() => client.push(encodeFrame(message))))),
+                  .pipe(Effect.tap(() => Effect.sync(() => frames.push({ direction: "client", frame: encodeFrame(message) })))),
               messages: connection.messages.pipe(
                 Stream.map((message) => {
-                  server.push(encodeFrame(message))
+                  frames.push({ direction: "server", frame: encodeFrame(message) })
                   return message
                 }),
               ),
@@ -138,19 +141,23 @@ export const makeWebSocketExecutor = <E>(
             sendText: (message) =>
               Effect.gen(function* () {
                 const current = yield* Ref.getAndUpdate(messageIndex, (value) => value + 1)
+                const clientEvents = interaction.events.filter((e) => e.direction === "client")
                 yield* compareClientMessage(
                   message,
-                  interaction.client[current],
+                  clientEvents[current],
                   current,
                   options.compareClientMessagesAsJson === true,
                 )
               }),
-            messages: Stream.fromIterable(interaction.server).pipe(Stream.map(decodeFrameMessage)),
+            messages: Stream.fromIterable(interaction.events.filter((e) => e.direction === "server")).pipe(
+              Stream.map((e) => decodeFrameMessage(e)),
+            ),
             close: Effect.gen(function* () {
+              const clientEvents = interaction.events.filter((e) => e.direction === "client")
               yield* assertEqual(
                 `WebSocket client frame count for interaction ${index + 1}`,
                 yield* Ref.get(messageIndex),
-                interaction.client.length,
+                clientEvents.length,
               )
             }),
           }

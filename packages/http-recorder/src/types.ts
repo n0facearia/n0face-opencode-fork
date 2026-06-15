@@ -34,9 +34,16 @@ export interface HttpInteraction {
 
 /** @internal */
 export type WebSocketEvent =
-  | { readonly direction: "client" | "server"; readonly kind: "text"; readonly body: string }
+  | { readonly direction: "client"; readonly kind: "text"; readonly body: string }
+  | { readonly direction: "server"; readonly kind: "text"; readonly body: string }
   | {
-      readonly direction: "client" | "server"
+      readonly direction: "client"
+      readonly kind: "binary"
+      readonly body: string
+      readonly bodyEncoding: "base64"
+    }
+  | {
+      readonly direction: "server"
       readonly kind: "binary"
       readonly body: string
       readonly bodyEncoding: "base64"
@@ -51,6 +58,11 @@ export interface WebSocketInteraction {
   }
   readonly events: ReadonlyArray<WebSocketEvent>
 }
+
+/** @internal */
+export type WebSocketFrame =
+  | { readonly kind: "text"; readonly body: string }
+  | { readonly kind: "binary"; readonly body: string; readonly bodyEncoding: "base64" }
 
 /** Returns whether an incoming HTTP request matches a recorded request. */
 export type RequestMatcher = (incoming: RequestSnapshot, recorded: RequestSnapshot) => boolean

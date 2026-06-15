@@ -53,6 +53,8 @@ import { TaskTool, type TaskPromptOps } from "@/tool/task"
 import { SessionRunState } from "./run-state"
 import { EffectBridge } from "@/effect/bridge"
 import { SyncEvent } from "@/sync"
+import { Question } from "@/question"
+import { SessionPipeline } from "./pipeline"
 import { SessionEvent } from "@/v2/session-event"
 import { Modelv2 } from "@/v2/model"
 import { AgentAttachment, FileAttachment, ReferenceAttachment, Source } from "@/v2/session-prompt"
@@ -202,6 +204,7 @@ export const layer = Layer.effect(
     const sys = yield* SystemPrompt.Service
     const llm = yield* LLM.Service
     const references = yield* Reference.Service
+    const question = yield* Question.Service
     const sync = yield* SyncEvent.Service
     const runner = Effect.fn("SessionPrompt.runner")(function* () {
       return yield* EffectBridge.make()
@@ -1599,6 +1602,10 @@ NOTE: At any point in time through this workflow you should feel free to ask the
     const prompt: (input: PromptInput) => Effect.Effect<MessageV2.WithParts> = Effect.fn("SessionPrompt.prompt")(
       function* (input: PromptInput) {
         const session = yield* sessions.get(input.sessionID).pipe(Effect.orDie)
+        yield* SessionPipeline.askSessionPermission(
+          { sessionID: input.sessionID },
+          { ask: question.ask },
+        )
         yield* revert.cleanup(session)
         const message = yield* createUserMessage(input)
         yield* sessions.touch(input.sessionID)
@@ -1613,7 +1620,34 @@ NOTE: At any point in time through this workflow you should feel free to ask the
         }
 
         if (input.noReply === true) return message
-        return yield* loop({ sessionID: input.sessionID })
+        const result = yield* loop({ sessionID: input.sessionID })
+        const agent = result.info.agent ?? ""
+        const assistantText = result.parts
+          .filter((p): p is MessageV2.TextPart => p.type === "text")
+          .map((p) => p.text)
+          .join("\n")
+        const pipelineResult = yield* SessionPipeline.checkAndHandlePipelineCheckpoint(
+          { sessionID: input.sessionID, assistantText, currentMode: agent },
+          { ask: question.ask, sync },
+        )
+        if (pipelineResult.action === "feedback") {
+          const feedback: MessageV2.UserPart = {
+            type: "text",
+            text: pipelineResult.text,
+            role: "user",
+            sessionID: input.sessionID,
+          }
+          const feedbackMsg = yield* createUserMessage({
+            ...input,
+            parts: [feedback],
+          })
+          yield* sessions.touch(input.sessionID)
+          return yield* loop({ sessionID: input.sessionID })
+        }
+        if (pipelineResult.action === "retry") {
+          return yield* loop({ sessionID: input.sessionID })
+        }
+        return result
       },
     )
 
@@ -2031,6 +2065,7 @@ export const defaultLayer = Layer.suspend(() =>
         SystemPrompt.defaultLayer,
         LLM.defaultLayer,
         Reference.defaultLayer,
+        Question.defaultLayer,
         Bus.layer,
         CrossSpawnSpawner.defaultLayer,
         SyncEvent.defaultLayer,
