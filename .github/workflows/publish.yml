@@ -41,9 +41,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish to npm
-        run: |
-          cp -r packages/opencode /tmp/opencode-publish
-          cd /tmp/opencode-publish
-          npm publish --access public
+        run: npm publish --prefix packages/opencode --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
