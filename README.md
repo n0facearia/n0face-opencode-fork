@@ -59,7 +59,7 @@ Also adds a reworked TUI with animated cat mascot, tabbed thinking/result view, 
 curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash
 ```
 
-Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.am/bin` to PATH, and installs all 11 mode configs to `~/.config/am/`.
+Downloads a prebuilt binary for linux/darwin on x64/arm64 to `~/.local/bin/am`.
 
 ### One-command uninstall
 
@@ -118,7 +118,7 @@ AM never touches `.opencode/`. You can have both installed side by side:
 | Project config  | `.am/`                     | `.opencode/`              |
 | Global config   | `~/.config/am/`            | `~/.config/opencode/`     |
 | Agent files     | `.am/agent/*.md`           | `.opencode/agent/*.md`    |
-| Binary          | `~/.am/bin/am`             | system-specific path      |
+| Binary          | `~/.local/bin/am`          | system-specific path      |
 
 ## Running Locally
 

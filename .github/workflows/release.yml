@@ -15,10 +15,10 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact: n0face-linux-x64
+            artifact: am-linux-x64
             binary: packages/opencode/dist/amcli-linux-x64/bin/am
           - os: macos-latest
-            artifact: n0face-macos-arm64
+            artifact: am-macos-arm64
             binary: packages/opencode/dist/amcli-darwin-arm64/bin/am
     runs-on: ${{ matrix.os }}
     steps:

@@ -2,11 +2,11 @@
 set -e
 
 if [ "${1:-}" = "uninstall" ]; then
-  if [ -f "$HOME/.local/bin/n0face" ]; then
-    rm "$HOME/.local/bin/n0face"
-    echo "n0face uninstalled."
+  if [ -f "$HOME/.local/bin/am" ]; then
+    rm "$HOME/.local/bin/am"
+    echo "am uninstalled."
   else
-    echo "n0face is not installed."
+    echo "am is not installed."
   fi
   exit 0
 fi
@@ -27,29 +27,29 @@ detect_binary() {
     *) echo "Your platform is not supported yet"; exit 1 ;;
   esac
 
-  echo "n0face-${os}-${arch}"
+  echo "am-${os}-${arch}"
 }
 
 binary=$(detect_binary)
 url="https://github.com/n0facearia/n0face-opencode-fork/releases/latest/download/${binary}"
 
 echo ""
-echo "Downloading n0face for ${binary}..."
+echo "Downloading am for ${binary}..."
 echo ""
 
 mkdir -p "$HOME/.local/bin"
 
 if command -v curl &>/dev/null; then
-  curl -fsSL "$url" -o "$HOME/.local/bin/n0face"
+  curl -fsSL "$url" -o "$HOME/.local/bin/am"
 elif command -v wget &>/dev/null; then
-  wget -q "$url" -O "$HOME/.local/bin/n0face"
+  wget -q "$url" -O "$HOME/.local/bin/am"
 else
   echo "Error: curl or wget is required."
   exit 1
 fi
 
-chmod +x "$HOME/.local/bin/n0face"
+chmod +x "$HOME/.local/bin/am"
 
 echo ""
-echo "Installation complete. Run: n0face"
+echo "Installation complete. Run: am"
 echo ""
