@@ -1,0 +1,44 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: n0face-linux-x64
+            binary: packages/opencode/dist/amcli-linux-x64/bin/am
+          - os: macos-latest
+            artifact: n0face-macos-arm64
+            binary: packages/opencode/dist/amcli-darwin-arm64/bin/am
+          - os: macos-13
+            artifact: n0face-macos-x64
+            binary: packages/opencode/dist/amcli-darwin-x64/bin/am
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install
+        working-directory: packages/opencode
+
+      - run: bun run build --single
+        working-directory: packages/opencode
+
+      - run: cp ${{ matrix.binary }} ${{ matrix.artifact }}
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.artifact }}

@@ -1,22 +1,45 @@
 #!/usr/bin/env bash
 set -e
 
-PACKAGE_NAME="amcli"
+detect_binary() {
+  os=$(uname -s | tr '[:upper:]' '[:lower:]')
+  arch=$(uname -m)
+
+  case "$os" in
+    linux) os="linux" ;;
+    darwin) os="macos" ;;
+    *) echo "Your platform is not supported yet"; exit 1 ;;
+  esac
+
+  case "$arch" in
+    x86_64) arch="x64" ;;
+    arm64 | aarch64) arch="arm64" ;;
+    *) echo "Your platform is not supported yet"; exit 1 ;;
+  esac
+
+  echo "n0face-${os}-${arch}"
+}
+
+binary=$(detect_binary)
+url="https://github.com/n0facearia/n0face-opencode-fork/releases/latest/download/${binary}"
 
 echo ""
-echo "Installing AM (amcli)..."
+echo "Downloading n0face for ${binary}..."
 echo ""
 
-if command -v npm &>/dev/null; then
-  npm install -g "$PACKAGE_NAME"
-elif command -v bun &>/dev/null; then
-  bun install -g "$PACKAGE_NAME"
+mkdir -p "$HOME/.local/bin"
+
+if command -v curl &>/dev/null; then
+  curl -fsSL "$url" -o "$HOME/.local/bin/n0face"
+elif command -v wget &>/dev/null; then
+  wget -q "$url" -O "$HOME/.local/bin/n0face"
 else
-  echo "Error: npm or bun is required."
-  echo "Install Node.js from https://nodejs.org or Bun from https://bun.sh"
+  echo "Error: curl or wget is required."
   exit 1
 fi
 
+chmod +x "$HOME/.local/bin/n0face"
+
 echo ""
-echo "AM installed. Run: am"
+echo "Installation complete. Run: n0face"
 echo ""
