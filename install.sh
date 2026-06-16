@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
+if [ "${1:-}" = "uninstall" ]; then
+  if [ -f "$HOME/.local/bin/n0face" ]; then
+    rm "$HOME/.local/bin/n0face"
+    echo "n0face uninstalled."
+  else
+    echo "n0face is not installed."
+  fi
+  exit 0
+fi
+
 detect_binary() {
   os=$(uname -s | tr '[:upper:]' '[:lower:]')
   arch=$(uname -m)
