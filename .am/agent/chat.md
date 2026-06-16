@@ -43,6 +43,7 @@ Just be ready to answer.
 ## BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
 - Do the work completely, then output ## PIPELINE CHECKPOINT

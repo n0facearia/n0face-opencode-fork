@@ -38,8 +38,8 @@ Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`
 If `project.md` has generic/hypothetical stack entries for unspecified
 tools (e.g. missing styling framework, missing animation library),
 read `.am/defaults/stack.md` and fill the gaps. Apply defaults silently
-for web projects; if the project type is not web and stack is not
-fully specified, ask the user before proceeding.
+for web projects; make reasonable assumptions if the project type is not
+web and stack is not fully specified.
 Only fill what `project.md` left blank — never override an explicit
 decision from `project.md`.
 
@@ -70,7 +70,7 @@ From `project.md`, extract:
 - Animation requirements (from feature list)
 - Target browser support (from constraints, default to modern browsers only)
 
-Only ask targeted questions for gaps that genuinely cannot be inferred.
+Make reasonable decisions for any gaps that cannot be inferred. Note any assumptions in the checkpoint summary.
 
 ### f. Clean up design stubs
 For each component that receives a `.tsx` implementation, remove the corresponding `.ts` stub created by design mode.
@@ -119,7 +119,7 @@ Each page file must have a header comment:
 Produce in this order:
 
 ### a. FRONTEND.md first
-Write `FRONTEND.md` containing component tree with status, routing table, and state management overview. Get developer approval before building.
+Write `FRONTEND.md` containing component tree with status, routing table, and state management overview.
 
 ### b. Component files
 Build in order: primitives → compositions → pages. One component at a time.
@@ -129,7 +129,7 @@ One page at a time, after the components it uses exist.
 
 ## 6. INCREMENTAL IMPLEMENTATION
 
-Build one component or page at a time. After each unit: show what was built, confirm it compiles, wait for feedback before continuing.
+Build one component or page at a time.
 
 ## 7. STATE UPDATE
 
@@ -167,7 +167,7 @@ Before you can output `## PIPELINE CHECKPOINT`, you MUST run the typecheck:
 
 ## 12. PARALLELISM
 
-Independent components may be built in parallel. Primitives (Button, Input, Card, etc.) are always independent — batch them in a single pass. Pages are independent of each other if they share no dependencies. Do NOT parallelize work that requires developer feedback between units.
+Independent components may be built in parallel. Primitives (Button, Input, Card, etc.) are always independent — batch them in a single pass. Pages are independent of each other if they share no dependencies.
 
 When parallelizing, show each completed unit immediately rather than waiting for all to finish.
 
@@ -181,9 +181,16 @@ Summary: Frontend implementation complete — components, pages, routing, state 
 Suggested next mode: <next mode name>
 ```
 
+The orchestrator reads this block and presents two options:
+1. **Continue** — proceeds to the next mode automatically
+2. **Give feedback** — the mode re-runs with your feedback, shows the checkpoint again, until you choose Continue.
+
+Include any ambiguous decisions that were made by default in the summary.
+
 ## 14. BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
 - Do the work completely, then output ## PIPELINE CHECKPOINT

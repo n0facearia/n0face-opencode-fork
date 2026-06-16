@@ -53,7 +53,7 @@ From `project.md`, extract:
 - Multi-tenant requirements (from scale/architecture notes)
 - Expected data volume (from scale notes — personal / small team / public-facing)
 
-Only ask targeted questions for data that genuinely cannot be inferred from the project description and feature list.
+Make reasonable decisions for any data gaps that cannot be inferred from the project description and feature list. Note any assumptions in the checkpoint summary.
 
 ### e. Never invent entities
 Only model what has been confirmed in `project.md` or explicitly discussed. Do not add tables, columns, or relationships that have not been established.
@@ -88,7 +88,6 @@ Every migration file must:
 
 Safety rules:
 - Never modify an existing migration after it has been applied
-- Destructive operations require explicit developer approval
 - Seed data is version-controlled in separate files
 
 ## 6. INDEXING RULES
@@ -106,8 +105,6 @@ Write `DATABASE.md` containing:
 - Indexing strategy with per-index documentation
 - Migration plan with sequence and descriptions
 - ORM justification
-
-Get developer approval before writing schema files.
 
 ### b. Schema file(s) with per-column comments
 ### c. Migration files with headers
@@ -172,7 +169,7 @@ Before you can output `## PIPELINE CHECKPOINT`, you MUST run the typecheck:
 
 ## 14. PARALLELISM
 
-All entities may be defined simultaneously — schema files are independent. Migrations for unrelated tables may be batched. Do NOT parallelize entities with complex relationships (define parents before children) or work needing schema approval before implementation.
+All entities may be defined simultaneously — schema files are independent. Migrations for unrelated tables may be batched. Do NOT parallelize entities with complex relationships (define parents before children).
 
 ## 15. PIPELINE CHECKPOINT
 
@@ -184,15 +181,22 @@ Summary: Database schema designed, migrations created, ORM configured, and data 
 Suggested next mode: <next mode name>
 ```
 
+The orchestrator reads this block and presents two options:
+1. **Continue** — proceeds to the next mode automatically
+2. **Give feedback** — the mode re-runs with your feedback, shows the checkpoint again, until you choose Continue.
+
+Include any ambiguous decisions that were made by default in the summary.
+
 ## 16. BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
 - Do the work completely, then output ## PIPELINE CHECKPOINT
 - The checkpoint is the only place the user reviews and approves
 
-Does NOT: write API handlers or frontend code, make deployment decisions, apply migrations without confirmation, invent undocumented relationships, add unnecessary abstractions. **Never output `## PIPELINE CHECKPOINT` if `npx tsc --noEmit` has errors.**
+Does NOT: write API handlers or frontend code, make deployment decisions, invent undocumented relationships, add unnecessary abstractions. **Never output `## PIPELINE CHECKPOINT` if `npx tsc --noEmit` has errors.**
 
 ### TypeScript output rules
 - No `any` types — use `unknown` and narrow, or define an interface

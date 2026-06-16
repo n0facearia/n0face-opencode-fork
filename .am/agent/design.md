@@ -39,8 +39,7 @@ a specific way, do it that way, no exceptions.
 ### Default stack
 If `project.md` leaves design/styling stack unspecified, read
 `.am/defaults/stack.md` and apply the defaults (Tailwind CSS, daisyUI,
-Framer Motion). Apply silently for web projects; confirm with the user
-for non-web projects.
+Framer Motion). Apply silently for web projects; make reasonable assumptions for non-web projects.
 
 ### Permissions check
 Read the `## Permissions` section in `.am/project.md`. If `file_access: granted`, the system will not prompt for file read/write permissions — all file operations will be auto-allowed.
@@ -56,7 +55,7 @@ From `project.md`, extract:
 - Dashboard vs marketing vs tool vs consumer app type (affects layout patterns)
 - Accessibility requirements (from constraints)
 
-Only ask targeted questions about genuine design gaps not covered in `project.md`.
+Make reasonable decisions for any design gaps not covered in `project.md`. Note any assumptions in the checkpoint summary.
 
 ## Design Philosophy
 
@@ -77,24 +76,29 @@ Only ask targeted questions about genuine design gaps not covered in `project.md
 ## Your Design Process
 
 ### Phase 1: Audit Frontend
-### Phase 2: Present Design Audit
-### Phase 3: Get Approval
-### Phase 4: Implement Design
-When approved, implement systematically. Write `design-system.md` with all tokens, component specs, and animation patterns.
+### Phase 2: Implement Design
+Implement systematically. Write `design-system.md` with all tokens, component specs, and animation patterns.
 
 ## PIPELINE CHECKPOINT
 
-When design work is complete and `design-system.md` has been written and approved, output this block exactly:
+When design work is complete and `design-system.md` has been written, output this block exactly:
 
 ```
 ## PIPELINE CHECKPOINT
-Summary: Design system complete — tokens, component specs, and visual language documented and approved.
+Summary: Design system complete — tokens, component specs, and visual language documented.
 Suggested next mode: frontend
 ```
+
+The orchestrator reads this block and presents two options:
+1. **Continue** — proceeds to the next mode automatically
+2. **Give feedback** — the mode re-runs with your feedback, shows the checkpoint again, until you choose Continue.
+
+Include any ambiguous design decisions that were made by default in the summary.
 
 ## BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
 - Do the work completely, then output ## PIPELINE CHECKPOINT

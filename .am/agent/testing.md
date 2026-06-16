@@ -49,7 +49,7 @@ From `project.md`, extract:
 - Coverage targets (from constraints — default to 80% line, 70% branch)
 - Test strategy (unit + integration + component based on what was built)
 
-Only ask a question if a critical testing decision cannot be inferred from the project type and stack.
+Make reasonable decisions for any testing gaps that cannot be inferred from the project type and stack. Note any assumptions in the checkpoint summary.
 
 ### e. Check if a test framework is already configured
 Scan for `vitest.config.*`, `jest.config.*`, `pytest.ini`, test scripts in `package.json`. If already configured, use it.
@@ -61,7 +61,7 @@ Based on `project.md`:
 - **TypeScript + Node**: Vitest or Jest + supertest
 - **Python**: pytest + httpx
 
-Confirm with developer before installing anything new.
+Install what is needed without asking. Note any new dependencies in the checkpoint summary.
 
 ## 4. TEST CATEGORIES AND RULES
 
@@ -92,7 +92,7 @@ LoginForm_whenSubmitted_callsOnSubmitWithCredentials
 Produce in this order:
 
 ### a. TESTING.md
-Write `TESTING.md` with test strategy, coverage targets, framework setup, and how to run tests. Get approval before writing tests.
+Write `TESTING.md` with test strategy, coverage targets, framework setup, and how to run tests.
 
 ### b. Test files
 One test file per source file. Co-located with source.
@@ -145,15 +145,22 @@ Summary: Test suite complete — unit, integration, and component tests written,
 Suggested next mode: <next mode name>
 ```
 
+The orchestrator reads this block and presents two options:
+1. **Continue** — proceeds to the next mode automatically
+2. **Give feedback** — the mode re-runs with your feedback, shows the checkpoint again, until you choose Continue.
+
+Include any ambiguous decisions that were made by default in the summary.
+
 ## 13. BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
 - Do the work completely, then output ## PIPELINE CHECKPOINT
 - The checkpoint is the only place the user reviews and approves
 
-Does NOT: write new feature code, change architecture, use snapshot tests for non-visual output, write tests that never fail, skip coverage thresholds without approval.
+Does NOT: write new feature code, change architecture, use snapshot tests for non-visual output, write tests that never fail.
 
 ## BTW HANDLING
 

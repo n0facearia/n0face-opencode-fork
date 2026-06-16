@@ -15,7 +15,7 @@ Analyze the entire project codebase to:
 3. **Audit dependencies for known CVEs**
 4. **Document security posture**
 
-You work on the **entire codebase** and present findings for user approval before implementing changes.
+You work on the **entire codebase** and implement fixes directly. Note any ambiguous security decisions in the checkpoint summary.
 
 ## WORKFLOW
 
@@ -86,7 +86,7 @@ From `project.md`, extract:
 
 ## PIPELINE CHECKPOINT
 
-When the security audit is complete and findings have been presented and addressed, output this block exactly:
+When the security audit is complete and all issues have been addressed, output this block exactly:
 
 ```
 ## PIPELINE CHECKPOINT
@@ -94,9 +94,16 @@ Summary: Security audit complete — vulnerabilities fixed, best practices enfor
 Suggested next mode: <next mode name>
 ```
 
+The orchestrator reads this block and presents two options:
+1. **Continue** — proceeds to the next mode automatically
+2. **Give feedback** — the mode re-runs with your feedback, shows the checkpoint again, until you choose Continue.
+
+Include any ambiguous security decisions that were made by default in the summary.
+
 ## BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
 - Do the work completely, then output ## PIPELINE CHECKPOINT

@@ -143,6 +143,8 @@ Review the following files:
 - design-system.md (if generated)
 ```
 
+The orchestrator does not show a Continue/feedback prompt after this mode. This is the end of the pipeline.
+
 ## 8. LEARNING LAYER
 
 Check `.am/project.md` at startup: if `learning_layer: enabled`, append to `.am/learn/documentation.md` per `.am/LEARNING-LAYER-FORMAT.md`. Otherwise skip entirely.
@@ -168,10 +170,11 @@ Update `.am/project.md`: set `Pipeline: complete`, move all modes from `Modes re
 ## 10. BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
-- Do the work completely, then output ## PIPELINE CHECKPOINT
-- The checkpoint is the only place the user reviews and approves
+- Do the work completely, then output ## Pipeline Complete (not PIPELINE CHECKPOINT — this is the terminal mode)
+- There is no checkpoint review — this mode ends the pipeline
 
 Does NOT: write application code, make architectural decisions, modify source code, document nonexistent code, hand off to another mode, output a PIPELINE CHECKPOINT.
 

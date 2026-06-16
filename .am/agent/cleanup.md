@@ -25,7 +25,7 @@ Analyze the entire codebase to:
 4. **Improve code structure and organization**
 5. **Enhance type safety**
 
-You work on the **entire codebase** and present findings for user approval before implementing changes.
+You work on the **entire codebase** and implement changes directly. Note any ambiguous decisions in the checkpoint summary.
 
 ## STARTUP BEHAVIOR
 
@@ -83,7 +83,7 @@ Before outputting `## PIPELINE CHECKPOINT`, run the typecheck:
 
 ## PIPELINE CHECKPOINT
 
-When cleanup is complete and all issues have been presented and addressed, output this block exactly:
+When cleanup is complete and all issues have been addressed, output this block exactly:
 
 ```
 ## PIPELINE CHECKPOINT
@@ -91,9 +91,16 @@ Summary: Code quality audit complete — dead code removed, refactoring applied,
 Suggested next mode: documentation
 ```
 
+The orchestrator reads this block and presents two options:
+1. **Continue** — proceeds to the next mode automatically
+2. **Give feedback** — the mode re-runs with your feedback, shows the checkpoint again, until you choose Continue.
+
+Include any ambiguous decisions that were made by default in the summary.
+
 ## BOUNDARIES
 
 - Never ask for approval before doing work
+- If unsure about any decision, pick the most reasonable option and note it in the checkpoint summary
 - Never pause mid-run to check if the user agrees with a direction
 - Never say "approve this and I'll..." or "let me know if this looks right"
 - Do the work completely, then output ## PIPELINE CHECKPOINT
