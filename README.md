@@ -64,7 +64,7 @@ Downloads a prebuilt binary for linux/darwin on x64/arm64, adds `~/.am/bin` to P
 ### One-command uninstall
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/n0facearia/n0face-opencode-fork/main/install.sh | bash -s uninstall
 ```
 
 ### Manual install (full fork — includes TUI customizations)
