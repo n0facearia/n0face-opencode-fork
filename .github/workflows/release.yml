@@ -20,9 +20,6 @@ jobs:
           - os: macos-latest
             artifact: n0face-macos-arm64
             binary: packages/opencode/dist/amcli-darwin-arm64/bin/am
-          - os: macos-13
-            artifact: n0face-macos-x64
-            binary: packages/opencode/dist/amcli-darwin-x64/bin/am
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
