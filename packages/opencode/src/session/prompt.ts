@@ -1626,16 +1626,15 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           .filter((p): p is MessageV2.TextPart => p.type === "text")
           .map((p) => p.text)
           .join("\n")
+        const ctx = yield* InstanceState.context
         const pipelineResult = yield* SessionPipeline.checkAndHandlePipelineCheckpoint(
-          { sessionID: input.sessionID, assistantText, currentMode: agent },
+          { sessionID: input.sessionID, assistantText, currentMode: agent, projectDir: ctx.directory },
           { ask: question.ask, sync },
         )
         if (pipelineResult.action === "feedback") {
-          const feedback: MessageV2.UserPart = {
-            type: "text",
+          const feedback: MessageV2.TextPartInput = {
+            type: "text" as const,
             text: pipelineResult.text,
-            role: "user",
-            sessionID: input.sessionID,
           }
           const feedbackMsg = yield* createUserMessage({
             ...input,

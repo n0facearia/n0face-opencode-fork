@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test"
-import { parsePipelineCheckpoint } from "../../src/session/pipeline"
+import { Effect } from "effect"
+import { parsePipelineCheckpoint, checkAndHandlePipelineCheckpoint } from "../../src/session/pipeline"
+import type { SessionID } from "../../src/session/schema"
 
 const sampleCheckpoint = `## Some work done
 
@@ -216,5 +218,101 @@ Now I need to set up the API routes for authentication.`
     expect(result).toBeDefined()
     expect(result!.nextMode).toBe("backend")
     expect(result!.summary).toContain("Finished the login page")
+  })
+})
+
+describe("checkAndHandlePipelineCheckpoint — chat mode exclusion", () => {
+  const sessionID = "ses-test-chat" as unknown as SessionID
+
+  const noopAsk = () =>
+    Effect.die("ask must not be called when currentMode === 'chat'")
+
+  const noopSync = {
+    run: () =>
+      Effect.die("sync.run must not be called when currentMode === 'chat'"),
+    replay: () =>
+      Effect.die("sync.replay must not be called for chat test"),
+    replayAll: () =>
+      Effect.die("sync.replayAll must not be called for chat test"),
+    remove: () =>
+      Effect.die("sync.remove must not be called for chat test"),
+    claim: () =>
+      Effect.die("sync.claim must not be called for chat test"),
+  }
+
+  test("returns { action: 'none' } for chat mode even when output contains HANDOFF marker", async () => {
+    const result = await Effect.runPromise(
+      checkAndHandlePipelineCheckpoint(
+        {
+          sessionID,
+          assistantText: "## HANDOFF — suggest backend",
+          currentMode: "chat",
+        },
+        { ask: noopAsk, sync: noopSync },
+      ),
+    )
+    expect(result).toEqual({ action: "none" })
+  })
+
+  test("returns { action: 'none' } for chat mode even when output contains PIPELINE CHECKPOINT", async () => {
+    const result = await Effect.runPromise(
+      checkAndHandlePipelineCheckpoint(
+        {
+          sessionID,
+          assistantText:
+            "## PIPELINE CHECKPOINT\n\nSummary: Done.\n\nSuggested next mode: backend",
+          currentMode: "chat",
+        },
+        { ask: noopAsk, sync: noopSync },
+      ),
+    )
+    expect(result).toEqual({ action: "none" })
+  })
+
+  test("returns { action: 'none' } for chat mode with normal Q&A output", async () => {
+    const result = await Effect.runPromise(
+      checkAndHandlePipelineCheckpoint(
+        {
+          sessionID,
+          assistantText:
+            "The auth middleware uses JWT tokens stored in httpOnly cookies.",
+          currentMode: "chat",
+        },
+        { ask: noopAsk, sync: noopSync },
+      ),
+    )
+    expect(result).toEqual({ action: "none" })
+  })
+
+  test("non-chat mode with valid checkpoint calls ask to confirm", async () => {
+    let askCalled = false
+    const confirmAsk = () => {
+      askCalled = true
+      return Effect.succeed(
+        [["Continue to backend"]] as ReadonlyArray<ReadonlyArray<string>>,
+      )
+    }
+    const confirmSync = {
+      run: () => Effect.void,
+      replay: () => Effect.void,
+      replayAll: () => Effect.succeed(undefined as string | undefined),
+      remove: () => Effect.void,
+      claim: () => Effect.void,
+    }
+
+    const result = await Effect.runPromise(
+      checkAndHandlePipelineCheckpoint(
+        {
+          sessionID,
+          assistantText:
+            "## PIPELINE CHECKPOINT\n\nSummary: Done.\n\nSuggested next mode: backend",
+          currentMode: "backend",
+        },
+        { ask: confirmAsk, sync: confirmSync },
+      ),
+    )
+
+    expect(askCalled).toBe(true)
+    expect(result).toEqual({ action: "continue" })
   })
 })

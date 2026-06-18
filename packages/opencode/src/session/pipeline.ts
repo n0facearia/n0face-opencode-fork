@@ -52,7 +52,11 @@ export function askSessionPermission(
           custom: false,
         }),
       ],
-    })
+    }).pipe(
+      Effect.catchTag("QuestionRejectedError", () =>
+        Effect.succeed([["No, ask each time"]] as ReadonlyArray<ReadonlyArray<string>>),
+      ),
+    )
     const choice = answers[0]?.[0] ?? ""
     sessionPermission = choice.startsWith("Yes") ? "granted" : "per-request"
   })
@@ -95,51 +99,56 @@ function readNextValidModeFromProjectMd(projectDir: string | undefined): string 
 }
 
 export function parsePipelineCheckpoint(text: string): { nextMode: string; summary: string } | undefined {
-  // Normalize line endings (CRLF → LF)
   const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n")
 
-  // Case-insensitive, tolerant of surrounding whitespace (e.g., "##PIPELINE CHECKPOINT", "##  PIPELINE CHECKPOINT")
-  const checkpointMatch = normalized.match(/#{1,3}\s*pipeline\s*checkpoint/i)
-  if (!checkpointMatch) {
-    log.info("No pipeline checkpoint header found")
-    return undefined
+  let nextMode: string | undefined
+  let summary = ""
+
+  // Try ## PIPELINE CHECKPOINT format (with Suggested next mode line)
+  const pcpMatch = normalized.match(/#{1,3}\s*pipeline\s*checkpoint/i)
+  if (pcpMatch) {
+    const afterHeader = normalized.slice(pcpMatch.index! + pcpMatch[0].length)
+    const modeMatch = afterHeader.match(/suggested\s+next\s+mode\s*[:\-–—]?\s*([^\n.,;]+)/i)
+    if (modeMatch) {
+      nextMode = modeMatch[1]
+        .split(/\s*[—–]\s*|\s+-\s+/)[0]
+        .trim()
+        .toLowerCase()
+        .replace(/[.:;,!?\s]+$/, "")
+        .replace(/^[.:;,!?\s]+/, "")
+      const summaryMatch = afterHeader.match(/summary\s*[:\-–—]\s*([^\n]+)/i)
+      if (summaryMatch) {
+        summary = summaryMatch[1].trim()
+      } else {
+        const oldSummaryMatch = afterHeader.match(/###\s*what\s+was\s+done[^\n]*\n([\s\S]*?)(?=\n###\s|$)/i)
+        if (oldSummaryMatch) {
+          summary = oldSummaryMatch[1].trim()
+        }
+      }
+      log.info("Parsed next mode from PIPELINE CHECKPOINT: '" + nextMode + "'")
+    }
   }
 
-  // Extract everything after the checkpoint header
-  const afterHeader = normalized.slice(normalized.search(/#{1,3}\s*pipeline\s*checkpoint/i))
-
-  // Match "Suggested next mode" — tolerate optional separator (handles newline before value)
-  const modeMatch = afterHeader.match(/suggested\s+next\s+mode\s*[:\-–—]?\s*([^\n.,;]+)/i)
-  if (!modeMatch) {
-    log.info("No 'suggested next mode' line found in checkpoint")
-    return undefined
+  // Try ## HANDOFF — suggest <mode> format (also supports trailing reason:
+  // ## HANDOFF — suggest backend — reason text)
+  if (!nextMode) {
+    const handoffMatch = normalized.match(/##\s*handoff\s*[—–\-]\s*suggest\s+(\S+)(?:\s*[—–\-]\s*(.*))?/i)
+    if (handoffMatch) {
+      nextMode = handoffMatch[1].toLowerCase().replace(/[.:;,!?\s]+$/, "").replace(/^[.:;,!?\s]+/, "")
+      summary = handoffMatch[2]?.trim() ?? ""
+      if (!summary) {
+        const after = normalized.slice(handoffMatch.index! + handoffMatch[0].length).trim()
+        const line = after.split("\n")[0]?.trim()
+        if (line && !line.startsWith("#")) summary = line
+      }
+      log.info("Parsed next mode from HANDOFF: '" + nextMode + "'")
+    }
   }
-
-  // Extract the raw mode name and split on separators (em dash, en dash, spaced-hyphen)
-  let nextMode = modeMatch[1]
-    .split(/\s*[—–]\s*|\s+-\s+/)[0]
-    .trim()
-    .toLowerCase()
-    .replace(/[.:;,!?\s]+$/, "")
-    .replace(/^[.:;,!?\s]+/, "")
 
   if (!nextMode || nextMode === "none" || nextMode === "pipeline-complete") {
-    log.info("Next mode is empty or special: '" + nextMode + "'")
+    if (!nextMode) log.info("No pipeline checkpoint or handoff header found")
+    else log.info("Next mode is special: '" + nextMode + "'")
     return undefined
-  }
-
-  log.info("Parsed next mode from checkpoint: '" + nextMode + "'")
-
-  // Extract summary — try "Summary:" format, then old "### What was done" format
-  let summary = ""
-  const summaryMatch = afterHeader.match(/summary\s*[:\-–—]\s*([^\n]+)/i)
-  if (summaryMatch) {
-    summary = summaryMatch[1].trim()
-  } else {
-    const oldSummaryMatch = afterHeader.match(/###\s*what\s+was\s+done[^\n]*\n([\s\S]*?)(?=\n###\s|$)/i)
-    if (oldSummaryMatch) {
-      summary = oldSummaryMatch[1].trim()
-    }
   }
 
   return { nextMode, summary }
@@ -150,6 +159,7 @@ export function checkAndHandlePipelineCheckpoint(
     sessionID: SessionID
     assistantText: string
     currentMode: string
+    projectDir?: string
   },
   deps: {
     ask: Question.Interface["ask"]
@@ -159,7 +169,40 @@ export function checkAndHandlePipelineCheckpoint(
   { action: "continue" } | { action: "feedback"; text: string } | { action: "retry" } | { action: "none" }
 > {
   console.error("CHECKPOINT HANDLER CALLED")
+
+  // Chat mode never handoffs
+  if (input.currentMode === "chat") return Effect.succeed({ action: "none" as const })
+
   const parsed = parsePipelineCheckpoint(input.assistantText)
+
+  // Documentation mode is terminal — no handoff, show pipeline complete message
+  if (input.currentMode === "documentation") {
+    return Effect.gen(function* () {
+      const msg = parsed?.summary
+        ? `**Mode complete:** ${parsed.summary}\n\n---\n\nPipeline complete. All modes have run. Enjoy your project! :cat:`
+        : "Pipeline complete. All modes have run. Enjoy your project! :cat:"
+      yield* deps.ask({
+        sessionID: input.sessionID,
+        questions: [
+          new Question.Info({
+            question: msg,
+            header: "Pipeline Complete",
+            options: [
+              new Question.Option({
+                label: "Done",
+                description: "Acknowledge and finish",
+              }),
+            ],
+            multiple: false,
+            custom: false,
+          }),
+        ],
+      }).pipe(
+        Effect.catchTag("QuestionRejectedError", () => Effect.void),
+      )
+      return { action: "none" as const }
+    })
+  }
 
   if (!parsed) {
     if (input.currentMode === "start") return Effect.succeed({ action: "none" as const })
