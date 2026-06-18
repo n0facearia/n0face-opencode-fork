@@ -40,9 +40,9 @@ echo ""
 mkdir -p "$HOME/.local/bin"
 
 if command -v curl &>/dev/null; then
-  curl -fsSL "$url" -o "$HOME/.local/bin/am"
+  curl -fL --progress-bar -o "$HOME/.local/bin/am" "$url"
 elif command -v wget &>/dev/null; then
-  wget -q "$url" -O "$HOME/.local/bin/am"
+  wget "$url" -O "$HOME/.local/bin/am"
 else
   echo "Error: curl or wget is required."
   exit 1
