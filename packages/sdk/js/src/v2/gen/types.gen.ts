@@ -53,7 +53,11 @@ export type Event =
   | EventSessionDeleted
   | EventSessionNextAgentSwitched
   | EventSessionNextModelSwitched
+  | EventSessionNextMoved
   | EventSessionNextPrompted
+  | EventSessionNextPromptAdmitted
+  | EventSessionNextPromptPromoted
+  | EventSessionNextContextUpdated
   | EventSessionNextSynthetic
   | EventSessionNextShellStarted
   | EventSessionNextShellEnded
@@ -77,6 +81,7 @@ export type Event =
   | EventSessionNextCompactionStarted
   | EventSessionNextCompactionDelta
   | EventSessionNextCompactionEnded
+  | EventReferenceUpdated
 
 export type OAuth = {
   type: "oauth"
@@ -894,6 +899,11 @@ export type GlobalEvent = {
     | SyncEventSessionNextCompactionStarted
     | SyncEventSessionNextCompactionDelta
     | SyncEventSessionNextCompactionEnded
+    | EventReferenceUpdated
+    | EventSessionNextMoved
+    | EventSessionNextPromptAdmitted
+    | EventSessionNextPromptPromoted
+    | EventSessionNextContextUpdated
 }
 
 /**
@@ -1793,7 +1803,7 @@ export type V2SessionsResponse = {
 }
 
 export type V2SessionMessagesResponse = {
-  items: Array<SessionMessage>
+  data: Array<SessionMessage>
   cursor: {
     previous?: string
     next?: string
@@ -2770,6 +2780,7 @@ export type EventSessionNextAgentSwitched = {
     timestamp: number
     sessionID: string
     agent: string
+    messageID: string
     source?: string
   }
 }
@@ -2780,6 +2791,7 @@ export type EventSessionNextModelSwitched = {
   properties: {
     timestamp: number
     sessionID: string
+    messageID: string
     model: {
       id: string
       providerID: string
@@ -2825,8 +2837,64 @@ export type EventSessionNextPrompted = {
   properties: {
     timestamp: number
     sessionID: string
+    messageID: string
     prompt: Prompt
   }
+}
+
+export type EventSessionNextMoved = {
+  id: string
+  type: "session.next.moved"
+  properties: {
+    timestamp: number
+    sessionID: string
+    location: {
+      directory: string
+      workspaceID?: string
+    }
+    subdirectory?: string
+  }
+}
+
+export type EventSessionNextPromptAdmitted = {
+  id: string
+  type: "session.next.prompt.admitted"
+  properties: {
+    timestamp: number
+    sessionID: string
+    messageID: string
+    prompt: Prompt
+    delivery: string
+  }
+}
+
+export type EventSessionNextPromptPromoted = {
+  id: string
+  type: "session.next.prompt.promoted"
+  properties: {
+    timestamp: number
+    sessionID: string
+    messageID: string
+    prompt: Prompt
+    timeCreated: number
+  }
+}
+
+export type EventSessionNextContextUpdated = {
+  id: string
+  type: "session.next.context.updated"
+  properties: {
+    timestamp: number
+    sessionID: string
+    messageID: string
+    text: string
+  }
+}
+
+export type EventReferenceUpdated = {
+  id: string
+  type: "reference.updated"
+  properties: Record<string, never>
 }
 
 export type EventSessionNextSynthetic = {
@@ -2835,6 +2903,7 @@ export type EventSessionNextSynthetic = {
   properties: {
     timestamp: number
     sessionID: string
+    messageID: string
     text: string
   }
 }
@@ -2845,6 +2914,7 @@ export type EventSessionNextShellStarted = {
   properties: {
     timestamp: number
     sessionID: string
+    messageID: string
     callID: string
     command: string
   }
@@ -2873,6 +2943,7 @@ export type EventSessionNextStepStarted = {
       providerID: string
       variant: string
     }
+    assistantMessageID: string
     snapshot?: string
   }
 }
@@ -2883,6 +2954,7 @@ export type EventSessionNextStepEnded = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     finish: string
     cost: number
     tokens: {
@@ -2909,6 +2981,7 @@ export type EventSessionNextStepFailed = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     error: SessionErrorUnknown
   }
 }
@@ -2919,6 +2992,8 @@ export type EventSessionNextTextStarted = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
+    textID: string
   }
 }
 
@@ -2928,6 +3003,8 @@ export type EventSessionNextTextDelta = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
+    textID: string
     delta: string
   }
 }
@@ -2938,6 +3015,8 @@ export type EventSessionNextTextEnded = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
+    textID: string
     text: string
   }
 }
@@ -2948,7 +3027,9 @@ export type EventSessionNextReasoningStarted = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     reasoningID: string
+    providerMetadata?: { [key: string]: unknown }
   }
 }
 
@@ -2958,6 +3039,7 @@ export type EventSessionNextReasoningDelta = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     reasoningID: string
     delta: string
   }
@@ -2969,8 +3051,10 @@ export type EventSessionNextReasoningEnded = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     reasoningID: string
     text: string
+    providerMetadata?: { [key: string]: unknown }
   }
 }
 
@@ -2980,6 +3064,7 @@ export type EventSessionNextToolInputStarted = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     callID: string
     name: string
   }
@@ -2991,6 +3076,7 @@ export type EventSessionNextToolInputDelta = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     callID: string
     delta: string
   }
@@ -3002,6 +3088,7 @@ export type EventSessionNextToolInputEnded = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     callID: string
     text: string
   }
@@ -3013,6 +3100,7 @@ export type EventSessionNextToolCalled = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     callID: string
     tool: string
     input: {
@@ -3045,6 +3133,7 @@ export type EventSessionNextToolProgress = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     callID: string
     structured: {
       [key: string]: unknown
@@ -3059,7 +3148,9 @@ export type EventSessionNextToolSuccess = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     callID: string
+    result?: { [key: string]: unknown }
     structured: {
       [key: string]: unknown
     }
@@ -3079,7 +3170,9 @@ export type EventSessionNextToolFailed = {
   properties: {
     timestamp: number
     sessionID: string
+    assistantMessageID: string
     callID: string
+    result?: { [key: string]: unknown }
     error: SessionErrorUnknown
     provider: {
       executed: boolean
@@ -3140,7 +3233,10 @@ export type EventSessionNextCompactionEnded = {
   properties: {
     timestamp: number
     sessionID: string
+    messageID: string
+    reason: "auto" | "manual"
     text: string
+    recent?: string
     include?: string
   }
 }
@@ -3250,6 +3346,7 @@ export type SessionMessageShell = {
 
 export type SessionMessageAssistantText = {
   type: "text"
+  id: string
   text: string
 }
 
@@ -3257,6 +3354,7 @@ export type SessionMessageAssistantReasoning = {
   type: "reasoning"
   id: string
   text: string
+  providerMetadata?: { [key: string]: unknown }
 }
 
 export type SessionMessageToolStatePending = {
@@ -3285,6 +3383,7 @@ export type SessionMessageToolStateCompleted = {
   structured: {
     [key: string]: unknown
   }
+  result?: { [key: string]: unknown }
 }
 
 export type SessionMessageToolStateError = {
@@ -3297,6 +3396,7 @@ export type SessionMessageToolStateError = {
     [key: string]: unknown
   }
   error: SessionErrorUnknown
+  result?: { [key: string]: unknown }
 }
 
 export type SessionMessageAssistantTool = {
@@ -3306,6 +3406,9 @@ export type SessionMessageAssistantTool = {
   provider?: {
     executed: boolean
     metadata?: {
+      [key: string]: unknown
+    }
+    resultMetadata?: {
       [key: string]: unknown
     }
   }
@@ -3369,6 +3472,19 @@ export type SessionMessageCompaction = {
   time: {
     created: number
   }
+  recent?: string
+}
+
+export type SessionMessageSystem = {
+  type: "system"
+  id: string
+  metadata?: {
+    [key: string]: unknown
+  }
+  time: {
+    created: number
+  }
+  text: string
 }
 
 export type SessionMessage =
@@ -3379,6 +3495,63 @@ export type SessionMessage =
   | SessionMessageShell
   | SessionMessageAssistant
   | SessionMessageCompaction
+  | SessionMessageSystem
+
+export type ReferenceInfoData = {
+  name: string
+  path: string
+  source: {
+    type: string
+    path: string
+  }
+}
+
+export type ReferenceListResponses = {
+  200: {
+    data?: Array<{ id: string; name: string; kind: string; hidden?: boolean; source?: { type: string; path?: string; repository?: string }; path?: string }>
+  }
+}
+
+export type ReferenceInfo = {
+  id: string
+  name: string
+  kind: "local" | "git" | "invalid"
+  uri?: string
+  repository?: string
+  branch?: string
+  target?: string
+  targetUri?: string
+  problem?: string
+  hidden?: boolean
+  source?: {
+    type: "git" | "local"
+    repository?: string
+    path?: string
+  }
+  path?: string
+}
+
+export type ExperimentalProjectCopyCreateResponses = {
+  200: {
+    directory?: string
+  }
+}
+
+export type ExperimentalControlPlaneMoveSessionResponses = {
+  200: {
+    data?: unknown
+  }
+}
+
+export type ExperimentalSessionBackgroundResponses = {
+  200: {
+    data?: unknown
+  }
+}
+
+export type ProjectDirectoriesResponses = {
+  200: Array<{ type: string; directory: string }>
+}
 
 export type EventTuiToastShow1 = {
   id: string

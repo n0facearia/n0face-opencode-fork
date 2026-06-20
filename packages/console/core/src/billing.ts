@@ -553,4 +553,20 @@ export namespace Billing {
       })
     },
   )
+
+  export const subtractLiteUsage = async (workspaceID: string, amount: number) => {
+    await Database.use((tx) =>
+      tx
+        .update(LiteTable)
+        .set({
+          rollingUsage: sql`GREATEST(0, COALESCE(${LiteTable.rollingUsage}, 0) - ${amount})`,
+          weeklyUsage: sql`GREATEST(0, COALESCE(${LiteTable.weeklyUsage}, 0) - ${amount})`,
+          monthlyUsage: sql`GREATEST(0, COALESCE(${LiteTable.monthlyUsage}, 0) - ${amount})`,
+          timeRollingUpdated: sql`now()`,
+          timeWeeklyUpdated: sql`now()`,
+          timeMonthlyUpdated: sql`now()`,
+        })
+        .where(and(eq(LiteTable.workspaceID, workspaceID), isNull(LiteTable.timeDeleted))),
+    )
+  }
 }

@@ -589,6 +589,10 @@ export type TuiPluginApi = {
   command?: TuiCommandApi
   keys: TuiKeys
   keymap: TuiKeymap
+  mode: {
+    current: () => string
+    push: (mode: string) => void
+  }
   route: {
     register: (routes: TuiRouteDefinition[]) => () => void
     navigate: (name: string, params?: Record<string, unknown>) => void

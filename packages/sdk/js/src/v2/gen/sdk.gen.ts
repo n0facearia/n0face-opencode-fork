@@ -30,7 +30,10 @@ import type {
   ExperimentalConsoleListOrgsResponses,
   ExperimentalConsoleSwitchOrgResponses,
   ExperimentalResourceListResponses,
+  ExperimentalSessionBackgroundResponses,
   ExperimentalSessionListResponses,
+  ExperimentalProjectCopyCreateResponses,
+  ExperimentalControlPlaneMoveSessionResponses,
   ExperimentalWorkspaceAdapterListResponses,
   ExperimentalWorkspaceCreateErrors,
   ExperimentalWorkspaceCreateResponses,
@@ -89,7 +92,9 @@ import type {
   PermissionRespondResponses,
   PermissionRuleset,
   ProjectCurrentResponses,
+  ProjectDirectoriesResponses,
   ProjectInitGitResponses,
+  ReferenceListResponses,
   ProjectListResponses,
   ProjectUpdateErrors,
   ProjectUpdateResponses,
@@ -777,6 +782,36 @@ export class Console extends HeyApiClient {
 
 export class Session extends HeyApiClient {
   /**
+   * Background session
+   */
+  public background<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      sessionID?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "query", key: "sessionID" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<ExperimentalSessionBackgroundResponses, unknown, ThrowOnError>({
+      url: "/experimental/session/background",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
    * List sessions
    *
    * Get a list of all OpenCode sessions across projects, sorted by most recently updated. Archived sessions are excluded by default.
@@ -1127,6 +1162,146 @@ export class Experimental extends HeyApiClient {
   private _workspace?: Workspace
   get workspace(): Workspace {
     return (this._workspace ??= new Workspace({ client: this.client }))
+  }
+
+  private _projectCopy?: ProjectCopy
+  get projectCopy(): ProjectCopy {
+    return (this._projectCopy ??= new ProjectCopy({ client: this.client }))
+  }
+
+  private _controlPlane?: ControlPlane
+  get controlPlane(): ControlPlane {
+    return (this._controlPlane ??= new ControlPlane({ client: this.client }))
+  }
+}
+
+export class ProjectCopy extends HeyApiClient {
+  public create<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      projectID?: string
+      strategy?: string
+      context?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "query", key: "projectID" },
+            { in: "query", key: "strategy" },
+            { in: "query", key: "context" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<ExperimentalProjectCopyCreateResponses, unknown, ThrowOnError>({
+      url: "/experimental/project-copy",
+      ...options,
+      ...params,
+    })
+  }
+
+  public refresh<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      projectID?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "query", key: "projectID" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<ExperimentalProjectCopyCreateResponses, unknown, ThrowOnError>({
+      url: "/experimental/project-copy/refresh",
+      ...options,
+      ...params,
+    })
+  }
+
+  public remove<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      projectID?: string
+      force?: boolean
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "body", key: "directory" },
+            { in: "body", key: "workspace" },
+            { in: "body", key: "projectID" },
+            { in: "body", key: "force" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<ExperimentalProjectCopyCreateResponses, unknown, ThrowOnError>({
+      url: "/experimental/project-copy/remove",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+}
+
+export class ControlPlane extends HeyApiClient {
+  public moveSession<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      sessionID?: string
+      destination?: { directory?: string }
+      moveChanges?: boolean | string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "body", key: "sessionID" },
+            { in: "body", key: "destination" },
+            { in: "body", key: "moveChanges" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<ExperimentalControlPlaneMoveSessionResponses, unknown, ThrowOnError>({
+      url: "/experimental/control-plane/move-session",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
   }
 }
 
@@ -1706,6 +1881,7 @@ export class Vcs extends HeyApiClient {
       directory?: string
       workspace?: string
       mode: "git" | "branch"
+      context?: number
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -1717,6 +1893,7 @@ export class Vcs extends HeyApiClient {
             { in: "query", key: "directory" },
             { in: "query", key: "workspace" },
             { in: "query", key: "mode" },
+            { in: "query", key: "context" },
           ],
         },
       ],
@@ -2178,6 +2355,33 @@ export class Project extends HeyApiClient {
    *
    * Retrieve the currently active project that OpenCode is working with.
    */
+  public directories<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      projectID?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "query", key: "projectID" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<ProjectDirectoriesResponses, unknown, ThrowOnError>({
+      url: "/project/directories",
+      ...options,
+      ...params,
+    })
+  }
+
   public current<ThrowOnError extends boolean = false>(
     parameters?: {
       directory?: string
@@ -4379,6 +4583,31 @@ export class V2 extends HeyApiClient {
   private _session?: Session3
   get session(): Session3 {
     return (this._session ??= new Session3({ client: this.client }))
+  }
+
+  get reference(): { list: (params: { location: { workspace?: string } }) => Promise<{ data?: { data?: Array<{ id: string; name: string; kind: string; hidden?: boolean; source?: { type: string; path?: string; repository?: string }; path?: string }> } }> } {
+    return {
+      list: async (params) => {
+        const result = await this.client.get<ReferenceListResponses, unknown, false>({
+          url: "/api/reference",
+          query: { workspace: params.location.workspace },
+        })
+        return { data: result.data }
+      },
+    }
+  }
+
+  get fs(): { find: (params: { query: string; limit?: string; location: { workspace?: string } }) => Promise<{ data?: { data?: Array<{ path: string; type: string; filename: string }> }; error?: unknown }> } {
+    return {
+      find: async (params) => {
+        const result = await this.client.get<Record<string, unknown>, unknown, false>({
+          url: "/api/fs/find",
+          query: { query: params.query, limit: params.limit, workspace: params.location.workspace },
+        })
+        const body = result.data as { data?: Array<{ path: string; type: string; filename: string }> } | undefined
+        return { data: body ?? { data: [] } }
+      },
+    }
   }
 }
 

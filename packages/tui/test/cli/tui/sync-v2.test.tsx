@@ -114,7 +114,7 @@ test("sync v2 settles pending tools when a live failure arrives", async () => {
         sessionID: "session-1",
         messageID: "msg_model_1",
         timestamp: 0,
-        model: { id: "model-1", providerID: "provider-1" },
+        model: { id: "model-1", providerID: "provider-1", variant: "default" },
       },
     })
     emitTwice(events, {
@@ -125,7 +125,7 @@ test("sync v2 settles pending tools when a live failure arrives", async () => {
         assistantMessageID: "msg_explicit_assistant_9",
         timestamp: 1,
         agent: "build",
-        model: { id: "model-1", providerID: "provider-1" },
+        model: { id: "model-1", providerID: "provider-1", variant: "default" },
       },
     })
     emitTwice(events, {
@@ -525,7 +525,7 @@ test("sync v2 preserves snapshot order and metadata for in-flight updates", asyn
         assistantMessageID: "msg_assistant_older",
         timestamp: 0,
         agent: "build",
-        model: { id: "model", providerID: "provider" },
+        model: { id: "model", providerID: "provider", variant: "default" },
       },
     })
     emitTwice(events, {
@@ -536,7 +536,7 @@ test("sync v2 preserves snapshot order and metadata for in-flight updates", asyn
         assistantMessageID: "msg_assistant_old",
         timestamp: 1,
         agent: "build",
-        model: { id: "model", providerID: "provider" },
+        model: { id: "model", providerID: "provider", variant: "default" },
       },
     })
     await wait(() => sync.session.message.fromSession("session-1")[0]?.id === "msg_assistant_old")
@@ -572,7 +572,7 @@ test("sync v2 preserves snapshot order and metadata for in-flight updates", asyn
             id: "msg_assistant_new",
             type: "assistant",
             agent: "build",
-            model: { id: "model", providerID: "provider" },
+            model: { id: "model", providerID: "provider", variant: "default" },
             content: [],
             time: { created: 3 },
           },
@@ -581,7 +581,7 @@ test("sync v2 preserves snapshot order and metadata for in-flight updates", asyn
             type: "assistant",
             metadata: { source: "snapshot" },
             agent: "build",
-            model: { id: "model", providerID: "provider" },
+            model: { id: "model", providerID: "provider", variant: "default" },
             content: [],
             time: { created: 1 },
           },
@@ -597,7 +597,7 @@ test("sync v2 preserves snapshot order and metadata for in-flight updates", asyn
         assistantMessageID: "msg_assistant_old",
         timestamp: 1,
         agent: "build",
-        model: { id: "model", providerID: "provider" },
+        model: { id: "model", providerID: "provider", variant: "default" },
       },
     })
 

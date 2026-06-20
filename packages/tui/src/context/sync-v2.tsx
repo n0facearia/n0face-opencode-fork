@@ -126,7 +126,7 @@ export const { use: useSyncV2, provider: SyncProviderV2 } = createSimpleContext(
     async function syncReferences(workspace = project.workspace.current()) {
       const result = await sdk.client.v2.reference.list({ location: { workspace } })
       if (workspace !== project.workspace.current()) return
-      setStore("reference", reconcile(result.data?.data ?? []))
+      setStore("reference", reconcile((result.data?.data ?? []) as ReferenceInfo[]))
     }
 
     createEffect(() => {

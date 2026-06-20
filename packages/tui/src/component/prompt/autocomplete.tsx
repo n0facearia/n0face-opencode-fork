@@ -329,7 +329,7 @@ export function Autocomplete(props: {
       if (!result.error && result.data) {
         const width = props.anchor().width - 4
         options.push(
-          ...result.data.data.map((item): AutocompleteOption => {
+          ...(result.data.data?.map((item): AutocompleteOption => {
             const { filename, url, part } = createFilePart(item.path, lineRange)
 
             return {
@@ -341,7 +341,7 @@ export function Autocomplete(props: {
                 insertPart(filename, part)
               },
             }
-          }),
+          }) ?? []),
         )
       }
 
@@ -416,13 +416,13 @@ export function Autocomplete(props: {
       .map(
         (reference): AutocompleteOption => ({
           display: "@" + reference.name,
-          description: ` ${reference.source.type === "git" ? reference.source.repository : reference.source.path}`,
+          description: reference.source ? ` ${reference.source.type === "git" ? reference.source.repository : reference.source.path}` : "",
           onSelect: () => {
             insertPart(reference.name, {
               type: "file",
               mime: "application/x-directory",
               filename: reference.name,
-              url: pathToFileURL(reference.path).href,
+              url: reference.path ? pathToFileURL(reference.path).href : "",
               source: {
                 type: "file",
                 text: { start: 0, end: 0, value: "" },
