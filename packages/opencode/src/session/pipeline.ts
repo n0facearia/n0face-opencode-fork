@@ -145,6 +145,20 @@ export function parsePipelineCheckpoint(text: string): { nextMode: string; summa
     }
   }
 
+  // Try "Suggested next step: <mode> — because <reason>" format (used by some projects)
+  if (!nextMode) {
+    const stepMatch = normalized.match(/suggested\s+next\s+step\s*[:\-–—]?\s*([^\n.,;]+)/i)
+    if (stepMatch) {
+      const parts = stepMatch[1].split(/\s*[—–]\s*|\s+-\s+/)
+      nextMode = parts[0].trim().toLowerCase()
+        .replace(/[.:;,!?\s]+$/, "")
+        .replace(/^[.:;,!?\s]+/, "")
+        .replace(/\s+mode$/i, "")
+      if (parts.length > 1) summary = parts.slice(1).join(" — ").trim()
+      log.info("Parsed next mode from SUGGESTED NEXT STEP: '" + nextMode + "'")
+    }
+  }
+
   if (!nextMode || nextMode === "none" || nextMode === "pipeline-complete") {
     if (!nextMode) log.info("No pipeline checkpoint or handoff header found")
     else log.info("Next mode is special: '" + nextMode + "'")
@@ -225,6 +239,10 @@ export function checkAndHandlePipelineCheckpoint(
                 label: "Give feedback",
                 description: "Tell the mode what to do next",
               }),
+              new Question.Option({
+                label: "Just chatting",
+                description: "This was an ad-hoc question, not a mode handoff",
+              }),
             ],
             multiple: false,
             custom: false,
@@ -237,6 +255,8 @@ export function checkAndHandlePipelineCheckpoint(
       )
 
       const choice = answers[0]?.[0] ?? ""
+
+      if (choice.startsWith("Just chatting")) return { action: "none" as const }
 
       if (choice.startsWith("Give feedback")) {
         const feedbackAnswers = yield* deps.ask({
@@ -275,7 +295,33 @@ export function checkAndHandlePipelineCheckpoint(
     if (fallback) {
       nextMode = fallback
     } else {
-      return Effect.succeed({ action: "none" as const })
+      return Effect.gen(function* () {
+        const answers = yield* deps.ask({
+          sessionID: input.sessionID,
+          questions: [
+            new Question.Info({
+              question: [
+                `The agent suggested switching to \`${nextMode}\` which is not a recognized mode.`,
+                `Staying in ${input.currentMode} mode.`,
+              ].join("\n\n"),
+              header: "Unknown mode",
+              options: [
+                new Question.Option({
+                  label: "OK",
+                  description: `Continue in ${input.currentMode} mode`,
+                }),
+              ],
+              multiple: false,
+              custom: false,
+            }),
+          ],
+        }).pipe(
+          Effect.catchTag("QuestionRejectedError", () =>
+            Effect.succeed([["OK"]] as ReadonlyArray<ReadonlyArray<string>>),
+          ),
+        )
+        return { action: "none" as const }
+      })
     }
   }
 
