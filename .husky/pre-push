@@ -1,5 +1,7 @@
 #!/bin/sh
 set -e
+# Capture pre-push ref info from stdin before any other command
+read local_ref local_sha remote_ref remote_sha 2>/dev/null || true
 # Check if bun version matches package.json
 # keep in sync with packages/script/src/index.ts semver qualifier
 bun -e '
@@ -17,4 +19,21 @@ if (process.versions.bun !== expectedBunVersion) {
   console.warn(`Warning: Bun version ${process.versions.bun} differs from expected ${expectedBunVersion}`);
 }
 '
-bun typecheck
+# Scope typecheck to packages with changes since the remote ref,
+# avoiding pre-existing errors in untouched packages (app, desktop, llm, ui).
+if [ -z "$remote_sha" ] || [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+  exec bun typecheck
+fi
+
+changed_packages=$(git diff --name-only "$remote_sha" | grep '^packages/' | while read -r f; do d=$(dirname "$f"); while [ "$d" != "." ] && [ ! -f "$d/package.json" ]; do d=$(dirname "$d"); done; [ -f "$d/package.json" ] && echo "$d"; done | sort -u)
+
+if [ -z "$changed_packages" ]; then
+  exit 0
+fi
+
+filters=""
+for pkg in $changed_packages; do
+  filters="$filters --filter=./$pkg"
+done
+
+exec bun turbo typecheck $filters
