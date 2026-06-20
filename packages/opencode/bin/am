@@ -72,7 +72,7 @@ let arch = archMap[os.arch()]
 if (!arch) {
   arch = os.arch()
 }
-const base = "am-" + platform + "-" + arch
+const base = "amcli-" + platform + "-" + arch
 const binary = platform === "windows" ? "am.exe" : "am"
 
 function supportsAvx2() {

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+BINARY_PREFIX="amcli"
+
 if [ "${1:-}" = "uninstall" ]; then
   if [ -f "$HOME/.local/bin/am" ]; then
     rm "$HOME/.local/bin/am"
@@ -11,13 +13,13 @@ if [ "${1:-}" = "uninstall" ]; then
   exit 0
 fi
 
-detect_binary() {
+detect_asset() {
   os=$(uname -s | tr '[:upper:]' '[:lower:]')
   arch=$(uname -m)
 
   case "$os" in
     linux) os="linux" ;;
-    darwin) os="macos" ;;
+    darwin) os="darwin" ;;
     *) echo "Your platform is not supported yet"; exit 1 ;;
   esac
 
@@ -27,27 +29,31 @@ detect_binary() {
     *) echo "Your platform is not supported yet"; exit 1 ;;
   esac
 
-  echo "am-${os}-${arch}"
+  echo "${BINARY_PREFIX}-${os}-${arch}.tar.gz"
 }
 
-binary=$(detect_binary)
-url="https://github.com/n0facearia/n0face-opencode-fork/releases/latest/download/${binary}"
+asset=$(detect_asset)
+url="https://github.com/n0facearia/n0face-opencode-fork/releases/latest/download/${asset}"
 
 echo ""
-echo "Downloading am for ${binary}..."
+echo "Downloading am for ${asset}..."
 echo ""
 
 mkdir -p "$HOME/.local/bin"
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
 
 if command -v curl &>/dev/null; then
-  curl -fL --progress-bar -o "$HOME/.local/bin/am" "$url"
+  curl -fL --progress-bar -o "$TMPDIR/${asset}" "$url" || { echo ""; echo "Error: Failed to download ${asset}."; echo "Your platform may not have a build for this release."; echo "See: https://github.com/n0facearia/n0face-opencode-fork/releases"; exit 1; }
 elif command -v wget &>/dev/null; then
-  wget "$url" -O "$HOME/.local/bin/am"
+  wget "$url" -O "$TMPDIR/${asset}" || { echo ""; echo "Error: Failed to download ${asset}."; echo "Your platform may not have a build for this release."; echo "See: https://github.com/n0facearia/n0face-opencode-fork/releases"; exit 1; }
 else
   echo "Error: curl or wget is required."
   exit 1
 fi
 
+tar -xzf "$TMPDIR/${asset}" -C "$TMPDIR"
+mv "$TMPDIR/am" "$HOME/.local/bin/am"
 chmod +x "$HOME/.local/bin/am"
 
 echo ""

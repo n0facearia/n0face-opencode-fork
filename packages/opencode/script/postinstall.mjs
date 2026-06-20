@@ -49,7 +49,7 @@ function detectPlatformAndArch() {
 
 function findBinary() {
   const { platform, arch } = detectPlatformAndArch()
-  const packageName = `am-${platform}-${arch}`
+  const packageName = `amcli-${platform}-${arch}`
   const binaryName = platform === "windows" ? "am.exe" : "am"
 
   try {
