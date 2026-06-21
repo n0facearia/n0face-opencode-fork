@@ -88,7 +88,7 @@ When cleanup is complete and all issues have been addressed, output this block e
 ```
 ## PIPELINE CHECKPOINT
 Summary: Code quality audit complete — dead code removed, refactoring applied, lint issues resolved.
-Suggested next mode: documentation
+Suggested next mode: backend
 ```
 
 The orchestrator reads this block and presents two options:

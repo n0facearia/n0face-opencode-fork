@@ -79,7 +79,7 @@ export function initializeSessionPermission(projectDir: string): void {
 
 export const VALID_MODES = [
   "start", "design", "frontend", "backend", "database",
-  "security", "testing", "devops", "cleanup", "documentation", "chat",
+  "testing", "cleanup", "chat",
   "architect", "code-review", "debug", "intake", "learn", "plan",
 ]
 
@@ -190,35 +190,6 @@ export function checkAndHandlePipelineCheckpoint(
   if (input.currentMode === "chat") return Effect.succeed({ action: "none" as const })
 
   const parsed = parsePipelineCheckpoint(input.assistantText)
-
-  // Documentation mode is terminal — no handoff, show pipeline complete message
-  if (input.currentMode === "documentation") {
-    return Effect.gen(function* () {
-      const msg = parsed?.summary
-        ? `**Mode complete:** ${parsed.summary}\n\n---\n\nPipeline complete. All modes have run. Enjoy your project! :cat:`
-        : "Pipeline complete. All modes have run. Enjoy your project! :cat:"
-      yield* deps.ask({
-        sessionID: input.sessionID,
-        questions: [
-          new Question.Info({
-            question: msg,
-            header: "Pipeline Complete",
-            options: [
-              new Question.Option({
-                label: "Done",
-                description: "Acknowledge and finish",
-              }),
-            ],
-            multiple: false,
-            custom: false,
-          }),
-        ],
-      }).pipe(
-        Effect.catchTag("QuestionRejectedError", () => Effect.void),
-      )
-      return { action: "none" as const }
-    })
-  }
 
   if (!parsed) {
     if (input.currentMode === "start") return Effect.succeed({ action: "none" as const })

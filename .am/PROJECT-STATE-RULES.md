@@ -56,10 +56,7 @@ Template:
 | backend | #10B981 | API, business logic, data layer |
 | database | #EC4899 | Schema, migrations, queries, ORM config |
 | cleanup | #6B7280 | Refactoring, tech debt, consistency |
-| security | #EF4444 | Audit, hardening, compliance |
 | testing | #A855F7 | Unit, integration, E2E, accessibility |
-| devops | #06B6D4 | CI/CD, deployment, infrastructure |
-| documentation | #F97316 | Architecture docs, API docs, onboarding |
 ```
 
 ## Updating Decisions Made

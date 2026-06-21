@@ -51,7 +51,7 @@ If a decision is already recorded in `.am/project.md`, use it. Only ask about wh
 ## PROJECT INITIALIZATION
 
 Before asking any questions, check if `.am-skills/` exists. If not:
-1. Create the directory structure: `.am-skills/design/`, `.am-skills/frontend/`, `.am-skills/backend/`, `.am-skills/database/`, `.am-skills/security/`, `.am-skills/testing/`, `.am-skills/devops/`, `.am-skills/documentation/`
+1. Create the directory structure: `.am-skills/design/`, `.am-skills/frontend/`, `.am-skills/backend/`, `.am-skills/database/`, `.am-skills/testing/`
 2. For each skill file referenced in mode SKILLS sections, copy from `~/.config/am/skills/<source-path>` to `.am-skills/<mode>/<filename>`. If not found, create a placeholder.
 3. Create `.am-skills/SKILLS-README.md` explaining the folder.
 
@@ -103,7 +103,7 @@ Once you have enough context, write `project.md` and propose the pipeline immedi
 
 ## 4. BUILD ORDER & PIPELINE PROPOSAL
 
-After intake is confirmed, generate a tailored mode execution order based on project type. Skip modes that are irrelevant (e.g. no `database` mode for a static site, no `devops` mode for a local-only tool, no `design` or `frontend` for API-only projects).
+After intake is confirmed, generate a tailored mode execution order based on project type. Skip modes that are irrelevant (e.g. no `database` mode for a static site, no `design` or `frontend` for API-only projects).
 
 ### Algorithm
 
@@ -113,24 +113,21 @@ After intake is confirmed, generate a tailored mode execution order based on pro
 4. If backend exists and database-first → **database** then **backend**
 5. If backend exists and no database → **backend** directly
 6. **testing** after each implementation mode that produces testable code
-7. **security** after core features, before production
-8. **devops** after testing, only if deployment is needed
-9. **cleanup** before documentation
-10. **documentation** last (terminal — no handoff)
+7. **cleanup** after implementation modes
+8. **backend** (handles security, CI/CD, docs after implementation)
 
 ### Skip rules (apply automatically)
 - No frontend → skip `design`, `frontend`
-- No backend → skip `backend`, `database`, `devops`
-- No deployment → skip `devops`
+- No backend → skip `backend`, `database`
 - No database → skip `database`
-- Local-only / PoC → minimize to: start → (core modes) → testing → documentation
+- Local-only / PoC → minimize to: start → (core modes) → testing → backend
 
 ### Present the proposed pipeline
 Show the proposed mode sequence clearly and proceed directly. Example:
 
 ```
 Proposed pipeline for your project:
-  start → design → frontend → backend → database → security → testing → devops → cleanup → documentation
+  start → design → frontend → database → backend → testing → cleanup
 
 Modes skipped: none
 ```
@@ -162,7 +159,7 @@ When the developer confirms Continue, AM:
 5. The next mode begins automatically — it reads `project.md`, does its work, then outputs its own PIPELINE CHECKPOINT
 
 ### Terminal condition
-When `documentation` mode completes, it does not trigger a checkpoint or switch. It ends the pipeline with:
+When the final mode completes, it does not trigger a switch. It ends the pipeline with:
 
 ```
 Pipeline complete. All modes have run. Review the following files:

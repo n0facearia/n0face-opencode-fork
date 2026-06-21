@@ -7,13 +7,10 @@ const modeDescriptions: Record<string, string> = {
   start: "New project intake and orchestration",
   design: "Visual identity and design system",
   frontend: "UI implementation",
-  backend: "API, services, middleware",
+  backend: "Backend, security, CI/CD, docs",
   database: "Schema, migrations, ORM",
   cleanup: "Dead code, lint, unused deps",
-  security: "Vulnerability scanning",
   testing: "Unit, integration, component tests",
-  devops: "CI/CD, Docker, deployment",
-  documentation: "Final docs and README",
   chat: "Questions and answers only",
 }
 

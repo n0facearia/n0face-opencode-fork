@@ -63,21 +63,21 @@ Suggested next mode: pipeline-complete`
   })
 
   test("handles em dash separator in next mode line", () => {
-    const text = `## PIPELINE CHECKPOINT
+    const     text = `## PIPELINE CHECKPOINT
 
-Suggested next mode: devops — Set up CI/CD pipeline`
+Suggested next mode: testing — Set up CI/CD pipeline`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("devops")
+    expect(result!.nextMode).toBe("testing")
   })
 
   test("handles hyphen separator in next mode line", () => {
     const text = `## PIPELINE CHECKPOINT
 
-Suggested next mode: testing - Write unit and integration tests`
+Suggested next mode: database - Write unit and integration tests`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("testing")
+    expect(result!.nextMode).toBe("database")
   })
 
   test("ignores text before the checkpoint block", () => {
@@ -151,7 +151,7 @@ SUGGESTED NEXT MODE: design`
   test("handles 'Suggested next mode' with capital first letter", () => {
     const text = `## PIPELINE CHECKPOINT
 
-Suggested Next Mode: security`
+Suggested Next Mode: database`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
     expect(result!.nextMode).toBe("security")
