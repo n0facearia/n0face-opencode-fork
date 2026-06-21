@@ -77,9 +77,10 @@ export function initializeSessionPermission(projectDir: string): void {
   }
 }
 
-const VALID_MODES = [
+export const VALID_MODES = [
   "start", "design", "frontend", "backend", "database",
   "security", "testing", "devops", "cleanup", "documentation", "chat",
+  "architect", "code-review", "debug", "intake", "learn", "plan",
 ]
 
 function readNextValidModeFromProjectMd(projectDir: string | undefined): string | undefined {
@@ -116,6 +117,7 @@ export function parsePipelineCheckpoint(text: string): { nextMode: string; summa
         .toLowerCase()
         .replace(/[.:;,!?\s]+$/, "")
         .replace(/^[.:;,!?\s]+/, "")
+        .replace(/\s+mode$/i, "")
       const summaryMatch = afterHeader.match(/summary\s*[:\-–—]\s*([^\n]+)/i)
       if (summaryMatch) {
         summary = summaryMatch[1].trim()
@@ -287,7 +289,7 @@ export function checkAndHandlePipelineCheckpoint(
   }
 
   log.info("Raw next mode from checkpoint: '" + parsed.nextMode + "'")
-  let nextMode = parsed.nextMode.trim().toLowerCase().replace(/\s+/g, "-").replace(/\.md$/i, "").replace(/.*\//, "")
+  let nextMode = parsed.nextMode.trim().toLowerCase().replace(/\s+/g, "-").replace(/\.md$/i, "").replace(/.*\//, "").replace(/-?mode$/i, "")
 
   if (!VALID_MODES.includes(nextMode)) {
     log.info("Pipeline: unknown mode '" + nextMode + "' — skipping, looking for next valid mode from project.md")

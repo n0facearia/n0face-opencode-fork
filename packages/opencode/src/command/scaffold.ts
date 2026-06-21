@@ -4,20 +4,7 @@ import path from "path"
 import fs from "fs/promises"
 import { Effect } from "effect"
 import { Global } from "@am-ai/core/global"
-
-const MODES = [
-  "start",
-  "design",
-  "frontend",
-  "backend",
-  "database",
-  "cleanup",
-  "security",
-  "testing",
-  "devops",
-  "documentation",
-  "chat",
-]
+import { SessionPipeline } from "@/session/pipeline"
 
 function copyIfExists(src: string, dst: string): Promise<void> {
   return fs.access(src).then(() => fs.cp(src, dst, { recursive: true }), () => {})
@@ -29,7 +16,7 @@ async function scaffoldModes(projectDir: string) {
 
   await fs.mkdir(modesDir, { recursive: true })
 
-  for (const mode of MODES) {
+  for (const mode of SessionPipeline.VALID_MODES) {
     const modeDir = path.join(modesDir, mode)
     await fs.mkdir(modeDir, { recursive: true })
 
