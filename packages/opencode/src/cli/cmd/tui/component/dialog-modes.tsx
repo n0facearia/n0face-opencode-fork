@@ -1,17 +1,11 @@
 import { useLocal } from "@tui/context/local"
 import { DialogSelect } from "@tui/ui/dialog-select"
 import { useDialog } from "@tui/ui/dialog"
+import { CANONICAL_MODES, CANONICAL_MODE_DESCRIPTIONS } from "@/agent/agent"
 import { createMemo } from "solid-js"
 
-const modeDescriptions: Record<string, string> = {
-  start: "New project intake and orchestration",
-  "frontend-mode": "Design system + UI implementation",
-  "backend-mode": "Backend, database, security, CI/CD, docs",
-  "test-mode": "Testing, linting, cleanup",
-  chat: "Questions and answers only",
-}
-
-const modeOrder = Object.keys(modeDescriptions)
+const modeOrder = CANONICAL_MODES as readonly string[]
+const modeDescriptions = CANONICAL_MODE_DESCRIPTIONS
 
 export function DialogModes() {
   const local = useLocal()

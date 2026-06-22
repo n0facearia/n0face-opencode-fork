@@ -25,6 +25,15 @@ import * as Option from "effect/Option"
 import * as OtelTracer from "@effect/opentelemetry/Tracer"
 import { type DeepMutable } from "@am-ai/core/schema"
 
+export const CANONICAL_MODES = ["start", "frontend-mode", "backend-mode", "test-mode", "chat"] as const
+export const CANONICAL_MODE_DESCRIPTIONS: Record<string, string> = {
+  start: "New project intake and orchestration",
+  "frontend-mode": "Design system + UI implementation",
+  "backend-mode": "Backend, database, security, CI/CD, docs",
+  "test-mode": "Testing, linting, cleanup",
+  chat: "Questions and answers only",
+}
+
 export const Info = Schema.Struct({
   name: Schema.String,
   description: Schema.optional(Schema.String),

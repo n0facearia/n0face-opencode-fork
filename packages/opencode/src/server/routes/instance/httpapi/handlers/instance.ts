@@ -1,4 +1,4 @@
-import { Agent } from "@/agent/agent"
+import { Agent, CANONICAL_MODES } from "@/agent/agent"
 import { Command } from "@/command"
 import * as InstanceState from "@/effect/instance-state"
 import { Format } from "@/format"
@@ -74,7 +74,9 @@ export const instanceHandlers = HttpApiBuilder.group(InstanceHttpApi, "instance"
     })
 
     const getAgent = Effect.fn("InstanceHttpApi.agent")(function* () {
-      return yield* agent.list()
+      const all = yield* agent.list()
+      const names = CANONICAL_MODES as readonly string[]
+      return all.filter((a) => names.includes(a.name))
     })
 
     const getSkill = Effect.fn("InstanceHttpApi.skill")(function* () {
