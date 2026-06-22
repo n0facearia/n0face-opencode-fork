@@ -37,3 +37,6 @@ tsconfig.tsbuildinfo
 
 # Test temp directories
 packages/core/test/.test-tmp-*
+
+# Release archives (built locally, uploaded to GitHub releases)
+amcli-*.tar.gz
