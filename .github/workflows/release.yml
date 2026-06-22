@@ -34,8 +34,12 @@ jobs:
       - run: bun run build --single
         working-directory: packages/opencode
 
-      - run: cp ${{ matrix.binary }} ${{ matrix.artifact }}
+      - run: |
+          cp ${{ matrix.binary }} ${{ matrix.artifact }}
+          tar -czf ${{ matrix.artifact }}.tar.gz -C $(dirname ${{ matrix.binary }}) am
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.artifact }}
+          files: |
+            ${{ matrix.artifact }}
+            ${{ matrix.artifact }}.tar.gz
