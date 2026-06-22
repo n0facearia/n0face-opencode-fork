@@ -33,6 +33,8 @@ jobs:
 
       - run: bun run build --single
         working-directory: packages/opencode
+        env:
+          AM_VERSION: ${{ github.ref_name }}
 
       - run: |
           cp ${{ matrix.binary }} ${{ matrix.artifact }}

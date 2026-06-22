@@ -35,46 +35,26 @@ detect_asset() {
 asset=$(detect_asset)
 base_url="https://github.com/n0facearia/n0face-opencode-fork/releases/latest/download"
 
-echo ""
-echo "Downloading am for ${asset}..."
-echo ""
-
 mkdir -p "$HOME/.local/bin"
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT
 
-download() {
-  if command -v curl &>/dev/null; then
-    curl -fL --progress-bar -o "$1" "$2" 2>&1
-  elif command -v wget &>/dev/null; then
-    wget "$2" -O "$1" 2>&1
-  else
-    echo "Error: curl or wget is required."
-    exit 1
-  fi
-}
+url="${base_url}/${asset}"
 
-# Try .tar.gz first, fall back to raw binary (CI produces both over time)
-archive="${base_url}/${asset}.tar.gz"
-raw="${base_url}/${asset}"
-target="$TMPDIR/${asset}"
+echo ""
+echo "Downloading am for ${asset}..."
+echo ""
 
-if download "$TMPDIR/${asset}.tar.gz" "$archive"; then
-  tar -xzf "$TMPDIR/${asset}.tar.gz" -C "$TMPDIR"
-  if [ -f "$TMPDIR/am" ]; then
-    mv "$TMPDIR/am" "$HOME/.local/bin/am"
-  else
-    mv "$TMPDIR/${asset}" "$HOME/.local/bin/am"
-  fi
-elif download "$target" "$raw"; then
-  mv "$target" "$HOME/.local/bin/am"
+if command -v curl &>/dev/null; then
+  curl -fL --progress-bar -o "$TMPDIR/${asset}" "$url" || { echo ""; echo "Error: Failed to download ${asset}."; echo "Your platform may not have a build for this release."; echo "See: https://github.com/n0facearia/n0face-opencode-fork/releases"; exit 1; }
+elif command -v wget &>/dev/null; then
+  wget "$url" -O "$TMPDIR/${asset}" || { echo ""; echo "Error: Failed to download ${asset}."; echo "Your platform may not have a build for this release."; echo "See: https://github.com/n0facearia/n0face-opencode-fork/releases"; exit 1; }
 else
-  echo ""
-  echo "Error: Failed to download ${asset}.tar.gz or ${asset}."
-  echo "Your platform may not have a build for this release."
-  echo "See: https://github.com/n0facearia/n0face-opencode-fork/releases"
+  echo "Error: curl or wget is required."
   exit 1
 fi
+
+mv "$TMPDIR/${asset}" "$HOME/.local/bin/am"
 chmod +x "$HOME/.local/bin/am"
 
 echo ""
