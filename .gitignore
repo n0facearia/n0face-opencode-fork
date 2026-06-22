@@ -30,3 +30,10 @@ UPCOMING_CHANGELOG.md
 logs/
 *.bun-build
 tsconfig.tsbuildinfo
+
+# Per-project permission grant state (local, not source)
+.am/permission-state.json
+.opencode/permission-state.json
+
+# Test temp directories
+packages/core/test/.test-tmp-*

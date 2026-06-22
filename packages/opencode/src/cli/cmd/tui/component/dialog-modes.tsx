@@ -5,12 +5,9 @@ import { createMemo } from "solid-js"
 
 const modeDescriptions: Record<string, string> = {
   start: "New project intake and orchestration",
-  design: "Visual identity and design system",
-  frontend: "UI implementation",
-  backend: "Backend, security, CI/CD, docs",
-  database: "Schema, migrations, ORM",
-  cleanup: "Dead code, lint, unused deps",
-  testing: "Unit, integration, component tests",
+  "frontend-mode": "Design system + UI implementation",
+  "backend-mode": "Backend, database, security, CI/CD, docs",
+  "test-mode": "Testing, linting, cleanup",
   chat: "Questions and answers only",
 }
 

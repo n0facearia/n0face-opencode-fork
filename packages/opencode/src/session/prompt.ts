@@ -55,6 +55,7 @@ import { EffectBridge } from "@/effect/bridge"
 import { SyncEvent } from "@/sync"
 import { Question } from "@/question"
 import { SessionPipeline } from "./pipeline"
+import { PermissionState } from "@am-ai/core/permission/state"
 import { SessionEvent } from "@/v2/session-event"
 import { Modelv2 } from "@/v2/model"
 import { AgentAttachment, FileAttachment, ReferenceAttachment, Source } from "@/v2/session-prompt"
@@ -1602,10 +1603,23 @@ NOTE: At any point in time through this workflow you should feel free to ask the
     const prompt: (input: PromptInput) => Effect.Effect<MessageV2.WithParts> = Effect.fn("SessionPrompt.prompt")(
       function* (input: PromptInput) {
         const session = yield* sessions.get(input.sessionID).pipe(Effect.orDie)
+        const ctx = yield* InstanceState.context
+        yield* SessionPipeline.initializeSessionPermission(fsys, ctx.directory)
         yield* SessionPipeline.askSessionPermission(
-          { sessionID: input.sessionID },
-          { ask: question.ask },
+          { sessionID: input.sessionID, projectDir: ctx.directory },
+          { ask: question.ask, appfs: fsys },
         )
+        if (
+          SessionPipeline.getSessionPermission() === "granted"
+          && !(yield* PermissionState.isGranted(fsys, ctx.directory))
+        ) {
+          yield* bus.publish(Session.Event.Error, {
+            sessionID: input.sessionID,
+            error: new NamedError.Unknown({
+              message: "Could not save permission — check disk space/permissions. Automation may re-prompt.",
+            }).toObject(),
+          })
+        }
         yield* revert.cleanup(session)
         const message = yield* createUserMessage(input)
         yield* sessions.touch(input.sessionID)
@@ -1626,26 +1640,10 @@ NOTE: At any point in time through this workflow you should feel free to ask the
           .filter((p): p is MessageV2.TextPart => p.type === "text")
           .map((p) => p.text)
           .join("\n")
-        const ctx = yield* InstanceState.context
-        const pipelineResult = yield* SessionPipeline.checkAndHandlePipelineCheckpoint(
+        yield* SessionPipeline.checkAndHandlePipelineCheckpoint(
           { sessionID: input.sessionID, assistantText, currentMode: agent, projectDir: ctx.directory },
-          { ask: question.ask, sync },
+          { sync, bus },
         )
-        if (pipelineResult.action === "feedback") {
-          const feedback: MessageV2.TextPartInput = {
-            type: "text" as const,
-            text: pipelineResult.text,
-          }
-          const feedbackMsg = yield* createUserMessage({
-            ...input,
-            parts: [feedback],
-          })
-          yield* sessions.touch(input.sessionID)
-          return yield* loop({ sessionID: input.sessionID })
-        }
-        if (pipelineResult.action === "retry") {
-          return yield* loop({ sessionID: input.sessionID })
-        }
         return result
       },
     )

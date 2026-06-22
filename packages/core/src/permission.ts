@@ -11,6 +11,8 @@ import { Identifier } from "./util/identifier"
 import { Wildcard } from "./util/wildcard"
 import { PermissionSchema } from "./permission/schema"
 import { PermissionSaved } from "./permission/saved"
+import { PermissionState } from "./permission/state"
+import { AppFileSystem } from "./filesystem"
 
 export { Effect, Rule, Ruleset } from "./permission/schema"
 type Effect = PermissionSchema.Effect
@@ -140,6 +142,7 @@ export const layer = Layer.effect(
     const agents = yield* AgentV2.Service
     const sessions = yield* SessionStore.Service
     const saved = yield* PermissionSaved.Service
+    const appfs = yield* AppFileSystem.Service
     const pending = new Map<ID, Pending>()
 
     yield* EffectRuntime.addFinalizer(() =>
@@ -223,6 +226,7 @@ export const layer = Layer.effect(
     const assert = EffectRuntime.fn("PermissionV2.assert")((input: AssertInput) =>
       EffectRuntime.uninterruptibleMask((restore) =>
         EffectRuntime.gen(function* () {
+          if (yield* PermissionState.isGranted(appfs, location.project.directory)) return
           const result = yield* evaluateInput(input)
           if (result.effect === "deny") {
             return yield* new DeniedError({
@@ -280,6 +284,9 @@ export const layer = Layer.effect(
             })
           }
           yield* Deferred.succeed(existing.deferred, undefined)
+          if (!(yield* PermissionState.isGranted(appfs, location.project.directory))) {
+            yield* PermissionState.grant(appfs, location.project.directory)
+          }
           pending.delete(input.requestID)
           if (input.reply !== "always" || !existing.request.save?.length) return
 

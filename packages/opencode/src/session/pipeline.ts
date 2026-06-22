@@ -7,6 +7,11 @@ import { SessionEvent } from "@/v2/session-event"
 import { SyncEvent } from "@/sync"
 import { BUILD_FROM_SOURCE } from "@/version"
 import * as Log from "@am-ai/core/util/log"
+import { PermissionState } from "@am-ai/core/permission/state"
+import { NamedError } from "@am-ai/core/util/error"
+import type { Bus } from "../bus"
+import type { AppFileSystem } from "@am-ai/core/filesystem"
+import * as Session from "./session"
 
 console.error("PIPELINE MODULE LOADED")
 const log = Log.create({ service: "pipeline" })
@@ -22,8 +27,8 @@ export function setSessionPermission(value: "granted" | "per-request" | null) {
 }
 
 export function askSessionPermission(
-  input: { sessionID: SessionID },
-  deps: { ask: Question.Interface["ask"] },
+  input: { sessionID: SessionID; projectDir: string },
+  deps: { ask: Question.Interface["ask"]; appfs: AppFileSystem.Interface },
 ): Effect.Effect<void> {
   console.error("PERMISSION QUESTION CALLED")
   return Effect.gen(function* () {
@@ -58,29 +63,28 @@ export function askSessionPermission(
       ),
     )
     const choice = answers[0]?.[0] ?? ""
-    sessionPermission = choice.startsWith("Yes") ? "granted" : "per-request"
+    if (choice.startsWith("Yes")) {
+      sessionPermission = "granted"
+      yield* PermissionState.grant(deps.appfs, input.projectDir)
+    } else {
+      sessionPermission = "per-request"
+    }
   })
 }
 
-export function initializeSessionPermission(projectDir: string): void {
-  if (sessionPermission !== null) return
-  try {
-    const content = readFileSync(path.join(projectDir, ".am", "project.md"), "utf-8")
-    const match = content.match(/file_access:\s*(granted|per-request)/)
-    if (match) sessionPermission = match[1] as "granted" | "per-request"
-  } catch {
-    try {
-      const content = readFileSync(path.join(projectDir, ".opencode", "project.md"), "utf-8")
-      const match = content.match(/file_access:\s*(granted|per-request)/)
-      if (match) sessionPermission = match[1] as "granted" | "per-request"
-    } catch {}
-  }
+export function initializeSessionPermission(
+  appfs: AppFileSystem.Interface,
+  projectDir: string,
+): Effect.Effect<void> {
+  return Effect.gen(function* () {
+    if (sessionPermission !== null) return
+    const granted = yield* PermissionState.isGranted(appfs, projectDir)
+    if (granted) sessionPermission = "granted"
+  })
 }
 
 export const VALID_MODES = [
-  "start", "design", "frontend", "backend", "database",
-  "testing", "cleanup", "chat",
-  "architect", "code-review", "debug", "intake", "learn", "plan",
+  "start", "frontend-mode", "backend-mode", "test-mode", "chat",
 ]
 
 function readNextValidModeFromProjectMd(projectDir: string | undefined): string | undefined {
@@ -117,7 +121,6 @@ export function parsePipelineCheckpoint(text: string): { nextMode: string; summa
         .toLowerCase()
         .replace(/[.:;,!?\s]+$/, "")
         .replace(/^[.:;,!?\s]+/, "")
-        .replace(/\s+mode$/i, "")
       const summaryMatch = afterHeader.match(/summary\s*[:\-–—]\s*([^\n]+)/i)
       if (summaryMatch) {
         summary = summaryMatch[1].trim()
@@ -155,7 +158,6 @@ export function parsePipelineCheckpoint(text: string): { nextMode: string; summa
       nextMode = parts[0].trim().toLowerCase()
         .replace(/[.:;,!?\s]+$/, "")
         .replace(/^[.:;,!?\s]+/, "")
-        .replace(/\s+mode$/i, "")
       if (parts.length > 1) summary = parts.slice(1).join(" — ").trim()
       log.info("Parsed next mode from SUGGESTED NEXT STEP: '" + nextMode + "'")
     }
@@ -170,6 +172,21 @@ export function parsePipelineCheckpoint(text: string): { nextMode: string; summa
   return { nextMode, summary }
 }
 
+function publishNote(
+  bus: Bus.Interface | undefined,
+  sessionID: SessionID,
+  message: string,
+): Effect.Effect<void> {
+  process.stderr.write("note: " + message + "\n")
+  if (bus) {
+    return bus.publish(Session.Event.Error, {
+      sessionID,
+      error: new NamedError.Unknown({ message }).toObject(),
+    })
+  }
+  return Effect.void
+}
+
 export function checkAndHandlePipelineCheckpoint(
   input: {
     sessionID: SessionID
@@ -178,12 +195,10 @@ export function checkAndHandlePipelineCheckpoint(
     projectDir?: string
   },
   deps: {
-    ask: Question.Interface["ask"]
     sync: SyncEvent.Interface
+    bus?: Bus.Interface
   },
-): Effect.Effect<
-  { action: "continue" } | { action: "feedback"; text: string } | { action: "retry" } | { action: "none" }
-> {
+): Effect.Effect<{ action: "continue" } | { action: "none" }> {
   console.error("CHECKPOINT HANDLER CALLED")
 
   // Chat mode never handoffs
@@ -193,182 +208,32 @@ export function checkAndHandlePipelineCheckpoint(
 
   if (!parsed) {
     if (input.currentMode === "start") return Effect.succeed({ action: "none" as const })
-
-    return Effect.gen(function* () {
-      log.info("No pipeline checkpoint found for " + input.currentMode + " — offering recovery")
-
-      const answers = yield* deps.ask({
-        sessionID: input.sessionID,
-        questions: [
-          new Question.Info({
-            question: `${input.currentMode} stopped before completing. Continue or give it more direction?`,
-            header: "Recovery",
-            options: [
-              new Question.Option({
-                label: "Continue",
-                description: `Re-run ${input.currentMode} mode`,
-              }),
-              new Question.Option({
-                label: "Give feedback",
-                description: "Tell the mode what to do next",
-              }),
-              new Question.Option({
-                label: "Just chatting",
-                description: "This was an ad-hoc question, not a mode handoff",
-              }),
-            ],
-            multiple: false,
-            custom: false,
-          }),
-        ],
-      }).pipe(
-        Effect.catchTag("QuestionRejectedError", () =>
-          Effect.succeed([["Continue"]] as ReadonlyArray<ReadonlyArray<string>>),
-        ),
-      )
-
-      const choice = answers[0]?.[0] ?? ""
-
-      if (choice.startsWith("Just chatting")) return { action: "none" as const }
-
-      if (choice.startsWith("Give feedback")) {
-        const feedbackAnswers = yield* deps.ask({
-          sessionID: input.sessionID,
-          questions: [
-            new Question.Info({
-              question: `What should ${input.currentMode} do?`,
-              header: "Your feedback",
-              options: [],
-              multiple: false,
-              custom: true,
-            }),
-          ],
-        }).pipe(
-          Effect.catchTag("QuestionRejectedError", () =>
-            Effect.succeed([[]] as ReadonlyArray<ReadonlyArray<string>>),
-          ),
-        )
-
-        const feedbackText = feedbackAnswers[0]?.[0] ?? ""
-        if (!feedbackText) return { action: "retry" as const }
-
-        return { action: "feedback" as const, text: feedbackText }
-      }
-
-      return { action: "retry" as const }
-    })
+    return Effect.succeed({ action: "none" as const })
   }
 
   log.info("Raw next mode from checkpoint: '" + parsed.nextMode + "'")
-  let nextMode = parsed.nextMode.trim().toLowerCase().replace(/\s+/g, "-").replace(/\.md$/i, "").replace(/.*\//, "").replace(/-?mode$/i, "")
-
-  if (!VALID_MODES.includes(nextMode)) {
-    log.info("Pipeline: unknown mode '" + nextMode + "' — skipping, looking for next valid mode from project.md")
-    const fallback = readNextValidModeFromProjectMd(input.projectDir)
-    if (fallback) {
-      nextMode = fallback
-    } else {
-      return Effect.gen(function* () {
-        const answers = yield* deps.ask({
-          sessionID: input.sessionID,
-          questions: [
-            new Question.Info({
-              question: [
-                `The agent suggested switching to \`${nextMode}\` which is not a recognized mode.`,
-                `Staying in ${input.currentMode} mode.`,
-              ].join("\n\n"),
-              header: "Unknown mode",
-              options: [
-                new Question.Option({
-                  label: "OK",
-                  description: `Continue in ${input.currentMode} mode`,
-                }),
-              ],
-              multiple: false,
-              custom: false,
-            }),
-          ],
-        }).pipe(
-          Effect.catchTag("QuestionRejectedError", () =>
-            Effect.succeed([["OK"]] as ReadonlyArray<ReadonlyArray<string>>),
-          ),
-        )
-        return { action: "none" as const }
-      })
-    }
-  }
+  let nextModeCanonical = parsed.nextMode.trim().toLowerCase().replace(/\s+/g, "-").replace(/\.md$/i, "").replace(/.*\//, "")
 
   return Effect.gen(function* () {
-    log.info("Pipeline checkpoint detected: switching to " + nextMode)
-
-    const summaryLines = parsed.summary
-      ? `\n\nWhat was done:\n${parsed.summary}`
-      : ""
-
-    const answers = yield* deps.ask({
-      sessionID: input.sessionID,
-      questions: [
-        new Question.Info({
-          question: `${input.currentMode} mode is complete.${summaryLines}\n\nContinue to ${nextMode} mode?`,
-          header: `Continue to ${nextMode}?`,
-          options: [
-            new Question.Option({
-              label: `Continue to ${nextMode}`,
-              description: `Switch automatically to ${nextMode} mode and begin`,
-            }),
-            new Question.Option({
-              label: "Give feedback",
-              description: "Type what you'd like changed before moving on",
-            }),
-          ],
-          multiple: false,
-          custom: false,
-        }),
-      ],
-    }).pipe(
-      Effect.catchTag("QuestionRejectedError", () =>
-        Effect.succeed([["Continue to " + nextMode]] as ReadonlyArray<ReadonlyArray<string>>),
-      ),
-    )
-
-    const choice = answers[0]?.[0] ?? ""
-
-    if (choice.startsWith("Give feedback")) {
-      const feedbackAnswers = yield* deps.ask({
-        sessionID: input.sessionID,
-        questions: [
-          new Question.Info({
-            question: "What would you like changed or clarified before moving on?",
-            header: "Your feedback",
-            options: [],
-            multiple: false,
-            custom: true,
-          }),
-        ],
-      }).pipe(
-        Effect.catchTag("QuestionRejectedError", () =>
-          Effect.succeed([[]] as ReadonlyArray<ReadonlyArray<string>>),
-        ),
-      )
-
-      const feedbackText = feedbackAnswers[0]?.[0] ?? ""
-      if (!feedbackText) {
-        yield* deps.sync.run(SessionEvent.AgentSwitched.Sync, {
-          sessionID: input.sessionID,
-          timestamp: DateTime.makeUnsafe(Date.now()),
-          agent: nextMode,
-          source: "pipeline",
-        })
-        return { action: "continue" as const }
+    if (!VALID_MODES.includes(nextModeCanonical)) {
+      log.info("Pipeline: unknown mode '" + nextModeCanonical + "' — skipping, looking for next valid mode from project.md")
+      const fallback = readNextValidModeFromProjectMd(input.projectDir)
+      if (fallback) {
+        yield* publishNote(deps.bus, input.sessionID, "mode '" + nextModeCanonical + "' not recognized — continuing with '" + fallback + "' from project.md")
+        log.info("Pipeline: using fallback mode '" + fallback + "' from project.md")
+        nextModeCanonical = fallback
+      } else {
+        yield* publishNote(deps.bus, input.sessionID, "pipeline suggested an unrecognized mode ('" + nextModeCanonical + "') — staying in " + input.currentMode)
+        return { action: "none" as const }
       }
-
-      return { action: "feedback" as const, text: feedbackText }
     }
+
+    log.info("Pipeline checkpoint detected: switching to " + nextModeCanonical)
 
     yield* deps.sync.run(SessionEvent.AgentSwitched.Sync, {
       sessionID: input.sessionID,
       timestamp: DateTime.makeUnsafe(Date.now()),
-      agent: nextMode,
+      agent: nextModeCanonical,
       source: "pipeline",
     })
     return { action: "continue" as const }

@@ -1,0 +1,9 @@
+{
+  "mode": "test-mode",
+  "touched_files": [],
+  "decisions": [],
+  "framework": null,
+  "test_files_written": 0,
+  "coverage": { "lines": 0, "branches": 0, "functions": 0 },
+  "last_session": null
+}

@@ -11,24 +11,24 @@ Some content here.
 
 Summary: Created the database schema with Drizzle ORM, set up migrations, and added CRUD endpoints.
 
-Suggested next mode: frontend`
+Suggested next mode: frontend-mode`
 
 const checkpointNoSummary = `## PIPELINE CHECKPOINT
 
-Suggested next mode: frontend`
+Suggested next mode: frontend-mode`
 
 describe("parsePipelineCheckpoint", () => {
   test("extracts next mode and summary from a full checkpoint block", () => {
     const result = parsePipelineCheckpoint(sampleCheckpoint)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("frontend")
+    expect(result!.nextMode).toBe("frontend-mode")
     expect(result!.summary).toContain("Created the database schema")
   })
 
   test("extracts next mode without summary", () => {
     const result = parsePipelineCheckpoint(checkpointNoSummary)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("frontend")
+    expect(result!.nextMode).toBe("frontend-mode")
     expect(result!.summary).toBe("")
   })
 
@@ -65,19 +65,19 @@ Suggested next mode: pipeline-complete`
   test("handles em dash separator in next mode line", () => {
     const     text = `## PIPELINE CHECKPOINT
 
-Suggested next mode: testing — Set up CI/CD pipeline`
+Suggested next mode: test-mode — Set up CI/CD pipeline`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("testing")
+    expect(result!.nextMode).toBe("test-mode")
   })
 
   test("handles hyphen separator in next mode line", () => {
     const text = `## PIPELINE CHECKPOINT
 
-Suggested next mode: database - Write unit and integration tests`
+Suggested next mode: backend-mode - Set up API routes`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("database")
+    expect(result!.nextMode).toBe("backend-mode")
   })
 
   test("ignores text before the checkpoint block", () => {
@@ -100,96 +100,96 @@ Suggested next mode: start — Begin development`
 
 Summary: Work done.
 
-Suggested next mode: frontend — Build the UI`
+Suggested next mode: frontend-mode — Build the UI`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("frontend")
+    expect(result!.nextMode).toBe("frontend-mode")
   })
 
   test("parses old format for backward compatibility", () => {
-    const text = `## PIPELINE CHECKPOINT — backend
+    const text = `## PIPELINE CHECKPOINT — backend-mode
 
 ### What was done this session
 - Created the database schema with Drizzle ORM
 - Set up migrations
 
 ### Suggested next mode
-frontend — Build the React frontend`
+frontend-mode — Build the React frontend`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("frontend")
+    expect(result!.nextMode).toBe("frontend-mode")
     expect(result!.summary).toContain("Created the database schema")
   })
 
   test("handles checkpoint with ### instead of ##", () => {
     const text = `### PIPELINE CHECKPOINT
 
-Suggested next mode: backend`
+Suggested next mode: backend-mode`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("backend")
+    expect(result!.nextMode).toBe("backend-mode")
   })
 
   test("handles checkpoint with extra spaces around header", () => {
     const text = `##   PIPELINE   CHECKPOINT   
 
-Suggested next mode: frontend`
+Suggested next mode: frontend-mode`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("frontend")
+    expect(result!.nextMode).toBe("frontend-mode")
   })
 
   test("handles 'Suggested next mode' with different casing", () => {
     const text = `## PIPELINE CHECKPOINT
 
-SUGGESTED NEXT MODE: design`
+SUGGESTED NEXT MODE: frontend-mode`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("design")
+    expect(result!.nextMode).toBe("frontend-mode")
   })
 
   test("handles 'Suggested next mode' with capital first letter", () => {
     const text = `## PIPELINE CHECKPOINT
 
-Suggested Next Mode: database`
+Suggested Next Mode: test-mode`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("security")
+    expect(result!.nextMode).toBe("test-mode")
   })
 
   test("handles checkpoint with CRLF line endings (Windows)", () => {
-    const text = `## PIPELINE CHECKPOINT\r\n\r\nSuggested next mode: testing`
+    const text = `## PIPELINE CHECKPOINT\r\n\r\nSuggested next mode: test-mode`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("testing")
+    expect(result!.nextMode).toBe("test-mode")
   })
 
   test("handles summary with em dash separator", () => {
     const text = `## PIPELINE CHECKPOINT
 
 Summary — Set up authentication and authorization
-Suggested next mode: database`
+Suggested next mode: backend-mode`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("database")
+    expect(result!.nextMode).toBe("backend-mode")
   })
 
   test("handles multiple spaces before mode name", () => {
     const text = `## PIPELINE CHECKPOINT
 
-Suggested next mode:   frontend`
+Suggested next mode:   frontend-mode`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("frontend")
+    expect(result!.nextMode).toBe("frontend-mode")
   })
 
   test("removes trailing punctuation from mode name", () => {
     const text = `## PIPELINE CHECKPOINT
 
-Suggested next mode: backend.`
+Suggested next mode: backend-mode.`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("backend")
+    expect(result!.nextMode).toBe("backend-mode")
   })
 
   test("handles checkpoint block with trailing content on same line", () => {
@@ -197,10 +197,10 @@ Suggested next mode: backend.`
 
 Summary: Work is done.
 
-Suggested next mode: cleanup — Final cleanup tasks`
+Suggested next mode: test-mode — Final cleanup tasks`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("cleanup")
+    expect(result!.nextMode).toBe("test-mode")
   })
 
   test("handles checkpoint block in the middle of other text", () => {
@@ -211,21 +211,18 @@ The login page is now responsive.
 
 Summary: Finished the login page component with form validation.
 
-Suggested next mode: backend
+Suggested next mode: backend-mode
 
 Now I need to set up the API routes for authentication.`
     const result = parsePipelineCheckpoint(text)
     expect(result).toBeDefined()
-    expect(result!.nextMode).toBe("backend")
+    expect(result!.nextMode).toBe("backend-mode")
     expect(result!.summary).toContain("Finished the login page")
   })
 })
 
 describe("checkAndHandlePipelineCheckpoint — chat mode exclusion", () => {
   const sessionID = "ses-test-chat" as unknown as SessionID
-
-  const noopAsk = () =>
-    Effect.die("ask must not be called when currentMode === 'chat'")
 
   const noopSync = {
     run: () =>
@@ -245,10 +242,10 @@ describe("checkAndHandlePipelineCheckpoint — chat mode exclusion", () => {
       checkAndHandlePipelineCheckpoint(
         {
           sessionID,
-          assistantText: "## HANDOFF — suggest backend",
+          assistantText: "## HANDOFF — suggest backend-mode",
           currentMode: "chat",
         },
-        { ask: noopAsk, sync: noopSync },
+        { sync: noopSync },
       ),
     )
     expect(result).toEqual({ action: "none" })
@@ -260,10 +257,10 @@ describe("checkAndHandlePipelineCheckpoint — chat mode exclusion", () => {
         {
           sessionID,
           assistantText:
-            "## PIPELINE CHECKPOINT\n\nSummary: Done.\n\nSuggested next mode: backend",
+            "## PIPELINE CHECKPOINT\n\nSummary: Done.\n\nSuggested next mode: backend-mode",
           currentMode: "chat",
         },
-        { ask: noopAsk, sync: noopSync },
+        { sync: noopSync },
       ),
     )
     expect(result).toEqual({ action: "none" })
@@ -278,22 +275,19 @@ describe("checkAndHandlePipelineCheckpoint — chat mode exclusion", () => {
             "The auth middleware uses JWT tokens stored in httpOnly cookies.",
           currentMode: "chat",
         },
-        { ask: noopAsk, sync: noopSync },
+        { sync: noopSync },
       ),
     )
     expect(result).toEqual({ action: "none" })
   })
 
-  test("non-chat mode with valid checkpoint calls ask to confirm", async () => {
-    let askCalled = false
-    const confirmAsk = () => {
-      askCalled = true
-      return Effect.succeed(
-        [["Continue to backend"]] as ReadonlyArray<ReadonlyArray<string>>,
-      )
-    }
+  test("non-chat mode with valid checkpoint emits AgentSwitched", async () => {
+    let syncCalled = false
     const confirmSync = {
-      run: () => Effect.void,
+      run: () => {
+        syncCalled = true
+        return Effect.void
+      },
       replay: () => Effect.void,
       replayAll: () => Effect.succeed(undefined as string | undefined),
       remove: () => Effect.void,
@@ -305,14 +299,14 @@ describe("checkAndHandlePipelineCheckpoint — chat mode exclusion", () => {
         {
           sessionID,
           assistantText:
-            "## PIPELINE CHECKPOINT\n\nSummary: Done.\n\nSuggested next mode: backend",
-          currentMode: "backend",
+            "## PIPELINE CHECKPOINT\n\nSummary: Done.\n\nSuggested next mode: backend-mode",
+          currentMode: "backend-mode",
         },
-        { ask: confirmAsk, sync: confirmSync },
+        { sync: confirmSync },
       ),
     )
 
-    expect(askCalled).toBe(true)
+    expect(syncCalled).toBe(true)
     expect(result).toEqual({ action: "continue" })
   })
 })
